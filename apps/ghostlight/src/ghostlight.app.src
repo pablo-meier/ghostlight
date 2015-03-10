@@ -1,0 +1,10 @@
+{application, ghostlight,
+ [{description, "Bringing the Internet to performing artists."},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {'ghostlight_app', []}},
+  {applications,
+   [lager, cowboy, kernel, stdlib]},
+  {env,[]},
+  {modules, []}
+ ]}.

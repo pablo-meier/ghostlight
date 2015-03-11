@@ -2,7 +2,7 @@
 %%% @author pablo
 %%% @copyright (C) 2015, pablo
 %%% @doc
-%%% gen_server for the connection to the Neo4j database.
+%%% gen_server for the connection to the Postgres database.
 %%% @end
 %%% Created : 2015-03-08 20:46:29.917402
 %%%-------------------------------------------------------------------
@@ -22,7 +22,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {}).
+-record(state, {connection}).
 
 %%%===================================================================
 %%% API
@@ -36,7 +36,6 @@
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
-    io:format("Hello World!"),
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 %%%===================================================================
@@ -55,7 +54,10 @@ start_link() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-    {ok, #state{}}.
+    {ok, Connection} = epgsql:connect("localhost", "pablo", "", [{database, "ghostlight-dev"}]),
+    initialize_tables(Connection),
+    State = #state{connection=Connection},
+    {ok, State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -112,8 +114,8 @@ handle_info(_Info, State) ->
 %% @spec terminate(Reason, State) -> void()
 %% @end
 %%--------------------------------------------------------------------
-terminate(_Reason, _State) ->
-    ok.
+terminate(_Reason, #state{connection=C}) ->
+    epgsql:close(C).
 
 %%--------------------------------------------------------------------
 %% @private
@@ -130,6 +132,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-
+initialize_tables(Connection) ->
+    ok.
 
 

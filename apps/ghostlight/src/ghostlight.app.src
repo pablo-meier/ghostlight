@@ -4,7 +4,12 @@
   {registered, []},
   {mod, {'ghostlight_app', []}},
   {applications,
-   [lager, cowboy, kernel, stdlib]},
+   [cowboy,
+    erlydtl,
+    epgsql,
+    kernel,
+    lager,
+    stdlib]},
   {env,[]},
   {modules, []}
  ]}.

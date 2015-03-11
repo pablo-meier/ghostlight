@@ -18,15 +18,8 @@ content_types_provided(Req, State) ->
 
 
 show_to_html(Req, State) ->
-    Body = <<"<html>
-<head>
-<meta charset=\"utf-8\">
-<title>REST Show!</title>
-</head>
-<body>
-  <p>It's a show!</p>
-</body>
-</html>">>,
+    ShowInfo = [{title, <<"An Octoroon">>}],
+    {ok, Body} = show_template:render(ShowInfo),
     {Body, Req, State}.
 
 show_to_json(Req, State) ->

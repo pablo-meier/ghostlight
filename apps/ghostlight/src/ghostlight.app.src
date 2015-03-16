@@ -9,7 +9,8 @@
     epgsql,
     kernel,
     lager,
-    stdlib]},
+    stdlib,
+    uuid]},
   {env,[]},
   {modules, []}
  ]}.

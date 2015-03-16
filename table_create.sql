@@ -1,11 +1,15 @@
 
+
+-- Access control is TRICKY, but this is a start. Something is private or public, that's it.
+-- If private, only creator can see it.
+CREATE TYPE visibility AS ENUM ('public', 'private');
+
 -- A little terminology:
 --   a SHOW is a showing by an organization -- e.g. Brunchaphobia, SoHo Rep's Octoroon
 --   a WORK is the work being presented -- _Moment After the Meerkat_ by Charly, _An Octoroon_ by Branden Jacob-Jenkins
 --   a PERFORMANCE is a unit presented at a SHOW -- 
 --        _Moment After the Meerkat_ starring X, Y, and Z, directed by A, for 5/10 Still Winter.
 --        _An Octoroon_ starring X, directed by Y, for _An Octoroon_
-
 
 -- Table for a person, in or out of Ghostlight.
 CREATE TABLE IF NOT EXISTS people (
@@ -41,7 +45,7 @@ CREATE TABLE IF NOT EXISTS shows (
 CREATE TABLE IF NOT EXISTS works (
     work_id UUID PRIMARY KEY,
     title TEXT NOT NULL,
-    visibility TEXT NOT NULL
+    acl VISIBILITY NOT NULL DEFAULT 'public'
 );
 
 
@@ -73,6 +77,7 @@ CREATE TABLE IF NOT EXISTS performance_onstage (
     performance_id UUID REFERENCES performances(performance_id) NOT NULL,
     performer_id UUID REFERENCES people(person_id) NOT NULL,
     role TEXT NOT NULL,
+    -- Maybe understudies should be a new table? Given that they can change around, like performers.
     understudy_id UUID REFERENCES people(person_id),
     date_started DATE,
     date_ended DATE,

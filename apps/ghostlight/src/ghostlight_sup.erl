@@ -29,7 +29,7 @@ start_link() ->
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
     {ok, {{one_for_all, 5, 60},
-          [{neo4j_server,
+          [{postgres_server,
            {ghostlight_db, start_link, []},
            permanent,
            5000,

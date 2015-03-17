@@ -205,7 +205,7 @@ get_performance_inserts(WorksWithIds,
 get_onstage_inserts(PerformanceId, OnstageList, State=#state{insert_onstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#onstage{ role=Role,
                                            person=Person }) ->
-                                [{PersonInserts, PersonId}] = get_people_inserts([Person], State),
+                                {PersonInserts, [PersonId]} = get_people_inserts([Person], State),
                                 OnstageInsert = {IO, [PerformanceId, PersonId, Role, null, null, null]},
                                 lists:reverse([OnstageInsert|PersonInserts])
                             end, OnstageList),
@@ -215,7 +215,7 @@ get_onstage_inserts(PerformanceId, OnstageList, State=#state{insert_onstage_stat
 get_offstage_inserts(PerformanceId, OffstageList, State=#state{insert_offstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#offstage{ job=Job,
                                             person=Person }) ->
-                                [{PersonInserts, PersonId}] = get_people_inserts([Person], State),
+                                {PersonInserts, [PersonId]} = get_people_inserts([Person], State),
                                 OffstageInsert = {IO, [PerformanceId, PersonId, Job, null, null, null]},
                                 lists:reverse([OffstageInsert|PersonInserts])
                             end, OffstageList),

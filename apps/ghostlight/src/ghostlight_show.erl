@@ -4,6 +4,7 @@
 -export([show_to_html/2,
          show_to_json/2,
          show_to_text/2]).
+-export([get_fiveten/0]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 

@@ -36,6 +36,8 @@
          terminate/2,
          code_change/3]).
 
+-export([insert_show/1]).
+
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
 -define(SERVER, ?MODULE).
@@ -90,47 +92,17 @@ init([]) ->
                    insert_org_statement=InsertOrg},
     {ok, State}.
 
-%%--------------------------------------------------------------------
-%% @private
-%% @doc
-%% Handling call messages
-%%
-%% @spec handle_call(Request, From, State) ->
-%%                                   {reply, Reply, State} |
-%%                                   {reply, Reply, State, Timeout} |
-%%                                   {noreply, State} |
-%%                                   {noreply, State, Timeout} |
-%%                                   {stop, Reason, Reply, State} |
-%%                                   {stop, Reason, State}
-%% @end
-%%--------------------------------------------------------------------
+handle_call({insert_show, Show}, _From, State) ->
+    Reply = get_show_inserts(Show, State),
+    {reply, Reply, State};
+
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
 
-%%--------------------------------------------------------------------
-%% @private
-%% @doc
-%% Handling cast messages
-%%
-%% @spec handle_cast(Msg, State) -> {noreply, State} |
-%%                                  {noreply, State, Timeout} |
-%%                                  {stop, Reason, State}
-%% @end
-%%--------------------------------------------------------------------
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
-%%--------------------------------------------------------------------
-%% @private
-%% @doc
-%% Handling all non call/cast messages
-%%
-%% @spec handle_info(Info, State) -> {noreply, State} |
-%%                                   {noreply, State, Timeout} |
-%%                                   {stop, Reason, State}
-%% @end
-%%--------------------------------------------------------------------
 handle_info(_Info, State) ->
     {noreply, State}.
 
@@ -140,6 +112,15 @@ terminate(Reason, #state{connection=C}) ->
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+
+%%%===================================================================
+%%% Smooth-n-easy API for the normies
+%%%===================================================================
+
+insert_show(Show) ->
+    gen_server:call(?MODULE, {insert_show, Show}).
+
 
 %%%===================================================================
 %%% Internal functions
@@ -224,7 +205,7 @@ get_performance_inserts(WorksWithIds,
 get_onstage_inserts(PerformanceId, OnstageList, State=#state{insert_onstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#onstage{ role=Role,
                                            person=Person }) ->
-                                [{PersonInserts, PersonId}] = get_people_inserts(Person, State),
+                                [{PersonInserts, PersonId}] = get_people_inserts([Person], State),
                                 OnstageInsert = {IO, [PerformanceId, PersonId, Role, null, null, null]},
                                 lists:reverse([OnstageInsert|PersonInserts])
                             end, OnstageList),
@@ -234,7 +215,7 @@ get_onstage_inserts(PerformanceId, OnstageList, State=#state{insert_onstage_stat
 get_offstage_inserts(PerformanceId, OffstageList, State=#state{insert_offstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#offstage{ job=Job,
                                             person=Person }) ->
-                                [{PersonInserts, PersonId}] = get_people_inserts(Person, State),
+                                [{PersonInserts, PersonId}] = get_people_inserts([Person], State),
                                 OffstageInsert = {IO, [PerformanceId, PersonId, Job, null, null, null]},
                                 lists:reverse([OffstageInsert|PersonInserts])
                             end, OffstageList),

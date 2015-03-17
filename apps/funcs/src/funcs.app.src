@@ -1,0 +1,11 @@
+{application, funcs,
+ [{description, "Simple function utils library."},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {'funcs_app', []}},
+  {applications,
+   [kernel,
+    stdlib]},
+  {env,[]},
+  {modules, []}
+ ]}.

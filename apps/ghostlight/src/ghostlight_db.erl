@@ -1,3 +1,30 @@
+%%% The DATABASE
+%%%
+%%% The primary value-prop of Ghostlight comes from its database. Virtually
+%%% _everything_ that gives it value over a pile of programs comes from the
+%%% fact that a) we have a well-maintained, well-run database containing all
+%%% the information, and b) that the data is good.
+%%%
+%%% While b) is mostly a policy issue (and some data science I don't know),
+%%% most of a) gets handled here!
+%%%
+%%% Here is the high-level on the database:
+%%% * It exposes a number of API functions to the app that are mostly wrappers
+%%%   to gen_server:call/cast. Technically speaking, we can change everything
+%%%   about this module EXCEPT this -- we could change DB engines, ditch
+%%%   gen_server, whatever. Highly unlikely, but that's the hard module
+%%%   boundary.
+%%% * We make it a gen_server for the well-known obvious reasons: we can restart
+%%%   it, supervise it, etc., and it's a solid way to maintain the state that
+%%%   we'll need (parsed queries, PSQL connections).
+%%%
+%%% Since the data is so spread out with a myriad of hairy relationships, 
+%%% generating the exact queries for the use case requires something of a 
+%%% calculus.
+%%%
+%%% Technically speaking, that's what's 
+%%%
+%%%
 -module(ghostlight_db).
 -behaviour(gen_server).
 
@@ -8,6 +35,8 @@
          handle_info/2,
          terminate/2,
          code_change/3]).
+
+-include("apps/ghostlight/include/ghostlight_data.hrl").
 
 -define(SERVER, ?MODULE).
 -record(state, {connection,
@@ -119,100 +148,133 @@ code_change(_OldVsn, State, _Extra) ->
 initialize_tables(_Connection) ->
     ok.
 
-get_offstage_inserts(Onstage, #state{insert_offstage_statement=IO}) ->
-    PerformanceId = maps:get(performance_id, Onstage),
-    PerformerId = maps:get(performer_id, Onstage),
-    Job = maps:get(job, Onstage),
-    DateStarted = maps:get(date_started, Onstage, null),
-    DateEnded = maps:get(date_started, Onstage, null),
+%% Given how the keys reference each other, it's kind of critical that 
+%% the operations are done in this order.
+get_show_inserts(#show{title=Title,
+                       org=Org,
+                       performances=Performances,
+                       special_thanks=SpecialThanks,
+                       dates=Dates
+                      },
+                 State=#state{begin_statement=BEGIN,
+                              commit_statement=COMMIT,
+                              insert_show_statement=IS
+                             }) ->
+    Works = extract_works(Performances),
+    {AllWorkInserts, WorksWithId} = fold_over_works(Works, State),
+    {OrgInserts, OrgId} = get_producing_org_inserts(Org, State),
+    ShowId = uuid:uuid4(),
+    ShowInserts = [{IS, [ShowId, Title, OrgId, SpecialThanks]}],
+    AllPerformanceInserts = fold_over_performances(Performances, ShowId, WorksWithId, State),
+    Batch = lists:append([[{BEGIN, []}],
+                           AllWorkInserts,
+                           OrgInserts,
+                           ShowInserts,
+                           AllPerformanceInserts,
+                           [{COMMIT, []}]]),
+    Batch.
 
-    Inserts = [{IO, [PerformanceId, PerformerId, Job, DateStarted, DateEnded]}],
-    {Inserts, []}.
+
+extract_works(Performances) ->
+    lists:map(fun (#performance{work = Work}) -> Work end, Performances).
+
+%% This looks worse than it is -- it's a generalized fold over the insert generators. So
+%% wheraas `get_X_inserts` return {XInserts, Id}, at a high level we'd like a way to get
+%% all the inserts [X] and their IDs. The return Tuple is {AllInserts, [{Item, Id}]
+fold_over_insertable(Fun, Collection, State) ->
+    lists:foldl(fun (Item, {Inserts, Accum}) ->
+                         {NewInserts, NewId} = Fun(Item, State),
+                         {lists:append(Inserts, NewInserts), [{Item, NewId}|Accum]}
+                 end, {[], []}, Collection).
+
+fold_over_works(Works, State) ->
+    fold_over_insertable(fun get_work_inserts/2, Works, State).
+
+fold_over_performances(Performances, ShowId, WorksWithIds, State) ->
+    Partialed = fun ({P, Order}, S) ->
+                        get_performance_inserts(WorksWithIds, ShowId, Order, P, S)
+                end,
+    Numbered = lists:zip(Performances, lists:seq(1, length(Performances))),
+    {Inserts, _} = fold_over_insertable(Partialed, Numbered, State),
+    Inserts.
 
 
-get_onstage_inserts(Onstage, #state{insert_onstage_statement=IO}) ->
-    PerformanceId = maps:get(performance_id, Onstage),
-    PerformerId = maps:get(performer_id, Onstage),
-    Role = maps:get(role, Onstage),
-    UnderstudyId = maps:get(understudy, Onstage, null),
-    DateStarted = maps:get(date_started, Onstage, null),
-    DateEnded = maps:get(date_started, Onstage, null),
-
-    Inserts = [{IO, [PerformanceId, PerformerId, Role, UnderstudyId, DateStarted, DateEnded]}],
-    {Inserts, []}.
-
-%% TODO: Are maps the best for this, really? Proplists?
-get_performance_inserts(PerformanceMap, State={insert_performance_statement=IP}) ->
+get_performance_inserts(WorksWithIds,
+                        ShowId,
+                        PerformanceOrder,
+                        #performance{ 
+                           work=Work,
+                           onstage=Onstage,
+                           offstage=Offstage,
+                           directors=Directors },
+                        State=#state{insert_performance_statement=IP}) ->
     PerformanceId = uuid:uuid4(),
-    ShowId = maps:get(show_id, PerformanceMap),
-    WorkId = maps:get(work_id, PerformanceMap),
-    Director = maps:get(director, PerformanceMap),
-    {DirectorInserts, DirectorId} = get_person_inserts(Director, State),
-    PerformanceOrder = maps:get(order, PerformanceMap),
+    WorkId = proplists:get_value(Work, WorksWithIds),
+    {DirectorInserts, DirectorId} = get_people_inserts(Directors, State),
+    OnstageInserts = get_onstage_inserts(PerformanceId, Onstage, State),
+    OffstageInserts = get_offstage_inserts(PerformanceId, Offstage, State),
 
     Inserts = lists:append([DirectorInserts,
-                            [{IP, [PerformanceId, WorkId, ShowId, DirectorId, PerformanceOrder]}] ]),
+                            [{IP, [PerformanceId, WorkId, ShowId, DirectorId, PerformanceOrder]}],
+                            OnstageInserts,
+                            OffstageInserts]),
     {Inserts, PerformanceId}.
 
 
-get_show_inserts(ShowMap, State=#state{begin_statement=BEGIN,
-                            commit_statement=COMMIT,
-                            insert_show_statement=IS,
-                            connection=C}) ->
-    Work = maps:get(work, ShowMap),
-    {WorkInserts, _WorkId} = get_work_inserts(Work, State),
-
-    Org = maps:get(producing_org, ShowMap),
-    {OrgInserts, OrgId} = get_producing_org_inserts(Org, State),
-
-    ShowId = uuid:uuid4(),
-    Title = maps:get(title, ShowMap),
-    SpecialThanks = maps:get(special_thanks, ShowMap, ""),
-    ShowInserts = [{IS, [ShowId, Title, OrgId, SpecialThanks]}],
-
-    Batch = lists:append([[{BEGIN, []}],
-                           WorkInserts,
-                           OrgInserts,
-                           ShowInserts,
-                           [{COMMIT, []}]]),
-
-    epgsql:execute_batch(C, Batch),
-    ok.
+get_onstage_inserts(PerformanceId, OnstageList, State=#state{insert_onstage_statement=IO}) ->
+    ListOfLists = lists:map(fun (#onstage{ role=Role,
+                                           person=Person }) ->
+                                [{PersonInserts, PersonId}] = get_people_inserts(Person, State),
+                                OnstageInsert = {IO, [PerformanceId, PersonId, Role, null, null, null]},
+                                lists:reverse([OnstageInsert|PersonInserts])
+                            end, OnstageList),
+    lists:flatten(ListOfLists).
 
 
-get_producing_org_inserts(OrgMap, #state{insert_org_statement=IO}) ->
+get_offstage_inserts(PerformanceId, OffstageList, State=#state{insert_offstage_statement=IO}) ->
+    ListOfLists = lists:map(fun (#offstage{ job=Job,
+                                            person=Person }) ->
+                                [{PersonInserts, PersonId}] = get_people_inserts(Person, State),
+                                OffstageInsert = {IO, [PerformanceId, PersonId, Job, null, null, null]},
+                                lists:reverse([OffstageInsert|PersonInserts])
+                            end, OffstageList),
+    lists:flatten(ListOfLists).
+
+
+get_producing_org_inserts(#organization {
+                             name=Name,
+                             tagline=Tagline,
+                             description=Description,
+                             parent=Parent,
+                             vanity_name=VanityName,
+                             date_founded=DateFounded,
+                             visibility=Visibility
+                          },
+                          #state{insert_org_statement=IO}) ->
     OrgId = uuid:uuid4(),
-    Name = maps:get(name, OrgMap),
-    Parent = maps:get(parent, OrgMap, null),
-    Tagline = maps:get(tagline, OrgMap, null),
-    Description = maps:get(description, OrgMap, null),
-    VanityName = maps:get(vanity_name, OrgMap, null),
-    DateFounded = maps:get(parent, OrgMap, null),
-    Visibility = maps:get(visibility, OrgMap, <<"public">>),
-
     OrgInserts = [{IO, [OrgId, Parent, Name, Tagline, Description, VanityName, DateFounded, Visibility]}],
     {OrgInserts, OrgId}.
 
 
-get_work_inserts(WorkMap, State=#state{insert_work_statement=IW,
-                                       insert_authorship_statement=IA}) ->
+get_work_inserts(#work{title=Title,
+                       authors=Authors},
+                 State=#state{insert_work_statement=IW,
+                              insert_authorship_statement=IA}) ->
     WorkUUID = uuid:uuid4(),
-    Title = maps:get(title, WorkMap, ""),
-    Authors = maps:get(authors, WorkMap, []),
 
-    {PersonInserts, Ids} = get_person_inserts(Authors, State),
+    {PersonInserts, Ids} = get_people_inserts(Authors, State),
     AuthorshipInserts = lists:map(fun (AuthorUUID) ->
                                       {IA, [WorkUUID, AuthorUUID]}
-                              end, Ids),
+                                  end, Ids),
 
     %% BEGIN, Insert the Work, Insert new People, Insert Authors, Commit
     WorkInserts = lists:append([ [{IW, [WorkUUID, Title, <<"public">>]}],
                                  PersonInserts,
                                  AuthorshipInserts]),
-    {WorkInserts, [WorkUUID]}.
+    {WorkInserts, WorkUUID}.
 
-% -spec get_person_inserts(list({name | id, binary()}), #state{}) -> {list({#statement{}, list(any())}), binary()}.
-get_person_inserts(PersonList, #state{insert_person_statement=IP}) ->
+% -spec get_people_inserts(list({name | id, binary()}), #state{}) -> {list({#statement{}, list(any())}), binary()}.
+get_people_inserts(PersonList, #state{insert_person_statement=IP}) ->
     PersonPairs = lists:map(fun ({Type, Value}) ->
                                   case Type of
                                       name -> 

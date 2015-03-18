@@ -51,7 +51,8 @@
                 insert_performance_statement,
                 insert_onstage_statement,
                 insert_offstage_statement,
-                insert_show_statement
+                insert_show_statement,
+                insert_dates_statement
                 }).
 
 start_link() ->
@@ -64,21 +65,52 @@ start_link() ->
 init([]) ->
     {ok, C} = epgsql:connect("localhost", "pablo", "", [{database, "ghostlight-dev"}]),
     initialize_tables(C),
-    {ok, BeginStmt} = epgsql:parse(C, "BEGIN"),
-    {ok, CommitStmt} = epgsql:parse(C, "COMMIT"),
-    {ok, InsertWork} = epgsql:parse(C, "INSERT INTO works (work_id, title, visibility) VALUES($1, $2, $3)", [uuid, text, text]),
-    {ok, InsertAuthorship} = epgsql:parse(C, "INSERT INTO authorship (work_id, person_id) VALUES($1, $2)", [uuid, uuid]),
-    {ok, InsertPerson} = epgsql:parse(C, "INSERT INTO people (person_id, name, photo_url, date_added) VALUES($1, $2, NULL, CURRENT_DATE)", [uuid, text]),
-    {ok, InsertOrg} = epgsql:parse(C, "INSERT INTO organizations (org_id, parent_org, name, tagline, description, vanity_name, date_founded, visibility)"
-        ++ " VALUES($1, $2, $3, $4, $5, $6, $7::date, $8)", [uuid, uuid, text, text, text, text, text, date, text]),
-    {ok, InsertPerformance} = epgsql:parse(C, "INSERT INTO performances (performance_id, work_id, show_id, director_id, performance_order)"
-        ++ " VALUES($1, $2, $3, $4, $5)", [uuid, uuid, uuid, uuid, int8]),
-    {ok, InsertOnstage} = epgsql:parse(C, "INSERT INTO performance_onstage (performance_id, performer_id, role, understudy_id, date_started, date_ended)"
-        ++ " VALUES($1, $2, $3, $4, $5, $6)", [uuid, uuid, text, uuid, date, date]),
-    {ok, InsertOffstage} = epgsql:parse(C, "INSERT INTO performance_offstage (performance_id, person_id, job, date_started, date_ended)"
-        ++ " VALUES($1, $2, $3, $4, $5)", [uuid, uuid, text, date, date]),
-    {ok, InsertShow} = epgsql:parse(C, "INSERT INTO shows (show_id, title, producing_org_id, special_thanks, date_created) "
-        ++ " VALUES($1, $2, $3, $4, CURRENT_DATE)", [uuid, text, uuid, text, date]),
+    {ok, BeginStmt} = epgsql:parse(C, "begin_statement", "BEGIN", []),
+    {ok, CommitStmt} = epgsql:parse(C, "commit_statement", "COMMIT", []),
+    {ok, InsertAuthorship} = epgsql:parse(C,
+                                          "insert_authorship",
+                                          "INSERT INTO authorship (work_id, person_id) VALUES($1, $2)",
+                                          [uuid, uuid]),
+    {ok, InsertPerson} = epgsql:parse(C,
+                                      "insert_person",
+                                      "INSERT INTO people (person_id, name, photo_url, date_added) VALUES($1, $2, NULL, CURRENT_DATE)",
+                                      [uuid, text]),
+
+    {ok, InsertWork} = epgsql:parse(C,
+                                    "insert_work",
+                                    "INSERT INTO works (work_id, title, visibility) VALUES($1, $2, $3)",
+                                    [uuid, text, text]),
+
+    {ok, InsertOrg} = epgsql:parse(C,
+                                   "insert_organization",
+                                   "INSERT INTO organizations (org_id, parent_org, name, tagline, description, vanity_name, date_founded, visibility)"
+                                    ++ " VALUES($1, $2, $3, $4, $5, $6, $7::date, $8)",
+                                   [uuid, uuid, text, text, text, text, date, text]),
+
+    {ok, InsertPerformance} = epgsql:parse(C,
+                                           "insert_performance",
+                                           "INSERT INTO performances (performance_id, work_id, show_id, director_id, performance_order)"
+                                            ++ " VALUES($1, $2, $3, $4, $5)",
+                                          [uuid, uuid, uuid, uuid, int4]),
+    {ok, InsertOnstage} = epgsql:parse(C,
+                                       "insert_performance_onstage",
+                                       "INSERT INTO performance_onstage (performance_id, performer_id, role, understudy_id, date_started, date_ended)"
+                                        ++ " VALUES($1, $2, $3, $4, $5, $6)",
+                                       [uuid, uuid, text, uuid, date, date]),
+    {ok, InsertOffstage} = epgsql:parse(C,
+                                        "insert_performance_offstage",
+                                        "INSERT INTO performance_offstage (performance_id, person_id, job, date_started, date_ended)"
+                                        ++ " VALUES($1, $2, $3, $4, $5)",
+                                       [uuid, uuid, text, date, date]),
+    {ok, InsertShow} = epgsql:parse(C,
+                                    "insert_show",
+                                    "INSERT INTO shows (show_id, title, producing_org_id, special_thanks, date_created) "
+                                    ++ " VALUES($1, $2, $3, $4, CURRENT_DATE)",
+                                   [uuid, text, uuid, text]),
+    {ok, InsertDates} = epgsql:parse(C,
+                                     "insert_show_dates",
+                                     "INSERT INTO show_dates (show_id, show_date) VALUES($1, $2)",
+                                     [uuid, timestamptz]),
      State = #state{connection=C,
                    begin_statement=BeginStmt,
                    commit_statement=CommitStmt,
@@ -89,11 +121,14 @@ init([]) ->
                    insert_onstage_statement=InsertOnstage,
                    insert_offstage_statement=InsertOffstage,
                    insert_show_statement=InsertShow,
-                   insert_org_statement=InsertOrg},
+                   insert_dates_statement=InsertDates,
+                   insert_org_statement=InsertOrg
+                   },
     {ok, State}.
 
 handle_call({insert_show, Show}, _From, State) ->
-    Reply = get_show_inserts(Show, State),
+    Inserts = get_show_inserts(Show, State),
+    Reply = exec_batch(Inserts, State),
     {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
@@ -129,6 +164,15 @@ insert_show(Show) ->
 initialize_tables(_Connection) ->
     ok.
 
+exec_batch(Batch, #state{connection=C,
+                        commit_statement=COMMIT,
+                        begin_statement=BEGIN}) ->
+    AsTransaction = lists:append([ [{BEGIN, []}],
+                                   Batch,
+                                   [{COMMIT, []}] ]),
+    Results = epgsql:execute_batch(C, AsTransaction),
+    Results.
+
 %% Given how the keys reference each other, it's kind of critical that 
 %% the operations are done in this order.
 get_show_inserts(#show{title=Title,
@@ -137,22 +181,24 @@ get_show_inserts(#show{title=Title,
                        special_thanks=SpecialThanks,
                        dates=Dates
                       },
-                 State=#state{begin_statement=BEGIN,
-                              commit_statement=COMMIT,
-                              insert_show_statement=IS
-                             }) ->
+                 State=#state{ insert_show_statement=IS,
+                               insert_dates_statement=ID}) ->
     Works = extract_works(Performances),
     {AllWorkInserts, WorksWithId} = fold_over_works(Works, State),
     {OrgInserts, OrgId} = get_producing_org_inserts(Org, State),
-    ShowId = uuid:uuid4(),
+    ShowId = fresh_uuid(),
     ShowInserts = [{IS, [ShowId, Title, OrgId, SpecialThanks]}],
+    DateInserts = lists:map(fun (#ghostlight_datetime{time8601=Timestamp}) ->
+                                {ID, [ShowId, iso8601:parse(Timestamp)]}
+                            end, Dates),
     AllPerformanceInserts = fold_over_performances(Performances, ShowId, WorksWithId, State),
-    Batch = lists:append([[{BEGIN, []}],
-                           AllWorkInserts,
-                           OrgInserts,
-                           ShowInserts,
-                           AllPerformanceInserts,
-                           [{COMMIT, []}]]),
+    Batch = lists:append([
+                          AllWorkInserts,
+                          OrgInserts,
+                          ShowInserts,
+                          DateInserts,
+                          AllPerformanceInserts
+                         ]),
     Batch.
 
 
@@ -189,14 +235,15 @@ get_performance_inserts(WorksWithIds,
                            offstage=Offstage,
                            directors=Directors },
                         State=#state{insert_performance_statement=IP}) ->
-    PerformanceId = uuid:uuid4(),
+    PerformanceId = fresh_uuid(),
     WorkId = proplists:get_value(Work, WorksWithIds),
-    {DirectorInserts, DirectorId} = get_people_inserts(Directors, State),
+    {DirectorInserts, [DirectorId]} = get_people_inserts(Directors, State),
+    PerformanceInserts = [{IP, [PerformanceId, WorkId, ShowId, DirectorId, PerformanceOrder]}],
     OnstageInserts = get_onstage_inserts(PerformanceId, Onstage, State),
     OffstageInserts = get_offstage_inserts(PerformanceId, Offstage, State),
 
     Inserts = lists:append([DirectorInserts,
-                            [{IP, [PerformanceId, WorkId, ShowId, DirectorId, PerformanceOrder]}],
+                            PerformanceInserts,
                             OnstageInserts,
                             OffstageInserts]),
     {Inserts, PerformanceId}.
@@ -232,34 +279,46 @@ get_producing_org_inserts(#organization {
                              visibility=Visibility
                           },
                           #state{insert_org_statement=IO}) ->
-    OrgId = uuid:uuid4(),
-    OrgInserts = [{IO, [OrgId, Parent, Name, Tagline, Description, VanityName, DateFounded, Visibility]}],
+    OrgId = fresh_uuid(),
+    ParentInsert = case Parent of
+                       {id, <<"">>} -> null;
+                       {id, Valid} -> Valid
+                   end,
+    DescriptionInsert = null_if_unspecified(Description),
+    VanityNameInsert = null_if_unspecified(VanityName),
+    TaglineInsert = null_if_unspecified(Tagline),
+    DateFoundedInsert = null_if_unspecified(DateFounded),
+
+    OrgInserts = [{IO, [OrgId, ParentInsert, Name, TaglineInsert, DescriptionInsert, VanityNameInsert, DateFoundedInsert, Visibility]}],
     {OrgInserts, OrgId}.
 
+
+null_if_unspecified(#ghostlight_datetime{}) -> null;
+null_if_unspecified(<<"">>) -> null;
+null_if_unspecified(Else) -> Else.
 
 get_work_inserts(#work{title=Title,
                        authors=Authors},
                  State=#state{insert_work_statement=IW,
                               insert_authorship_statement=IA}) ->
-    WorkUUID = uuid:uuid4(),
+    WorkUUID = fresh_uuid(),
 
     {PersonInserts, Ids} = get_people_inserts(Authors, State),
     AuthorshipInserts = lists:map(fun (AuthorUUID) ->
                                       {IA, [WorkUUID, AuthorUUID]}
                                   end, Ids),
 
-    %% BEGIN, Insert the Work, Insert new People, Insert Authors, Commit
     WorkInserts = lists:append([ [{IW, [WorkUUID, Title, <<"public">>]}],
                                  PersonInserts,
                                  AuthorshipInserts]),
     {WorkInserts, WorkUUID}.
 
-% -spec get_people_inserts(list({name | id, binary()}), #state{}) -> {list({#statement{}, list(any())}), binary()}.
+
 get_people_inserts(PersonList, #state{insert_person_statement=IP}) ->
     PersonPairs = lists:map(fun ({Type, Value}) ->
                                   case Type of
                                       name -> 
-                                          PersonUUID = uuid:uuid4(),
+                                          PersonUUID = fresh_uuid(),
                                           {{IP, [PersonUUID, Value]}, PersonUUID};
                                       id ->
                                           {none, Value}
@@ -269,3 +328,6 @@ get_people_inserts(PersonList, #state{insert_person_statement=IP}) ->
     Filtered = lists:filter(fun(X) -> X =/= none end, Inserts),
     {Filtered, Ids}.
 
+
+fresh_uuid() ->
+    uuid:to_string(uuid:uuid4()).

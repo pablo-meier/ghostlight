@@ -5,7 +5,7 @@
 %% 'undefined's. 
 
 -type person() :: {name, binary()} | {id, binary()}.
--type organization_parent() :: {name, binary()} | {id, binary()}.
+-type organization_parent() :: {id, binary()}.
 
 %% This is bad but Erlangs native libraries don't have timezones.
 %% Also considering:
@@ -16,13 +16,13 @@
 %% for it atm.
 -record(ghostlight_datetime, {
     time8601 = <<"">> :: binary(),
-    timezone = <<"">> :: binary()
+    timezone = <<"EST">> :: binary()
 }).
 
 -record(organization, {
     name = <<"">>                         :: binary(),
     tagline = <<"">>                      :: binary(),
-    parent = {name, <<"">>}               :: organization_parent(),
+    parent = {id, <<"">>}                 :: organization_parent(),
     description = <<"">>                  :: binary(),
     vanity_name = <<"">>                  :: binary(),
     date_founded = #ghostlight_datetime{} :: #ghostlight_datetime{},

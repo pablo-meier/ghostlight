@@ -6,6 +6,34 @@
         <link href="/static/css/ghostlight.css" media="all" rel="stylesheet" />
     </head>
     <body>
-        <h1>{{ title }} was a great show!</h1>
+        <h1>{{ title }}</h1>
+        <!-- If only one performance, author(s) here -->
+        <h3>Presented by {{ presenting_org_name }}</h3>
+
+        <ul>
+            {% for date in dates %}
+            <li><strong>{{ date }} </strong></li>
+            {% endfor %}
+        </ul>
+
+        {% for performance in performances %}
+     
+            <h5>{{ performance.work.title }}, by 
+                {% for author in performance.work.authors %}
+                {{ author }}
+                {% endfor %} </h5>
+            <strong> Directed by 
+            {% for director in performance.directors %}
+            {{ director }}
+            {% endfor %}</strong>
+
+            <p>Starring</p>
+            {% for onstage in performance.onstage %}
+            <p>{{onstage.name}} &rarr; {{onstage.role}}</p>
+            {% endfor %} <!-- for onstage -->
+
+        {% endfor %}
+
+        <p><small>Special thanks to {{ special_thanks }}</small></p>
     </body>
 </html>

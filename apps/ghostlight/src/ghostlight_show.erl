@@ -21,7 +21,23 @@ content_types_provided(Req, State) ->
 
 
 show_to_html(Req, State) ->
-    ShowInfo = [{title, <<"An Octoroon">>}],
+
+    % dates  :: [text]
+    % title  :: text
+    % presenting_org_name :: text
+    % special_thanks :: text
+
+    ShowInfo = [{title, <<"5-10 Still Winter">>},
+                {presenting_org_name, <<"SoHo Rep">>},
+                {special_thanks, <<"This guy!">>},
+                {dates, [<<"Saturday, March 10 2015, 8:00">>]},
+                {performances, [
+                                [{work, [{title, <<"Literally Stupid">>}, {authors, [<<"Adin Lenahan">>]}]},
+                                 {directors, [<<"Karen Eilbacher">>]},
+                                 {onstage, [[{name, <<"Olivia Jampol">>}, {role, <<"Erica">>}],
+                                            [{name, <<"Ryan Dreyer">>}, {role, <<"Jerome">>}],
+                                            [{name, <<"Shane Hall">>}, {role, <<"Caleb">>}]]}]
+                               ]}],
     {ok, Body} = show_template:render(ShowInfo),
     {Body, Req, State}.
 

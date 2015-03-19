@@ -25,6 +25,12 @@
 %%% Technically speaking, that's what's 
 %%%
 %%%
+%%% Some ground rules for the module:
+%%%
+%%% * SQL is invisible. No evidence of the statements/queries or the rows and
+%%%   row structure should escape here. We trade entirely in the records
+%%%   specified in ghostlight_data.
+%%%
 -module(ghostlight_db).
 -behaviour(gen_server).
 
@@ -113,8 +119,69 @@ insert_show(Show) ->
 
 get_show(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
+    %% handle if this call fails.
     [_, {ok, Meta}, {ok, Performances}, {ok, Authorship}, _] = Response,
-    {Meta, Performances, Authorship}.  
+    [{Title, OrgName, SpecialThanks, Date}] = Meta,
+
+    Authors = authors_to_map(Authorship),
+
+    Return = #show{
+                 title = Title,
+                 special_thanks = SpecialThanks,
+                 dates = [Date],
+                 org = #organization{
+                            name = OrgName
+                         },
+                 performances = make_performance_record_list(Performances, Authors)
+               },
+    Return.
+
+make_performance_record_list(Performances, AuthorMap) ->
+    PerformancesMap = lists:foldl(fun ({Title, _, Performer, Role}, Accum) ->
+                                      PerformerRecord = #onstage{
+                                                           role = Role,
+                                                           person = {name, Performer}
+                                                        },
+                                      case maps:get(Title, Accum, none) of
+                                          none ->
+                                              maps:put(Title, [PerformerRecord], Accum);
+                                          Performers ->
+                                              maps:put(Title, [PerformerRecord|Performers], Accum)
+                                      end
+                                  end, maps:new(), Performances),
+
+    DirectorMap = lists:foldl(fun ({Title, Director, _, _}, Accum) ->
+                                  case maps:get(Title, Accum, none) of
+                                      none ->
+                                          maps:put(Title, {name, Director}, Accum);
+                                      {name, _} ->
+                                          Accum
+                                  end
+                              end, maps:new(), Performances),
+    lists:map(fun (Title) ->
+                  #performance{
+                      work = #work {
+                                 title = Title,
+                                 authors = maps:get(Title, AuthorMap)
+                             },
+                      onstage = maps:get(Title, PerformancesMap),
+                      directors = [maps:get(Title, DirectorMap)]
+                  }
+              end, maps:keys(PerformancesMap)).
+
+
+%% Given a list of Authorship like the one we return from SQL, gives us a map where every key is the title
+%% of a work, and the value is a list of all its authors.
+authors_to_map(AuthorList) ->
+    lists:foldl(fun ({Title, Author}, Accum) ->
+            AuthorTuple = {name, Author},
+            case maps:get(Title, Accum, none) of
+                none ->
+                    maps:put(Title, [AuthorTuple], Accum);
+                Authors ->
+                    maps:put(Title, [AuthorTuple|Authors], Accum)
+            end
+        end, maps:new(), AuthorList).
 
 
 %%%===================================================================
@@ -148,8 +215,8 @@ get_show_inserts(#show{title=Title,
     {OrgInserts, OrgId} = get_producing_org_inserts(Org, State),
     ShowId = fresh_uuid(),
     ShowInserts = [{IS, [ShowId, Title, OrgId, SpecialThanks]}],
-    DateInserts = lists:map(fun (#ghostlight_datetime{time8601=Timestamp}) ->
-                                {ID, [ShowId, iso8601:parse(Timestamp)]}
+    DateInserts = lists:map(fun (Date) ->
+                                {ID, [ShowId, Date]}
                             end, Dates),
     AllPerformanceInserts = fold_over_performances(Performances, ShowId, WorksWithId, State),
     Batch = lists:append([
@@ -253,7 +320,7 @@ get_producing_org_inserts(#organization {
     {OrgInserts, OrgId}.
 
 
-null_if_unspecified(#ghostlight_datetime{}) -> null;
+null_if_unspecified({}) -> null;
 null_if_unspecified(<<"">>) -> null;
 null_if_unspecified(Else) -> Else.
 

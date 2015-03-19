@@ -5,19 +5,8 @@
 %% 'undefined's. 
 
 -type person() :: {name, binary()} | {id, binary()}.
+-type datetime() :: {{integer(), integer(), integer()}, {integer(), integer(), float()}}.
 -type organization_parent() :: {id, binary()}.
-
-%% This is bad but Erlangs native libraries don't have timezones.
-%% Also considering:
-%%   https://github.com/choptastic/qdate
-%%   https://github.com/seansawyer/erlang_iso8601
-%%
-%% But, like with pgsql statements, unclear how to import any data definitions
-%% for it atm.
--record(ghostlight_datetime, {
-    time8601 = <<"">> :: binary(),
-    timezone = <<"EST">> :: binary()
-}).
 
 -record(organization, {
     name = <<"">>                         :: binary(),
@@ -25,7 +14,7 @@
     parent = {id, <<"">>}                 :: organization_parent(),
     description = <<"">>                  :: binary(),
     vanity_name = <<"">>                  :: binary(),
-    date_founded = #ghostlight_datetime{} :: #ghostlight_datetime{},
+    date_founded = {}                     :: datetime(),
     visibility = <<"public">>             :: binary()
 }).
 
@@ -56,6 +45,6 @@
     org = #organization{}   :: #organization{},
     performances = []       :: list(#performance{}),
     special_thanks = <<"">> :: binary(),
-    dates = []              :: list(#ghostlight_datetime{})
+    dates = []              :: list(datetime())
 }).
 

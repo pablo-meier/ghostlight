@@ -43,64 +43,42 @@ show_to_html(Req, State) ->
     ShowId = cowboy_req:binding(show_id, Req),
     lager:info("ShowID is ~p", [ShowId]),
 
-    {Meta, Performances, Authorship} = ghostlight_db:get_show(ShowId),
-    [{Title, OrgName, SpecialThanks, Date}] = Meta,
-    
-    Authors = authors_to_map(Authorship),
+    ShowRecord = ghostlight_db:get_show(ShowId),
 
-    ForTemplate = [{title, Title},
-                   {presenting_org_name, OrgName},
-                   {special_thanks, SpecialThanks},
-                   {dates, [Date]},
-                   {performances, performances_as_proplist(Performances, Authors)}
+    lager:info("Input is ~p", [ShowRecord#show.performances]),
+
+    ForTemplate = [{title, ShowRecord#show.title},
+                   {presenting_org_name, ShowRecord#show.org#organization.name},
+                   {special_thanks, ShowRecord#show.special_thanks},
+                   {dates, ShowRecord#show.dates},
+                   {performances, records_to_proplist(ShowRecord#show.performances)}
                   ],
-
-    lager:info("ForTemplate is ~p", [ForTemplate]),
 
     {ok, Body} = show_template:render(ForTemplate),
     {Body, Req, State}.
 
-performances_as_proplist(Performances, AuthorMap) ->
-    PerformancesMap = lists:foldl(fun ({Title, _, Performer, Role}, Accum) ->
-                                      PerformerProplist = [{name, Performer}, {role, Role}],
-                                      case maps:get(Title, Accum, none) of
-                                          none ->
-                                              maps:put(Title, [PerformerProplist], Accum);
-                                          Performers ->
-                                              maps:put(Title, [PerformerProplist|Performers], Accum)
-                                      end
-                                  end, maps:new(), Performances),
 
-    DirectorMap = lists:foldl(fun ({Title, Director, _, _}, Accum) ->
-                                      case maps:get(Title, Accum, none) of
-                                          none ->
-                                              maps:put(Title, Director, Accum);
-                                          Director ->
-                                              Accum
-                                      end
-                                  end, maps:new(), Performances),
+records_to_proplist(Performances) ->
+    lists:map(fun(#performance{work=Work, onstage=Onstage, directors=Directors}) ->
+                  #work{title=Title, authors=AuthorsTuples} = Work,
+                  DirectorNames = extract_names(Directors),
+                  AuthorNames = extract_names(AuthorsTuples),
+                  OnstageList = onstage_to_proplist(Onstage),
+                  [
+                   {work, [{title, Title}, {authors, AuthorNames}]},
+                   {directors, DirectorNames},
+                   {onstage, OnstageList}
+                  ]
+              end, Performances).
 
+extract_names(ListOfPeople) ->
+    lager:info("  INPUT IS ~p", [ListOfPeople]),
+    lists:map(fun({name, Name}) -> Name end, ListOfPeople).
 
-    Proplists = lists:map(fun (Title) ->
-                              [{work, [{title, Title},
-                               {authors, maps:get(Title, AuthorMap)}]},
-                               {directors, [maps:get(Title, DirectorMap)]},
-                               {onstage, maps:get(Title, PerformancesMap)}]
-                          end, maps:keys(PerformancesMap)),
-    Proplists.
-
-
-%% Given a list of Authorship like the one we return from SQL, gives us a map where every key is the title
-%% of a work, and the value is a list of all its authors.
-authors_to_map(AuthorList) ->
-    lists:foldl(fun ({Title, Author}, Accum) ->
-            case maps:get(Title, Accum, none) of
-                none ->
-                    maps:put(Title, [Author], Accum);
-                Authors ->
-                    maps:put(Title, [Author|Authors], Accum)
-            end
-        end, maps:new(), AuthorList).
+onstage_to_proplist(ListOnstage) ->
+    lists:map(fun(#onstage{role=Role, person=Person}) ->
+                  [{role, Role}, Person]
+              end, ListOnstage).
 
 show_to_json(Req, State) ->
     Body = <<"{\"data\": \"It's a show!\"}">>,
@@ -114,10 +92,7 @@ get_fiveten() ->
     #show{
         title = <<"5-10: Still Winter">>,
         special_thanks = <<"The Alchemical, Ria T. DiLullo, Milica Bogetic & Paul Meier">>,
-        dates = [#ghostlight_datetime {
-                    time8601 = <<"2015-03-09T20:00:00">>,
-                    timezone = <<"EST">>
-                }],
+        dates = [{{2015, 3, 9}, {20, 0, 0.0}}],
         org = #organization{
                   name = <<"Plumage">>,
                   tagline = <<"A Co-Lab between blackbird delight and Marrow's Edge">>

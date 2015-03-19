@@ -36,7 +36,8 @@
          terminate/2,
          code_change/3]).
 
--export([insert_show/1]).
+-export([insert_show/1,
+         get_show/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -44,6 +45,7 @@
 -record(state, {connection,
                 begin_statement,
                 commit_statement,
+
                 insert_work_statement,
                 insert_authorship_statement,
                 insert_person_statement,
@@ -52,7 +54,11 @@
                 insert_onstage_statement,
                 insert_offstage_statement,
                 insert_show_statement,
-                insert_dates_statement
+                insert_dates_statement,
+
+                get_show_meta,
+                get_show_onstage,
+                get_show_authorship
                 }).
 
 start_link() ->
@@ -65,70 +71,19 @@ start_link() ->
 init([]) ->
     {ok, C} = epgsql:connect("localhost", "pablo", "", [{database, "ghostlight-dev"}]),
     initialize_tables(C),
-    {ok, BeginStmt} = epgsql:parse(C, "begin_statement", "BEGIN", []),
-    {ok, CommitStmt} = epgsql:parse(C, "commit_statement", "COMMIT", []),
-    {ok, InsertAuthorship} = epgsql:parse(C,
-                                          "insert_authorship",
-                                          "INSERT INTO authorship (work_id, person_id) VALUES($1, $2)",
-                                          [uuid, uuid]),
-    {ok, InsertPerson} = epgsql:parse(C,
-                                      "insert_person",
-                                      "INSERT INTO people (person_id, name, photo_url, date_added) VALUES($1, $2, NULL, CURRENT_DATE)",
-                                      [uuid, text]),
-
-    {ok, InsertWork} = epgsql:parse(C,
-                                    "insert_work",
-                                    "INSERT INTO works (work_id, title, visibility) VALUES($1, $2, $3)",
-                                    [uuid, text, text]),
-
-    {ok, InsertOrg} = epgsql:parse(C,
-                                   "insert_organization",
-                                   "INSERT INTO organizations (org_id, parent_org, name, tagline, description, vanity_name, date_founded, visibility)"
-                                    ++ " VALUES($1, $2, $3, $4, $5, $6, $7::date, $8)",
-                                   [uuid, uuid, text, text, text, text, date, text]),
-
-    {ok, InsertPerformance} = epgsql:parse(C,
-                                           "insert_performance",
-                                           "INSERT INTO performances (performance_id, work_id, show_id, director_id, performance_order)"
-                                            ++ " VALUES($1, $2, $3, $4, $5)",
-                                          [uuid, uuid, uuid, uuid, int4]),
-    {ok, InsertOnstage} = epgsql:parse(C,
-                                       "insert_performance_onstage",
-                                       "INSERT INTO performance_onstage (performance_id, performer_id, role, understudy_id, date_started, date_ended)"
-                                        ++ " VALUES($1, $2, $3, $4, $5, $6)",
-                                       [uuid, uuid, text, uuid, date, date]),
-    {ok, InsertOffstage} = epgsql:parse(C,
-                                        "insert_performance_offstage",
-                                        "INSERT INTO performance_offstage (performance_id, person_id, job, date_started, date_ended)"
-                                        ++ " VALUES($1, $2, $3, $4, $5)",
-                                       [uuid, uuid, text, date, date]),
-    {ok, InsertShow} = epgsql:parse(C,
-                                    "insert_show",
-                                    "INSERT INTO shows (show_id, title, producing_org_id, special_thanks, date_created) "
-                                    ++ " VALUES($1, $2, $3, $4, CURRENT_DATE)",
-                                   [uuid, text, uuid, text]),
-    {ok, InsertDates} = epgsql:parse(C,
-                                     "insert_show_dates",
-                                     "INSERT INTO show_dates (show_id, show_date) VALUES($1, $2)",
-                                     [uuid, timestamptz]),
-     State = #state{connection=C,
-                   begin_statement=BeginStmt,
-                   commit_statement=CommitStmt,
-                   insert_work_statement=InsertWork,
-                   insert_authorship_statement=InsertAuthorship,
-                   insert_person_statement=InsertPerson,
-                   insert_performance_statement=InsertPerformance,
-                   insert_onstage_statement=InsertOnstage,
-                   insert_offstage_statement=InsertOffstage,
-                   insert_show_statement=InsertShow,
-                   insert_dates_statement=InsertDates,
-                   insert_org_statement=InsertOrg
-                   },
+    State = prepare_statements(C),
     {ok, State}.
 
 handle_call({insert_show, Show}, _From, State) ->
     Inserts = get_show_inserts(Show, State),
     Reply = exec_batch(Inserts, State),
+    {reply, Reply, State};
+
+handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM, get_show_onstage=SO, get_show_authorship=SA}) ->
+    Batch = [ {SM, [ShowId]},
+              {SO, [ShowId]},
+              {SA, [ShowId]}],
+    Reply = exec_batch(Batch, State),
     {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
@@ -155,6 +110,11 @@ code_change(_OldVsn, State, _Extra) ->
 
 insert_show(Show) ->
     gen_server:call(?MODULE, {insert_show, Show}).
+
+get_show(ShowId) ->
+    Response = gen_server:call(?MODULE, {get_show, ShowId}),
+    lager:info(Response),
+    Response.  
 
 
 %%%===================================================================
@@ -331,3 +291,90 @@ get_people_inserts(PersonList, #state{insert_person_statement=IP}) ->
 
 fresh_uuid() ->
     uuid:to_string(uuid:uuid4()).
+
+
+prepare_statements(C) ->
+    {ok, BeginStmt} = epgsql:parse(C, "begin_statement", "BEGIN", []),
+    {ok, CommitStmt} = epgsql:parse(C, "commit_statement", "COMMIT", []),
+
+
+    %% INSERT Statements
+    AuthorshipSql = "INSERT INTO authorship (work_id, person_id) VALUES($1, $2)",
+    {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid]),
+
+    PersonSql = "INSERT INTO people (person_id, name, photo_url, date_added) VALUES($1, $2, NULL, CURRENT_DATE)", 
+    {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text]),
+
+    WorksSql = "INSERT INTO works (work_id, title, visibility) VALUES($1, $2, $3)", 
+    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text]),
+
+    OrgsSql = "INSERT INTO organizations (org_id, parent_org, name, tagline, description, vanity_name, date_founded, visibility)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6, $7::date, $8)",
+    {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, uuid, text, text, text, text, date, text]),
+
+    PerformanceSql = "INSERT INTO performances (performance_id, work_id, show_id, director_id, performance_order)"
+        ++ " VALUES($1, $2, $3, $4, $5)",
+    {ok, InsertPerformance} = epgsql:parse(C, "insert_performance", PerformanceSql, [uuid, uuid, uuid, uuid, int4]),
+
+    OnstageSql = "INSERT INTO performance_onstage (performance_id, performer_id, role, understudy_id, date_started, date_ended)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6)",
+    {ok, InsertOnstage} = epgsql:parse(C, "insert_performance_onstage", OnstageSql, [uuid, uuid, text, uuid, date, date]),
+
+    OffstageSql = "INSERT INTO performance_offstage (performance_id, person_id, job, date_started, date_ended)"
+        ++ " VALUES($1, $2, $3, $4, $5)",
+    {ok, InsertOffstage} = epgsql:parse(C, "insert_performance_offstage", OffstageSql, [uuid, uuid, text, date, date]),
+
+    ShowSql = "INSERT INTO shows (show_id, title, producing_org_id, special_thanks, date_created) "
+        ++ " VALUES($1, $2, $3, $4, CURRENT_DATE)",
+    {ok, InsertShow} = epgsql:parse(C, "insert_show", ShowSql, [uuid, text, uuid, text]),
+
+    DatesSql = "INSERT INTO show_dates (show_id, show_date) VALUES($1, $2)",
+    {ok, InsertDates} = epgsql:parse(C, "insert_show_dates", DatesSql, [uuid, timestamptz]),
+
+
+    %% SELECT Statements
+
+    %% This will get the show's metadata
+    GetShowSql = "SELECT s.title, o.name, s.special_thanks, d.show_date "
+        ++ "FROM shows AS s INNER JOIN organizations AS o ON (s.producing_org_id = o.org_id) "
+        ++ "INNER JOIN show_dates AS d USING (show_id) WHERE s.show_id = $1",
+    {ok, GetShow} = epgsql:parse(C, "get_show_meta", GetShowSql, [uuid]),
+
+
+    %% This monstrosity will get all the performers in a show, even if spanning
+    %% Many performances.
+    GetOnstageSql = "SELECT w.title, ppl.name AS director_name, people2.name AS performer_name, po.role "
+        ++ "FROM works AS w INNER JOIN performances AS p USING (work_id) "
+        ++ "INNER JOIN people AS ppl ON (ppl.person_id = p.director_id) "
+        ++ "INNER JOIN performance_onstage AS po USING (performance_id) "
+        ++ "INNER JOIN people AS people2 ON (people2.person_id = po.performer_id) "
+        ++ "WHERE p.show_id = $1 "
+        ++ "GROUP BY p.performance_id, w.title, ppl.name, people2.name, po.role ORDER BY p.performance_order;",
+    {ok, GetOnstage} = epgsql:parse(C, "get_show_onstage", GetOnstageSql, [uuid]),
+
+    %% Pulls the authors of a show.
+    GetAuthorsSql = "SELECT w.title, p.name AS author_name FROM "
+        ++ "(SELECT p.work_id FROM performances AS p WHERE p.show_id = $1) AS works_in_show "
+        ++ "INNER JOIN works AS w USING (work_id) INNER JOIN authorship AS a USING (work_id) "
+        ++ "INNER JOIN people AS p USING (person_id)",
+    {ok, GetAuthors} = epgsql:parse(C, "get_show_authors", GetAuthorsSql, [uuid]),
+
+    State = #state{connection=C,
+                   begin_statement=BeginStmt,
+                   commit_statement=CommitStmt,
+
+                   insert_work_statement=InsertWork,
+                   insert_authorship_statement=InsertAuthorship,
+                   insert_person_statement=InsertPerson,
+                   insert_performance_statement=InsertPerformance,
+                   insert_onstage_statement=InsertOnstage,
+                   insert_offstage_statement=InsertOffstage,
+                   insert_show_statement=InsertShow,
+                   insert_dates_statement=InsertDates,
+                   insert_org_statement=InsertOrg,
+
+                   get_show_meta=GetShow,
+                   get_show_onstage=GetOnstage,
+                   get_show_authorship=GetAuthors
+                   },
+    State.

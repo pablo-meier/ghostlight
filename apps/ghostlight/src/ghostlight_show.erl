@@ -1,6 +1,7 @@
 -module(ghostlight_show).
 -export([init/2]).
--export([content_types_provided/2]).
+-export([content_types_provided/2,
+         allowed_methods/2]).
 -export([show_to_html/2,
          show_to_json/2,
          show_to_text/2]).
@@ -12,6 +13,10 @@
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
 
+allowed_methods(Req, State) ->
+    {[<<"GET">>, <<"POST">>, <<"DELETE">>],
+     Req, State}.
+
 content_types_provided(Req, State) ->
     {[
       {<<"text/html">>, show_to_html},
@@ -20,29 +25,6 @@ content_types_provided(Req, State) ->
      ], Req, State}.
 
 
-show_to_html(Req, State) ->
-    
-    ShowId = cowboy_req:binding(show_id, Req),
-    lager:info("ShowID is ~p", [ShowId]),
-
-    {Meta, Performances, Authorship} = ghostlight_db:get_show(ShowId), %"2ff9dd53-e08c-4479-bdcc-a505d91c57b6"),
-    [{Title, OrgName, SpecialThanks, Date}] = Meta,
-
-    Authors = authors_to_map(Authorship),
-
-    ForTemplate = [{title, Title},
-                   {presenting_org_name, OrgName},
-                   {special_thanks, SpecialThanks},
-                   {dates, [Date]},
-                   {performances, performances_as_proplist(Performances, Authors)}
-                  ],
-
-    lager:info("ForTemplate is ~p", [ForTemplate]),
-
-    % dates  :: [text]
-    % title  :: text
-    % presenting_org_name :: text
-    % special_thanks :: text
 
 %    ShowInfo = [{title, <<"5-10 Still Winter">>},
 %                {presenting_org_name, <<"SoHo Rep">>},
@@ -55,6 +37,26 @@ show_to_html(Req, State) ->
 %                                            [{name, <<"Ryan Dreyer">>}, {role, <<"Jerome">>}],
 %                                            [{name, <<"Shane Hall">>}, {role, <<"Caleb">>}]]}]
 %                               ]}],
+
+show_to_html(Req, State) ->
+    
+    ShowId = cowboy_req:binding(show_id, Req),
+    lager:info("ShowID is ~p", [ShowId]),
+
+    {Meta, Performances, Authorship} = ghostlight_db:get_show(ShowId),
+    [{Title, OrgName, SpecialThanks, Date}] = Meta,
+    
+    Authors = authors_to_map(Authorship),
+
+    ForTemplate = [{title, Title},
+                   {presenting_org_name, OrgName},
+                   {special_thanks, SpecialThanks},
+                   {dates, [Date]},
+                   {performances, performances_as_proplist(Performances, Authors)}
+                  ],
+
+    lager:info("ForTemplate is ~p", [ForTemplate]),
+
     {ok, Body} = show_template:render(ForTemplate),
     {Body, Req, State}.
 
@@ -63,10 +65,8 @@ performances_as_proplist(Performances, AuthorMap) ->
                                       PerformerProplist = [{name, Performer}, {role, Role}],
                                       case maps:get(Title, Accum, none) of
                                           none ->
-                                              lager:info("New Performer Proplist! Setting ~p for key ~p", [[PerformerProplist], Title]),
                                               maps:put(Title, [PerformerProplist], Accum);
                                           Performers ->
-                                              lager:info("  Appending! Consing ~p to value ~p", [PerformerProplist, Performers]),
                                               maps:put(Title, [PerformerProplist|Performers], Accum)
                                       end
                                   end, maps:new(), Performances),

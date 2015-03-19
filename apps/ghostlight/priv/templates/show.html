@@ -12,7 +12,7 @@
 
         <ul>
             {% for date in dates %}
-            <li><strong>{{ date }} </strong></li>
+            <li><strong>{{ date|date:"l, N jS, Y, h:iA" }} </strong></li>
             {% endfor %}
         </ul>
 

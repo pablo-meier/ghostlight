@@ -113,8 +113,8 @@ insert_show(Show) ->
 
 get_show(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
-    lager:info(Response),
-    Response.  
+    [_, {ok, Meta}, {ok, Performances}, {ok, Authorship}, _] = Response,
+    {Meta, Performances, Authorship}.  
 
 
 %%%===================================================================

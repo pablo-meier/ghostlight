@@ -21,25 +21,86 @@ content_types_provided(Req, State) ->
 
 
 show_to_html(Req, State) ->
+    
+    ShowId = cowboy_req:binding(show_id, Req),
+    lager:info("ShowID is ~p", [ShowId]),
+
+    {Meta, Performances, Authorship} = ghostlight_db:get_show(ShowId), %"2ff9dd53-e08c-4479-bdcc-a505d91c57b6"),
+    [{Title, OrgName, SpecialThanks, Date}] = Meta,
+
+    Authors = authors_to_map(Authorship),
+
+    ForTemplate = [{title, Title},
+                   {presenting_org_name, OrgName},
+                   {special_thanks, SpecialThanks},
+                   {dates, [Date]},
+                   {performances, performances_as_proplist(Performances, Authors)}
+                  ],
+
+    lager:info("ForTemplate is ~p", [ForTemplate]),
 
     % dates  :: [text]
     % title  :: text
     % presenting_org_name :: text
     % special_thanks :: text
 
-    ShowInfo = [{title, <<"5-10 Still Winter">>},
-                {presenting_org_name, <<"SoHo Rep">>},
-                {special_thanks, <<"This guy!">>},
-                {dates, [<<"Saturday, March 10 2015, 8:00">>]},
-                {performances, [
-                                [{work, [{title, <<"Literally Stupid">>}, {authors, [<<"Adin Lenahan">>]}]},
-                                 {directors, [<<"Karen Eilbacher">>]},
-                                 {onstage, [[{name, <<"Olivia Jampol">>}, {role, <<"Erica">>}],
-                                            [{name, <<"Ryan Dreyer">>}, {role, <<"Jerome">>}],
-                                            [{name, <<"Shane Hall">>}, {role, <<"Caleb">>}]]}]
-                               ]}],
-    {ok, Body} = show_template:render(ShowInfo),
+%    ShowInfo = [{title, <<"5-10 Still Winter">>},
+%                {presenting_org_name, <<"SoHo Rep">>},
+%                {special_thanks, <<"This guy!">>},
+%                {dates, [<<"Saturday, March 10 2015, 8:00">>]},
+%                {performances, [
+%                                [{work, [{title, <<"Literally Stupid">>}, {authors, [<<"Adin Lenahan">>]}]},
+%                                 {directors, [<<"Karen Eilbacher">>]},
+%                                 {onstage, [[{name, <<"Olivia Jampol">>}, {role, <<"Erica">>}],
+%                                            [{name, <<"Ryan Dreyer">>}, {role, <<"Jerome">>}],
+%                                            [{name, <<"Shane Hall">>}, {role, <<"Caleb">>}]]}]
+%                               ]}],
+    {ok, Body} = show_template:render(ForTemplate),
     {Body, Req, State}.
+
+performances_as_proplist(Performances, AuthorMap) ->
+    PerformancesMap = lists:foldl(fun ({Title, _, Performer, Role}, Accum) ->
+                                      PerformerProplist = [{name, Performer}, {role, Role}],
+                                      case maps:get(Title, Accum, none) of
+                                          none ->
+                                              lager:info("New Performer Proplist! Setting ~p for key ~p", [[PerformerProplist], Title]),
+                                              maps:put(Title, [PerformerProplist], Accum);
+                                          Performers ->
+                                              lager:info("  Appending! Consing ~p to value ~p", [PerformerProplist, Performers]),
+                                              maps:put(Title, [PerformerProplist|Performers], Accum)
+                                      end
+                                  end, maps:new(), Performances),
+
+    DirectorMap = lists:foldl(fun ({Title, Director, _, _}, Accum) ->
+                                      case maps:get(Title, Accum, none) of
+                                          none ->
+                                              maps:put(Title, Director, Accum);
+                                          Director ->
+                                              Accum
+                                      end
+                                  end, maps:new(), Performances),
+
+
+    Proplists = lists:map(fun (Title) ->
+                              [{work, [{title, Title},
+                               {authors, maps:get(Title, AuthorMap)}]},
+                               {directors, [maps:get(Title, DirectorMap)]},
+                               {onstage, maps:get(Title, PerformancesMap)}]
+                          end, maps:keys(PerformancesMap)),
+    Proplists.
+
+
+%% Given a list of Authorship like the one we return from SQL, gives us a map where every key is the title
+%% of a work, and the value is a list of all its authors.
+authors_to_map(AuthorList) ->
+    lists:foldl(fun ({Title, Author}, Accum) ->
+            case maps:get(Title, Accum, none) of
+                none ->
+                    maps:put(Title, [Author], Accum);
+                Authors ->
+                    maps:put(Title, [Author|Authors], Accum)
+            end
+        end, maps:new(), AuthorList).
 
 show_to_json(Req, State) ->
     Body = <<"{\"data\": \"It's a show!\"}">>,

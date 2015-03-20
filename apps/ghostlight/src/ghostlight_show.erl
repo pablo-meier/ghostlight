@@ -1,10 +1,13 @@
 -module(ghostlight_show).
 -export([init/2]).
 -export([content_types_provided/2,
+         content_types_accepted/2,
          allowed_methods/2]).
 -export([show_to_html/2,
          show_to_json/2,
-         show_to_text/2]).
+         show_to_text/2,
+        
+         post_json/2]).
 -export([get_fiveten/0]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
@@ -24,6 +27,10 @@ content_types_provided(Req, State) ->
       {<<"text/plain">>, show_to_text}
      ], Req, State}.
 
+content_types_accepted(Req, State) ->
+    {[
+      {<<"application/json">>, post_json}
+     ], Req, State}.
 
 
 %    ShowInfo = [{title, <<"5-10 Still Winter">>},
@@ -39,23 +46,26 @@ content_types_provided(Req, State) ->
 %                               ]}],
 
 show_to_html(Req, State) ->
-    
     ShowId = cowboy_req:binding(show_id, Req),
-    lager:info("ShowID is ~p", [ShowId]),
 
-    ShowRecord = ghostlight_db:get_show(ShowId),
+    case ShowId of
+        <<"new">> ->
+            {ok, Body} = insert_show_template:render([]),
+            {Body, Req, State};
+        _ ->
+            ShowRecord = ghostlight_db:get_show(ShowId),
+            ForTemplate = record_to_proplist(ShowRecord),
+            {ok, Body} = show_template:render(ForTemplate),
+            {Body, Req, State}
+    end.
 
-    lager:info("Input is ~p", [ShowRecord#show.performances]),
-
-    ForTemplate = [{title, ShowRecord#show.title},
-                   {presenting_org_name, ShowRecord#show.org#organization.name},
-                   {special_thanks, ShowRecord#show.special_thanks},
-                   {dates, ShowRecord#show.dates},
-                   {performances, records_to_proplist(ShowRecord#show.performances)}
-                  ],
-
-    {ok, Body} = show_template:render(ForTemplate),
-    {Body, Req, State}.
+record_to_proplist(ShowRecord) ->
+    [{title, ShowRecord#show.title},
+     {presenting_org_name, ShowRecord#show.org#organization.name},
+     {special_thanks, ShowRecord#show.special_thanks},
+     {dates, ShowRecord#show.dates},
+     {performances, records_to_proplist(ShowRecord#show.performances)}
+    ].
 
 
 records_to_proplist(Performances) ->
@@ -72,7 +82,6 @@ records_to_proplist(Performances) ->
               end, Performances).
 
 extract_names(ListOfPeople) ->
-    lager:info("  INPUT IS ~p", [ListOfPeople]),
     lists:map(fun({name, Name}) -> Name end, ListOfPeople).
 
 onstage_to_proplist(ListOnstage) ->
@@ -81,12 +90,64 @@ onstage_to_proplist(ListOnstage) ->
               end, ListOnstage).
 
 show_to_json(Req, State) ->
-    Body = <<"{\"data\": \"It's a show!\"}">>,
+    ShowId = cowboy_req:binding(show_id, Req),
+    ShowRecord = ghostlight_db:get_show(ShowId),
+    Proplist = record_to_proplist(ShowRecord),
+
+    %% replace the dates -- erlydtl requires Erlang datetypes, jiffy chokes.
+    DateList = proplists:get_value(dates, Proplist),
+    CorrectedDates = lists:map(fun(D) -> iso8601:format(remove_float(D)) end, DateList),
+    lager:info("DateList was ~p, now it is ~p", [DateList, CorrectedDates]),
+    CorrectedPropList = [ {dates, CorrectedDates} | proplists:delete(dates, Proplist)],
+
+    lager:info("  Encoding: ~p", [{CorrectedPropList}]),
+    Body = jiffy:encode({CorrectedPropList}),
     {Body, Req, State}.
+
+
+post_json(Req, State) ->
+    % upload the body, return yes or no
+    {ok, RequestBody, _Req2} = cowboy_req:body(Req),
+    lager:info("~n~nOH HEY IT'S A POST! BODY: ~p~n", [RequestBody]),
+
+    Decoded = jiffy:decode(RequestBody),
+    lager:info("~nWe have an Erlang object: ~p~n", [Decoded]),
+    {true, cowboy_req:set_resp_body(<<"ok">>, Req), State}.
+
+
+remove_float({{Y,M,D},{H,Min,Sec}}) -> {{Y,M,D},{H,Min,trunc(Sec)}}.
 
 show_to_text(Req, State) ->
     {<<"It's a show!">>, Req, State}.
 
+
+%% {
+%%   title: text,
+%%   special_thanks: text,
+%%   dates: [iso8601],
+%%   org: {
+%%     name: text,
+%%     tagline: text
+%%   },
+%%   performances: [
+%%     {
+%%       work: {
+%%         title: text,
+%%         authors: [text]
+%%       },
+%%       director: {
+%%         name: text
+%%       }
+%%       onstage: [
+%%         {
+%%           name: text,
+%%           role: text
+%%         },
+%%         ...
+%%       ]
+%%     },
+%%     ...
+%%   ],
 
 get_fiveten() ->
     #show{

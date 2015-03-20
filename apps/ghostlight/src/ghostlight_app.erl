@@ -34,7 +34,7 @@ initiate_listening_to_endpoints() ->
     Port = 8080,
     Dispatch = cowboy_router:compile([
                                       {'_', [
-                                             {"/shows/:show_id", ghostlight_show, []},
+                                             {"/shows/[:show_id]", ghostlight_show, []},
                                              {"/static/[...]", cowboy_static, {priv_dir, ghostlight, "static/",
                                                                                [{mimetypes, cow_mimetypes, all}]}}
                                       ]}

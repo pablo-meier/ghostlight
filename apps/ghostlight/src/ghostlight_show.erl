@@ -89,65 +89,101 @@ onstage_to_proplist(ListOnstage) ->
                   [{role, Role}, Person]
               end, ListOnstage).
 
+
+
 show_to_json(Req, State) ->
     ShowId = cowboy_req:binding(show_id, Req),
-    ShowRecord = ghostlight_db:get_show(ShowId),
-    Proplist = record_to_proplist(ShowRecord),
-
-    %% replace the dates -- erlydtl requires Erlang datetypes, jiffy chokes.
-    DateList = proplists:get_value(dates, Proplist),
-    CorrectedDates = lists:map(fun(D) -> iso8601:format(remove_float(D)) end, DateList),
-    lager:info("DateList was ~p, now it is ~p", [DateList, CorrectedDates]),
-    CorrectedPropList = [ {dates, CorrectedDates} | proplists:delete(dates, Proplist)],
-
-    lager:info("  Encoding: ~p", [{CorrectedPropList}]),
-    Body = jiffy:encode({CorrectedPropList}),
-    {Body, Req, State}.
+    _ShowRecord = ghostlight_db:get_show(ShowId),
+%    Body = jiffy:encode({CorrectedPropList}),
+    {<<"{ \"status\": \"ok\" }">>, Req, State}.
 
 
 post_json(Req, State) ->
     % upload the body, return yes or no
-    {ok, RequestBody, _Req2} = cowboy_req:body(Req),
-    lager:info("~n~nOH HEY IT'S A POST! BODY: ~p~n", [RequestBody]),
+    {ok, RequestBody, Req2} = cowboy_req:body(Req),
+    ShowRecord = show_json_to_record(RequestBody),
+    lager:info("ShowRecord is ~p", [ShowRecord]),
+    % ghostlight_db:insert_show(ShowRecord),
 
-    Decoded = jiffy:decode(RequestBody),
-    lager:info("~nWe have an Erlang object: ~p~n", [Decoded]),
-    {true, cowboy_req:set_resp_body(<<"ok">>, Req), State}.
+    {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State}.
 
 
-remove_float({{Y,M,D},{H,Min,Sec}}) -> {{Y,M,D},{H,Min,trunc(Sec)}}.
+show_json_to_record(JsonInput) ->
+    {Decoded} = jiffy:decode(JsonInput),
+    lager:info("~nWe have an Erlang object: ~p~n", [{Decoded}]),
+
+    Title = proplists:get_value(<<"title">>, Decoded),
+    SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),
+    Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded)),
+    Org = organization_json_to_record(proplists:get_value(<<"org">>, Decoded)),
+    Performances = lists:map(fun performance_json_to_record/1, proplists:get_value(<<"performances">>, Decoded)),
+
+    #show{
+        title = Title,
+        special_thanks = SpecialThanks,
+        dates = Dates,
+        org = Org,
+        performances = Performances
+    }.
+
+
+performance_json_to_record({Proplist}) ->
+    Work = work_json_to_record(proplists:get_value(<<"work">>, Proplist)),
+    Onstage = lists:map(fun onstage_json_to_record/1, proplists:get_value(<<"onstage">>, Proplist)),
+    Offstage = lists:map(fun offstage_json_to_record/1, proplists:get_value(<<"offstage">>, Proplist)),
+    #performance{
+       work = Work,
+       onstage = Onstage,
+       offstage = Offstage
+    }.
+
+
+work_json_to_record({Proplist}) ->
+    #work {
+       title = proplists:get_value(<<"title">>, Proplist),
+       authors = lists:map(fun people_json_to_record/1, proplists:get_value(<<"authors">>, Proplist))
+    }.
+
+
+organization_json_to_record({Org}) ->
+    Name = proplists:get_value(<<"name">>, Org),
+    Tagline = proplists:get_value(<<"tagline">>, Org),
+    Description = proplists:get_value(<<"description">>, Org),
+    #organization{
+       name = Name,
+       tagline = Tagline,
+       description = Description
+    }.
+
+
+people_json_to_record({Person}) ->
+    case proplists:get_value(<<"id">>, Person) of
+        undefined ->
+            {name, proplists:get_value(<<"name">>, Person)};
+        Id ->
+            {id, Id}
+    end.
+
+onstage_json_to_record({Onstage}) ->
+    Performer = people_json_to_record(proplists:get_value(<<"performer">>, Onstage)),
+    Role = proplists:get_value(<<"role">>, Onstage),
+    #onstage{
+      person = Performer,
+      role = Role
+    }.
+
+offstage_json_to_record({Offstage}) ->
+    Contributor = people_json_to_record(proplists:get_value(<<"contributor">>, Offstage)),
+    Job = proplists:get_value(<<"job">>, Offstage),
+    #offstage{
+      person = Contributor,
+      job = Job 
+    }.
+
 
 show_to_text(Req, State) ->
     {<<"It's a show!">>, Req, State}.
 
-
-%% {
-%%   title: text,
-%%   special_thanks: text,
-%%   dates: [iso8601],
-%%   org: {
-%%     name: text,
-%%     tagline: text
-%%   },
-%%   performances: [
-%%     {
-%%       work: {
-%%         title: text,
-%%         authors: [text]
-%%       },
-%%       director: {
-%%         name: text
-%%       }
-%%       onstage: [
-%%         {
-%%           name: text,
-%%           role: text
-%%         },
-%%         ...
-%%       ]
-%%     },
-%%     ...
-%%   ],
 
 get_fiveten() ->
     #show{

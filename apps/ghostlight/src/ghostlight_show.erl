@@ -5,7 +5,6 @@
          allowed_methods/2]).
 -export([show_to_html/2,
          show_to_json/2,
-         show_to_text/2,
         
          post_json/2]).
 -export([get_fiveten/0]).
@@ -23,8 +22,7 @@ allowed_methods(Req, State) ->
 content_types_provided(Req, State) ->
     {[
       {<<"text/html">>, show_to_html},
-      {<<"application/json">>, show_to_json},
-      {<<"text/plain">>, show_to_text}
+      {<<"application/json">>, show_to_json}
      ], Req, State}.
 
 content_types_accepted(Req, State) ->
@@ -47,7 +45,6 @@ content_types_accepted(Req, State) ->
 
 show_to_html(Req, State) ->
     ShowId = cowboy_req:binding(show_id, Req),
-
     case ShowId of
         <<"new">> ->
             {ok, Body} = insert_show_template:render([]),
@@ -141,7 +138,7 @@ performance_json_to_record({Proplist}) ->
 work_json_to_record({Proplist}) ->
     #work {
        title = proplists:get_value(<<"title">>, Proplist),
-       authors = lists:map(fun people_json_to_record/1, proplists:get_value(<<"authors">>, Proplist))
+       authors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"authors">>, Proplist))
     }.
 
 
@@ -156,16 +153,8 @@ organization_json_to_record({Org}) ->
     }.
 
 
-people_json_to_record({Person}) ->
-    case proplists:get_value(<<"id">>, Person) of
-        undefined ->
-            {name, proplists:get_value(<<"name">>, Person)};
-        Id ->
-            {id, Id}
-    end.
-
 onstage_json_to_record({Onstage}) ->
-    Performer = people_json_to_record(proplists:get_value(<<"performer">>, Onstage)),
+    Performer = ghostlight_people:json_to_record(proplists:get_value(<<"performer">>, Onstage)),
     Role = proplists:get_value(<<"role">>, Onstage),
     #onstage{
       person = Performer,
@@ -173,16 +162,12 @@ onstage_json_to_record({Onstage}) ->
     }.
 
 offstage_json_to_record({Offstage}) ->
-    Contributor = people_json_to_record(proplists:get_value(<<"contributor">>, Offstage)),
+    Contributor = ghostlight_people:json_to_record(proplists:get_value(<<"contributor">>, Offstage)),
     Job = proplists:get_value(<<"job">>, Offstage),
     #offstage{
       person = Contributor,
       job = Job 
     }.
-
-
-show_to_text(Req, State) ->
-    {<<"It's a show!">>, Req, State}.
 
 
 get_fiveten() ->

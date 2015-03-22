@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ghostlight | {% block title %} {% endblock %}</title>
+        <script src="/static/js/ghostlight.js"></script>
+        <link href="/static/css/ghostlight.css" media="all" rel="stylesheet" />
+    </head>
+    <body>
+        <h1>Ghostlight</h1>
+        <div id="sidebar">
+            <ul>
+                <li><a href="/shows">Shows!</a></li>
+                <li><a href="/works">Works!</a></li>
+                <li><a href="/people">People!</a></li>
+            </ul>
+        </div>
+
+        <div id="content">
+            {% block content %} {% endblock %}
+        </div>
+    </body>
+</html>

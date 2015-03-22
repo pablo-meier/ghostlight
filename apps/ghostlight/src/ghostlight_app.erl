@@ -16,7 +16,7 @@
 
 start(_StartType, _StartArgs) ->
     lager:start(),
-    lager:info("HELLO GHOSTLIGHT"),
+    lager:info("__~-~-*^*HELLO GHOSTLIGHT*^*-~-~__"),
     initiate_listening_to_endpoints(),
     compile_all_templates(),
     ghostlight_sup:start_link().
@@ -35,6 +35,7 @@ initiate_listening_to_endpoints() ->
     Dispatch = cowboy_router:compile([
                                       {'_', [
                                              {"/shows/[:show_id]", ghostlight_show, []},
+                                             {"/people/[:person_id]", ghostlight_people, []},
                                              {"/static/[...]", cowboy_static, {priv_dir, ghostlight, "static/",
                                                                                [{mimetypes, cow_mimetypes, all}]}}
                                       ]}
@@ -51,12 +52,18 @@ compile_all_templates() ->
     PrivDir = code:priv_dir(ghostlight),
     Templates = filename:join([PrivDir, "templates"]),
     Native = filename:nativename(Templates),
-    {ok, Filenames} = file:list_dir(Native),
+    {ok, DirContents} = file:list_dir(Native),
+    Filenames = lists:filter(fun (X) -> re:run(X, "^\\.") == nomatch end, DirContents),
     lager:info("Compiling Templates..."),
     lists:foreach(fun (File) ->
                     ModuleName = filename:basename(File, ".html") ++ "_template",
                     FileAbsName = filename:join([Native, File]),
                     lager:info("  Compiling a template module named ~p~n", [ModuleName]),
-                    erlydtl:compile_file(FileAbsName, list_to_atom(ModuleName), [{out_dir, false}])
+                    case erlydtl:compile_file(FileAbsName, list_to_atom(ModuleName), [{out_dir, false}, {return_errors, true}]) of
+                        {ok, _} ->
+                            lager:info("    Success");
+                        Else ->
+                            lager:error("    Error: ~p~n", [Else])
+                    end
                   end, Filenames),
     ok.

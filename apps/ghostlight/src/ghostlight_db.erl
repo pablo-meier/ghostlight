@@ -43,7 +43,8 @@
          code_change/3]).
 
 -export([insert_show/1,
-         get_show/1]).
+         get_show/1,
+         get_person/1]).  
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -90,6 +91,18 @@ handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM, get_show_o
               {SO, [ShowId]},
               {SA, [ShowId]}],
     Reply = exec_batch(Batch, State),
+    {reply, Reply, State};
+
+handle_call({get_person, PersonId}, _From, State=#state{}) ->
+    %% A person could:
+    %% * have been an onstage performer
+    %% * been an offstage contributor
+    %% * be an author of a work
+    %% * be a director of a performance
+    %% * be affiliated with an org
+    %%
+    %% Query should fetch all of this and make it presentable.
+    Reply = <<"ok">>,
     {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
@@ -182,6 +195,11 @@ authors_to_map(AuthorList) ->
                     maps:put(Title, [AuthorTuple|Authors], Accum)
             end
         end, maps:new(), AuthorList).
+
+
+get_person(PersonId) ->
+    _Response = gen_server:call(?MODULE, {get_person, PersonId}),
+    ok.
 
 
 %%%===================================================================

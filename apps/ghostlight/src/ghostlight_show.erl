@@ -99,8 +99,9 @@ post_json(Req, State) ->
     % upload the body, return yes or no
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     ShowRecord = show_json_to_record(RequestBody),
-    lager:info("ShowRecord is ~p", [ShowRecord]),
-    % ghostlight_db:insert_show(ShowRecord),
+    lager:info("~nShowRecord is ~p", [ShowRecord]),
+    Response = ghostlight_db:insert_show(ShowRecord),
+    lager:info("~nResponse from DB server is ~p~n", [Response]),
 
     {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State}.
 
@@ -126,10 +127,12 @@ show_json_to_record(JsonInput) ->
 
 performance_json_to_record({Proplist}) ->
     Work = work_json_to_record(proplists:get_value(<<"work">>, Proplist)),
-    Onstage = lists:map(fun onstage_json_to_record/1, proplists:get_value(<<"onstage">>, Proplist)),
-    Offstage = lists:map(fun offstage_json_to_record/1, proplists:get_value(<<"offstage">>, Proplist)),
+    Onstage = lists:map(fun onstage_json_to_record/1, proplists:get_value(<<"onstage">>, Proplist, [])),
+    Offstage = lists:map(fun offstage_json_to_record/1, proplists:get_value(<<"offstage">>, Proplist, [])),
+    Directors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"directors">>, Proplist)),
     #performance{
        work = Work,
+       directors = Directors,
        onstage = Onstage,
        offstage = Offstage
     }.

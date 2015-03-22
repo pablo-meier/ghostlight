@@ -1,0 +1,36 @@
+{
+  "title" : "An Octoroon",
+  "special_thanks" : "Pablo for Ghostlight",
+  "dates" : ["2015-03-20T02:45:14.403Z", "2015-03-19T02:45:14.403Z", "2015-03-17T02:45:14.403Z"],
+  "org" : {
+    "name": "SoHo Rep",
+    "tagline" : "So Ho It's Repping"    
+  },
+  "performances": [{
+    "work" : {
+      "title" : "An Octoroon",
+      "authors": [{"name": "Branden Jacobs-Jenkins"}]
+    },
+    "directors": [{"name": "Sarah Benson"}],
+    "onstage": [
+      {
+        "performer" : {"name": "Ian Lasseter"},
+        "role" : "Assistant/Pete/Paul"
+      },
+      {
+        "performer" : {"name": "Maechi Aharanwa"},
+        "role" : "Minnie"
+      }      
+    ],
+    "offstage": [
+      {
+        "contributor" : {"name": "Matt Tierney"},
+        "job" : "Sound Designer"
+      },
+      {
+        "contributor" : {"name": "Matt Frey"},
+        "job" : "Lighting Designer"        
+      }
+    ] 
+  }]
+}

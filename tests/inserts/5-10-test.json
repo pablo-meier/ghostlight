@@ -1,0 +1,117 @@
+{
+  "title" : "5-10: Still Winter",
+  "special_thanks" : "The Alchemical, Ria T. DiLullo, Milica Bogetic & Paul Meier",
+  "dates" : ["2015-03-09T20:00:00.000Z"],
+  "org" : {
+    "name": "Plumage",
+    "tagline" : "A Co-Lab between blackbird delight and Marrow's Edge"
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "Literally Stupid",
+        "authors": [{"name": "Adin Lenahan"}]
+      },
+      "directors": [{"name": "Karen Eilbacher"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Olivia Jampol"},
+          "role" : "Erica"
+        },
+        {
+          "performer" : {"name": "Ryan Dreyer"},
+          "role" : "Jerome"
+        },
+        {
+          "performer" : {"name": "Shane Hall"},
+          "role" : "Caleb"
+        }      
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Tights",
+        "authors": [{"name": "Lily Padilla"}]
+      },
+      "directors": [{"name": "Avriel Hillman"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Christopher Curry"},
+          "role" : "Manny"
+        },
+        {
+          "performer" : {"name": "Jim Shankman"},
+          "role" : "Mr. Reaves"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Let The Cat Out of the Bag",
+        "authors": [{"name": "Joy Tomasko"}]
+      },
+      "directors": [{"name": "Osh Ghanimah"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Ethan Nguyen"},
+          "role" : "Doorman"
+        },
+        {
+          "performer" : {"name": "Megan Hopp"},
+          "role" : "Voice"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Moment After the Meerkat",
+        "authors": [{"name": "Charly Evon Simpson"}]
+      },
+      "directors": [{"name": "Michael Raine"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Jimmy Dailey"},
+          "role" : "Adam"
+        },
+        {
+          "performer" : {"name": "Rachel Lin"},
+          "role" : "Bridget"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Louboutin",
+        "authors": [{"name": "Daria Miyeko Marinelli"}]
+      },
+      "directors": [{"name": "Eric Powell Holm"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Irene Rivera"},
+          "role" : "Lil"
+        },
+        {
+          "performer" : {"name": "Phene"},
+          "role" : "Rachel Lin"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Meditations in an Avalanche",
+        "authors": [{"name": "Elijah Guo"}]
+      },
+      "directors": [{"name": "Lilleth Glimcher"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Sohina Sidhu"},
+          "role" : "Jessica"
+        },
+        {
+          "performer" : {"name": "Matt Stango"},
+          "role" : "Claude"
+        }
+      ]
+    }
+  ]
+}

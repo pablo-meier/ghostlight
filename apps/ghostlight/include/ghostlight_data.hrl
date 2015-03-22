@@ -8,14 +8,15 @@
 -type datetime() :: {{integer(), integer(), integer()}, {integer(), integer(), float()}}.
 -type organization_parent() :: {id, binary()}.
 
+
 -record(organization, {
-    name = <<"">>                         :: binary(),
-    tagline = <<"">>                      :: binary(),
-    parent = {id, <<"">>}                 :: organization_parent(),
-    description = <<"">>                  :: binary(),
-    vanity_name = <<"">>                  :: binary(),
-    date_founded = {}                     :: datetime(),
-    visibility = <<"public">>             :: binary()
+    name = <<"">>              :: binary(),
+    tagline = <<"">>           :: binary(),
+    parent = {id, <<"">>}      :: organization_parent(),
+    description = <<"">>       :: binary(),
+    vanity_name = <<"">>       :: binary(),
+    date_founded = {}          :: datetime(),
+    visibility = <<"public">>  :: binary()
 }).
 
 -record(work, {
@@ -47,4 +48,18 @@
     special_thanks = <<"">> :: binary(),
     dates = []              :: list(datetime())
 }).
+
+
+%% Tentative about this -- should we be defining records per-call? I dislike the granularity
+%% of the above records for returning, say all the contributions for a person, since they'll
+%% touch so many things.
+
+-record(person_return, {
+    authored = []  :: list(#work{}),
+    directed = []  :: list(#performance{}),
+    onstage = []   :: list(#performance{}),
+    offstage = []  :: list(#performance{}),
+    orgs = []      :: list(#organization{})
+}).
+
 

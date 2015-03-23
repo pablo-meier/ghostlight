@@ -43,8 +43,10 @@
          code_change/3]).
 
 -export([insert_show/1,
+
          get_show/1,
-         get_person/1]).  
+         get_person/1,
+         get_org/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -93,6 +95,17 @@ handle_call({insert_show, Show}, _From, State) ->
     Reply = exec_batch(Inserts, State),
     {reply, Reply, State};
 
+%% Like insertions, getting a show is a pretty hairy endeavor since it touches
+%% so many tables. There's probably some major SQL-foo I could employ to get 
+%% almost exactly what I need.
+%%
+%% Here's the expectation from the DB on getting a show:
+%%
+%% * What is it? Work, org, dates.  TODO: Venue.
+%% * Who was in it and who worked on it? Actors, directors, stage hands, etc.
+%%
+%% Later maybe we could do things like who went/who's going, or sorting by
+%% shows that haven't closed yet.
 handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM, get_show_onstage=SO, get_show_authorship=SA}) ->
     Batch = [ {SM, [ShowId]},
               {SO, [ShowId]},
@@ -100,31 +113,31 @@ handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM, get_show_o
     Reply = exec_batch(Batch, State),
     {reply, Reply, State};
 
+
+%% In many ways, the person resource is the most important one -- we're
+%% doing this, in part, to make something of a portfolio to see and
+%% grow. You want to be proud when you see this resource. You want to feel
+%% inspired to add to it.
+%%
+%% While there will probably be a lot more later on, here is a start for
+%% what to return when looking up a person:
+%%
+%% * What is their name and other "person" data (i.e. a bio, photo urls, etc.)
+%% * Where have been an onstage performer?
+%% * Where have they been an offstage contributor?
+%% * Have they directed any performances?
+%% * Are they authors or creators of original work?
+%% * Are they affiliated with organizations?
+%%
+%% Query should fetch all of this and make it presentable. Unfortunately,
+%% until I beef up on Views or Postgres features, this is a batch of 5 queries,
+%% 6 once I get directors. I'll see what I can do.
 handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
                                                         get_person_authorship=GA,
                                                         get_person_orgs=GO,
                                                         get_person_onstage=POn,
                                                         get_person_offstage=POff}) ->
 
-    %% In many ways, the person resource is the most important one -- we're
-    %% doing this, in part, to make something of a portfolio to see and
-    %% grow. You want to be proud when you see this resource. You want to feel
-    %% inspired to add to it.
-    %%
-    %% While there will probably be a lot more later on, here is a start for
-    %% what to return when looking up a person:
-    %%
-    %% * What is their name and other "person" data (i.e. a bio, photo urls, etc.)
-    %% * Where have been an onstage performer?
-    %% * Where have they been an offstage contributor?
-    %% * Have they directed any performances?
-    %% * Are they authors or creators of original work?
-    %% * Are they affiliated with organizations?
-    %%
-    %% Query should fetch all of this and make it presentable. Unfortunately,
-    %% until I beef up on Views or Postgres features, this is a batch of 5 queries,
-    %% 6 once I get directors. I'll see what I can do.
-    
     Batch = [ {GN, [PersonId]},
               {GA, [PersonId]},
               {GO, [PersonId]},
@@ -134,6 +147,21 @@ handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
 
     lager:info("SQL has returned us ~p~n", [Reply]),
     {reply, Reply, State};
+
+
+%% Orgs are pretty straightforward -- who's in them, and what have they
+%% produced. Need to see if I care about in-app membership enough to 
+%% make that happen here.
+handle_call({get_org, _OrgId}, _From, State=#state{}) ->
+
+    Batch = [ %{GN, [OrgId]},
+            ],
+
+    Reply = exec_batch(Batch, State),
+
+    lager:info("SQL has returned us ~p~n", [Reply]),
+    {reply, Reply, State};
+
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -259,6 +287,10 @@ get_person(PersonId) ->
        orgs = Orgs
     }.
 
+
+get_org(OrgId) ->
+    _Reply = gen_server:call(?MODULE, {get_org, OrgId}),
+    #organization{}.
 
 %%%===================================================================
 %%% Internal functions

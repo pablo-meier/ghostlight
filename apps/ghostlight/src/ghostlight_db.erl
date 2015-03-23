@@ -65,7 +65,14 @@
 
                 get_show_meta,
                 get_show_onstage,
-                get_show_authorship
+                get_show_authorship,
+
+                get_person_name,
+                get_person_authorship,
+                get_person_orgs,
+                get_person_onstage,
+                get_person_offstage,
+                get_person_directorships
                 }).
 
 start_link() ->
@@ -93,16 +100,33 @@ handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM, get_show_o
     Reply = exec_batch(Batch, State),
     {reply, Reply, State};
 
-handle_call({get_person, PersonId}, _From, State=#state{}) ->
+handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
+                                                        get_person_authorship=GA,
+                                                        get_person_orgs=GO,
+                                                        get_person_onstage=POn,
+                                                        get_person_offstage=POff}) ->
     %% A person could:
     %% * have been an onstage performer
+    %%   - get all 'shows' where they were onstage on a performance
     %% * been an offstage contributor
-    %% * be an author of a work
+    %%   - ditto
     %% * be a director of a performance
+    %%   - ditto
+    %% * be an author of a work
+    %%   - get the work(s) that they are listed as a an author of.
     %% * be affiliated with an org
+    %%   - get all orgs they work for (not necessarily members of)
     %%
     %% Query should fetch all of this and make it presentable.
-    Reply = <<"ok">>,
+    
+    Batch = [ {GN, [PersonId]},
+              {GA, [PersonId]},
+              {GO, [PersonId]},
+              {POn, [PersonId]},
+              {POff, [PersonId]} ],
+    Reply = exec_batch(Batch, State),
+
+    lager:info("SQL has returned us ~p~n", [Reply]),
     {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
@@ -198,8 +222,35 @@ authors_to_map(AuthorList) ->
 
 
 get_person(PersonId) ->
-    _Response = gen_server:call(?MODULE, {get_person, PersonId}),
-    ok.
+    Response = gen_server:call(?MODULE, {get_person, PersonId}),
+    [{ok, _}, {ok, [{Name}]}, {ok, AuthorshipList}, {ok, OrgsList}, {ok, OnstageList}, {ok, OffstageList}, {ok, _}] = Response,
+    Authors = [ #work{id=WorkId, title=Title, authors=[Author]} || {WorkId, Title, Author} <- AuthorshipList],
+    Orgs = [ #org_work{org_id=OrgId, org_name=OrgName, title=Job} || {OrgId, OrgName, Job} <- OrgsList],
+    Onstage = [ #show{ title=ShowTitle,
+                       id=ShowId,
+                       org=#organization{id=OrgId, name=OrgName},
+                       performances=[#performance{
+                                       work=#work{ id=WorkId, title=WorkTitle },
+                                       onstage=#onstage{ role=Role }
+                                    }]
+                     } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName, Role} <- OnstageList ],
+    Offstage = [ #show{ title=ShowTitle,
+                       id=ShowId,
+                       org=#organization{id=OrgId, name=OrgName},
+                       performances=[#performance{
+                                       work=#work{ id=WorkId, title=WorkTitle },
+                                       offstage=#offstage{ job=Job }
+                                    }]
+                     } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName, Job} <- OffstageList ],
+
+    #person_return{
+       name = Name,
+       authored = Authors,
+       directed = [],
+       onstage = Onstage,
+       offstage = Offstage,
+       orgs = Orgs
+    }.
 
 
 %%%===================================================================
@@ -443,6 +494,31 @@ prepare_statements(C) ->
         ++ "INNER JOIN works AS w USING (work_id) INNER JOIN authorship AS a USING (work_id) "
         ++ "INNER JOIN people AS p USING (person_id)",
     {ok, GetAuthors} = epgsql:parse(C, "get_show_authors", GetAuthorsSql, [uuid]),
+ 
+    GetPersonNameSql = "SELECT name FROM people WHERE person_id = $1",
+    {ok, GetPersonName} = epgsql:parse(C, "get_person_name", GetPersonNameSql, [uuid]),
+    
+    %% Pulls the works authored by a person.
+    GetShowsAuthoredSql = "SELECT w.work_id, w.title, p.name FROM authorship AS a "
+        ++ "INNER JOIN works AS w USING (work_id) INNER JOIN people AS p using (person_id) "
+        ++ "WHERE w.visibility = 'public' AND p.person_id = $1",
+    {ok, GetShowsAuthored} = epgsql:parse(C, "get_authorships", GetShowsAuthoredSql, [uuid]),
+
+    GetPersonOrgsSql = "SELECT o.org_id, o.name, oe.title FROM organizations AS o, org_employee AS oe "
+        ++ "WHERE oe.person_id = $1 AND o.visibility = 'public'",
+    {ok, GetPersonOrgs} = epgsql:parse(C, "get_person_orgs", GetPersonOrgsSql, [uuid]),
+
+    GetPersonOnstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.role FROM shows AS s "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+        ++ "INNER JOIN performance_onstage AS po USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
+        ++ "WHERE po.performer_id = $1",
+    {ok, GetPersonOnstage} = epgsql:parse(C, "get_person_onstage", GetPersonOnstageSql, [uuid]),
+
+    GetPersonOffstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.job FROM shows AS s "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+        ++ "INNER JOIN performance_offstage AS po USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
+        ++ "WHERE po.person_id = $1",
+    {ok, GetPersonOffstage} = epgsql:parse(C, "get_person_offstage", GetPersonOffstageSql, [uuid]),
 
     State = #state{connection=C,
                    begin_statement=BeginStmt,
@@ -460,6 +536,12 @@ prepare_statements(C) ->
 
                    get_show_meta=GetShow,
                    get_show_onstage=GetOnstage,
-                   get_show_authorship=GetAuthors
+                   get_show_authorship=GetAuthors,
+
+                   get_person_name=GetPersonName,
+                   get_person_authorship=GetShowsAuthored,
+                   get_person_orgs=GetPersonOrgs,
+                   get_person_onstage=GetPersonOnstage,
+                   get_person_offstage=GetPersonOffstage
                    },
     State.

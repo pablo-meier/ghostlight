@@ -3,5 +3,70 @@
 {% block title %}{{ name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ name }} is a person!</h1>
+  <h1>{{ name }}</h1>
+
+  {% if onstage_list %}
+    <h3>Performances!</h3>
+    <table>
+      <tr>
+        <th><strong>Show</strong></th>
+        <th><strong>Producing Organization</strong></th>
+        <th><strong>Piece</strong></th>
+        <th><strong>Role</strong></th>
+      </tr>
+    {% for onstage in onstage_list %}
+      <tr>
+        <td><a href="/shows/{{ onstage.show_id }}">{{ onstage.title }}</a></td>
+        <td><a href="/organizations/{{ onstage.org_id }}">{{ onstage.org_name }}</a></td>
+        <td><a href="/works/{{ onstage.work_id }}">{{ onstage.work_title }}</a></td>
+        <td><strong>{{ onstage.role }}</strong></td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endif %}
+
+  {% if offstage_list %}
+    <h3>Production Work!</h3>
+    <table>
+      <tr>
+        <th><strong>Show</strong></th>
+        <th><strong>Producing Organization</strong></th>
+        <th><strong>Role</strong></th>
+      </tr>
+    {% for offstage in offstage_list %}
+      <tr>
+        <td><a href="/shows/{{ offstage.show_id }}">{{ offstage.title }}</a></td>
+        <td><a href="/organizations/{{ offstage.org_id }}">{{ offstage.org_name }}</a></td>
+        <td><strong>{{ onstage.job }}</strong></td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endif %}
+
+  {% if authorship %}
+    <h3>Works created!</h3>
+    <ul>
+    {% for piece in authorship %}
+      <li><a href="/works/{{ piece.work_id }}">{{ piece.title }}</a></li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if organizations %}
+    <h3>Organizations!</h3>
+    <table>
+      <tr>
+        <th><strong>Organization</strong></th>
+        <th><strong>Role</strong></th>
+      </tr>
+    {% for position in organizations %}
+      <tr>
+        <td><a href="/organizations/{{ position.org_id }}">{{ position.org_name }}</a></td>
+        <td>{{ position.job }}</td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endif %}
+
+
 {% endblock %}

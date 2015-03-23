@@ -1,6 +1,6 @@
 -module(ghostlight_people).
--export([init/2]).
--export([content_types_provided/2,
+-export([init/2,
+         content_types_provided/2,
          content_types_accepted/2,
          allowed_methods/2]).
 -export([person_to_html/2,
@@ -19,9 +19,8 @@ allowed_methods(Req, State) ->
 
 content_types_provided(Req, State) ->
     {[
-      {<<"text/html">>, show_to_html},
-      {<<"application/json">>, show_to_json},
-      {<<"text/plain">>, show_to_text}
+      {<<"text/html">>, person_to_html},
+      {<<"application/json">>, person_to_json}
      ], Req, State}.
 
 content_types_accepted(Req, State) ->
@@ -36,8 +35,9 @@ person_to_html(Req, State) ->
             {ok, Body} = insert_person_template:render([]),
             {Body, Req, State};
         _ ->
-            {name, Name} = ghostlight_db:get_person(PersonId),
-            ForTemplate = [{name, Name}],
+            PersonRecord = ghostlight_db:get_person(PersonId),
+            lager:info("PersonRecord returned from DB is ~p~n", [PersonRecord]),
+            ForTemplate = [{name, <<"pablo">>}],
             {ok, Body} = person_template:render(ForTemplate),
             {Body, Req, State}
     end.

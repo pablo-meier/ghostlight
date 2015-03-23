@@ -130,7 +130,7 @@ performance_json_to_record({Proplist}) ->
     Onstage = lists:map(fun onstage_json_to_record/1, proplists:get_value(<<"onstage">>, Proplist, [])),
     Offstage = lists:map(fun offstage_json_to_record/1, proplists:get_value(<<"offstage">>, Proplist, [])),
     Directors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"directors">>, Proplist)),
-    #performance{
+    #performance {
        work = Work,
        directors = Directors,
        onstage = Onstage,

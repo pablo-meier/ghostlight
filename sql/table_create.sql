@@ -1,15 +1,19 @@
-
-
--- Access control is TRICKY, but this is a start. Something is private or public, that's it.
--- If private, only creator can see it.
-CREATE TYPE visibility AS ENUM ('public', 'private');
-
+-- Toplevel file to initialize the tables. Performances and the way people
+-- people can work in/for them is a little flexible, so this looks like a 
+-- right mess, but that's where the challenge of the program comes in from.
+--
 -- A little terminology:
 --   a SHOW is a showing by an organization -- e.g. Brunchaphobia, SoHo Rep's Octoroon
 --   a WORK is the work being presented -- _Moment After the Meerkat_ by Charly, _An Octoroon_ by Branden Jacob-Jenkins
 --   a PERFORMANCE is a unit presented at a SHOW -- 
 --        _Moment After the Meerkat_ starring X, Y, and Z, directed by A, for 5/10 Still Winter.
 --        _An Octoroon_ starring X, directed by Y, for _An Octoroon_
+
+
+-- Access control is TRICKY, but this is a start. Something is private or public, that's it.
+-- If private, only creator can see it. I can work on maybe sometime getting intermediate 
+-- tables for more fine-grained ACLs.
+CREATE TYPE visibility AS ENUM ('public', 'private');
 
 -- Table for a person, in or out of Ghostlight.
 CREATE TABLE IF NOT EXISTS people (

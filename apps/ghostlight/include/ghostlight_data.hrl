@@ -10,6 +10,7 @@
 
 
 -record(organization, {
+    id = <<"">>                :: binary(),
     name = <<"">>              :: binary(),
     tagline = <<"">>           :: binary(),
     parent = {id, <<"">>}      :: organization_parent(),
@@ -20,6 +21,7 @@
 }).
 
 -record(work, {
+    id = <<"">>    :: binary(),
     title = <<"">> :: binary(),
     authors = []   :: list(person())
 }).
@@ -42,6 +44,7 @@
 }).
 
 -record(show, {
+    id = <<"">>             :: binary(),
     title = <<"">>          :: binary(),
     org = #organization{}   :: #organization{},
     performances = []       :: list(#performance{}),
@@ -50,15 +53,22 @@
 }).
 
 
+-record(org_work, {
+  org_id = <<"">>   :: binary(),
+  org_name = <<"">> :: binary(),
+  title = <<"">>    :: binary()
+}).
+
 %% Tentative about this -- should we be defining records per-call? I dislike the granularity
 %% of the above records for returning, say all the contributions for a person, since they'll
 %% touch so many things.
 
 -record(person_return, {
+    name = <<"">>  :: binary(),
     authored = []  :: list(#work{}),
     directed = []  :: list(#performance{}),
-    onstage = []   :: list(#performance{}),
-    offstage = []  :: list(#performance{}),
+    onstage = []   :: list(#show{}),
+    offstage = []  :: list(#show{}),
     orgs = []      :: list(#organization{})
 }).
 

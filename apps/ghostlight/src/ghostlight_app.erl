@@ -37,7 +37,7 @@ initiate_listening_to_endpoints() ->
                                              {"/shows/[:show_id]", ghostlight_show, []},
                                              {"/people/[:person_id]", ghostlight_people, []},
                                              {"/organizations/[:org_id]", ghostlight_org, []},
-                                             {"/works/[:word_id]", ghostlight_work, []},
+                                             {"/works/[:work_id]", ghostlight_work, []},
                                              {"/static/[...]", cowboy_static, {priv_dir, ghostlight, "static/",
                                                                                [{mimetypes, cow_mimetypes, all}]}}
                                       ]}

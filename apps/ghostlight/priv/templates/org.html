@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ name }}</h1>
+  {% if tagline %}
+    <h3>{{ tagline }}</h3>
+  {% endif %}
+
+  {% if description %}
+    {{ description }}
+  {% endif %}
+ 
+  {% if shows %}
+    <h3>Shows produced</h3>
+    <table>
+      <tr>
+        <th>Show</th>
+        <th>Works</th>
+      </tr>
+    {% for show in shows %}
+      <tr>
+        <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>
+        <td>
+          {% for performance in show.performances %}
+            <a href="/works/{{ performance.work_id }}">{{ performance.work_title }}</a>&nbsp;
+          {% endfor %}
+        </td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endif %}
+
+  {% if employees %}
+    <h3>Employees</h3>
+    <table>
+      <tr>
+        <th>Title</th>
+        <th>Employee</th>
+      </tr>
+    {% for employee in employees %}
+      <tr>
+      <td>{{ employee.title }}</td>
+      <td><a href="/people/{{ employee.person_id }}">{{ employee.person_name }}</a></td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endif %}
+{% endblock %}

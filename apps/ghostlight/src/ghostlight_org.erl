@@ -33,9 +33,7 @@ org_to_html(Req, State) ->
             {Body, Req, State};
         _ ->
             OrgRecord = ghostlight_db:get_org(OrgId),
-            lager:info("OrgRecord returned from DB is ~p~n", [OrgRecord]),
             ForTemplate = record_to_proplist(OrgRecord),
-            lager:info("~n~nProplist is ~p~n", [ForTemplate]),
             {ok, Body} = org_template:render(ForTemplate),
             {Body, Req, State}
     end.

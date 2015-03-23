@@ -87,3 +87,8 @@
     employees = []        :: list(#org_employee{})
 }).
 
+-record(work_return, {
+    work = #work{}   :: #work{},
+    shows = []       :: list(#show{})
+}).
+

@@ -60,7 +60,8 @@
 
          get_show/1,
          get_person/1,
-         get_org/1]).
+         get_org/1,
+         get_work/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -92,7 +93,10 @@
 
                 get_org_meta,
                 get_produced_by_org,
-                get_org_employees
+                get_org_employees,
+
+                get_work_meta,
+                get_work_shows
                 }).
 
 start_link() ->
@@ -163,7 +167,6 @@ handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
               {POff, [PersonId]} ],
     Reply = exec_batch(Batch, State),
 
-    lager:info("SQL has returned us ~p~n", [Reply]),
     {reply, Reply, State};
 
 
@@ -178,9 +181,18 @@ handle_call({get_org, OrgId}, _From, State=#state{get_org_meta=GOM,
               {GOE, [OrgId]} ],
 
     Reply = exec_batch(Batch, State),
-    lager:info("SQL has returned us ~p~n", [Reply]),
     {reply, Reply, State};
 
+
+%% Works are also straightforward -- get their authors, and where they've been
+%% produced.
+handle_call({get_work, WorkId}, _From, State=#state{get_work_meta=GWM,
+                                                   get_work_shows=GWS}) ->
+    Batch = [ {GWM, [WorkId]},
+              {GWS, [WorkId]} ],
+
+    Reply = exec_batch(Batch, State),
+    {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -346,6 +358,30 @@ condense_performances_in_show(ShowList) ->
          performances = maps:get({ShowId, ShowTitle}, AsMap)
       } || {ShowId, ShowTitle} <- maps:keys(AsMap) ].
 
+
+%% Works return their list of authors, as well as when they were produced.
+get_work(WorkId) ->
+    Response = gen_server:call(?MODULE, {get_work, WorkId}),
+    [{ok, []}, {ok, Authors}, {ok, Shows}, {ok, []}] = Response,
+    [{WorkTitle, _, _}|_] = Authors,
+    AuthorList = [ #person{ id = AuthorId, name = AuthorName } || {_, AuthorId, AuthorName} <- Authors ],
+    ShowList = [ #show{
+                     id=ShowId,
+                     title=ShowTitle,
+                     org=#organization{
+                            id=OrgId,
+                            name=OrgName
+                         }
+                 } || {ShowId, ShowTitle, OrgId, OrgName} <- Shows],
+    #work_return{
+       work=#work{
+               id=WorkId,
+               title=WorkTitle,
+               authors=AuthorList
+            },
+       shows=ShowList
+    }.
+
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
@@ -354,8 +390,8 @@ initialize_tables(_Connection) ->
     ok.
 
 exec_batch(Batch, #state{connection=C,
-                        commit_statement=COMMIT,
-                        begin_statement=BEGIN}) ->
+                         commit_statement=COMMIT,
+                         begin_statement=BEGIN}) ->
     AsTransaction = lists:append([ [{BEGIN, []}],
                                    Batch,
                                    [{COMMIT, []}] ]),
@@ -630,6 +666,19 @@ prepare_statements(C) ->
         ++ "(person_id) WHERE oe.org_id = $1",
     {ok, GetOrgEmployees} = epgsql:parse(C, "get_org_employees", GetOrgEmployeesSql, [uuid]),
 
+
+
+    GetWorkTitleAndAuthorsSql = "SELECT w.title, p.person_id, p.name FROM works AS w INNER JOIN authorship AS a USING (work_id) "
+        ++ "INNER JOIN people AS p USING (person_id) WHERE a.work_id = $1",
+    {ok, GetWorkTitleAndAuthors} = epgsql:parse(C, "get_work_meta", GetWorkTitleAndAuthorsSql, [uuid]),
+
+    GetWorkShowsSql = "SELECT s.show_id, s.title, o.org_id, o.name AS org_name FROM shows AS s "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+        ++ "INNER JOIN works AS w ON (p.work_id = w.work_id) WHERE w.work_id = $1",
+
+    {ok, GetWorkShows} = epgsql:parse(C, "get_work_shows", GetWorkShowsSql, [uuid]),
+                
+ 
     State = #state{connection=C,
                    begin_statement=BeginStmt,
                    commit_statement=CommitStmt,
@@ -656,6 +705,9 @@ prepare_statements(C) ->
 
                    get_org_meta=GetOrgMeta,
                    get_produced_by_org=GetProducedByOrg,
-                   get_org_employees=GetOrgEmployees
+                   get_org_employees=GetOrgEmployees,
+
+                   get_work_meta=GetWorkTitleAndAuthors,
+                   get_work_shows=GetWorkShows
                    },
     State.

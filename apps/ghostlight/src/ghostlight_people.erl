@@ -94,12 +94,12 @@ record_to_proplist(#person_return{
 
 
 json_to_record({Person}) ->
-    case proplists:get_value(<<"id">>, Person) of
-        undefined ->
-            {name, proplists:get_value(<<"name">>, Person)};
-        Id ->
-            {id, Id}
-    end.
+    PersonId = proplists:get_value(<<"id">>, Person, null),
+    PersonName = proplists:get_value(<<"name">>, Person, null),
+    #person{
+       id = PersonId,
+       name = PersonName
+    }.
 
 person_to_json(Req, State) ->
     {<<"{ \"status\": \"ok\" }">>, Req, State}.

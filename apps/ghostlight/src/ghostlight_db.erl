@@ -107,7 +107,7 @@ handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
                                                         get_person_offstage=POff}) ->
 
     %% In many ways, the person resource is the most important one -- we're
-    %% doing this, in part, to bring make something of a portfolio to see and
+    %% doing this, in part, to make something of a portfolio to see and
     %% grow. You want to be proud when you see this resource. You want to feel
     %% inspired to add to it.
     %%
@@ -164,60 +164,61 @@ get_show(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
     %% handle if this call fails.
     [_, {ok, Meta}, {ok, Performances}, {ok, Authorship}, _] = Response,
-    [{Title, OrgName, SpecialThanks, Date}] = Meta,
+    [{Title, OrgName, OrgId, SpecialThanks, Date}] = Meta,
 
     Authors = authors_to_map(Authorship),
-
-    Return = #show{
-                 title = Title,
-                 special_thanks = SpecialThanks,
-                 dates = [Date],
-                 org = #organization{
-                            name = OrgName
-                         },
-                 performances = make_performance_record_list(Performances, Authors)
-               },
-    Return.
+    #show{
+        title = Title,
+        special_thanks = SpecialThanks,
+        dates = [Date],
+        org = #organization{
+                   id = OrgId,
+                   name = OrgName
+                },
+        performances = make_performance_record_list(Performances, Authors)
+      }.
 
 make_performance_record_list(Performances, AuthorMap) ->
-    PerformancesMap = lists:foldl(fun ({Title, _, Performer, Role}, Accum) ->
+    PerformancesMap = lists:foldl(fun ({WorkId, Title, _, _, PerformerName, PerformerId, Role}, Accum) ->
                                       PerformerRecord = #onstage{
                                                            role = Role,
-                                                           person = {name, Performer}
+                                                           person = #person{
+                                                                       id = PerformerId,
+                                                                       name = PerformerName
+                                                                    }
                                                         },
-                                      case maps:get(Title, Accum, none) of
+                                      case maps:get({WorkId, Title}, Accum, none) of
                                           none ->
-                                              maps:put(Title, [PerformerRecord], Accum);
+                                              maps:put({WorkId, Title}, [PerformerRecord], Accum);
                                           Performers ->
-                                              maps:put(Title, [PerformerRecord|Performers], Accum)
+                                              maps:put({WorkId, Title}, [PerformerRecord|Performers], Accum)
                                       end
                                   end, maps:new(), Performances),
 
-    DirectorMap = lists:foldl(fun ({Title, Director, _, _}, Accum) ->
-                                  case maps:get(Title, Accum, none) of
+    DirectorMap = lists:foldl(fun ({WorkId, _, DirectorName, DirectorId, _, _, _}, Accum) ->
+                                  case maps:get(WorkId, Accum, none) of
                                       none ->
-                                          maps:put(Title, {name, Director}, Accum);
-                                      {name, _} ->
+                                          maps:put(WorkId, #person{name=DirectorName, id=DirectorId}, Accum);
+                                      _ ->
                                           Accum
                                   end
                               end, maps:new(), Performances),
-    lists:map(fun (Title) ->
-                  #performance{
-                      work = #work {
-                                 title = Title,
-                                 authors = maps:get(Title, AuthorMap)
-                             },
-                      onstage = maps:get(Title, PerformancesMap),
-                      directors = [maps:get(Title, DirectorMap)]
-                  }
-              end, maps:keys(PerformancesMap)).
+    [ #performance{
+          work = #work {
+                     id = WorkId,
+                     title = Title,
+                     authors = maps:get(Title, AuthorMap)
+                 },
+          onstage = maps:get({WorkId, Title}, PerformancesMap),
+          directors = [maps:get(WorkId, DirectorMap)]
+      } || {WorkId, Title} <- maps:keys(PerformancesMap) ].
 
 
 %% Given a list of Authorship like the one we return from SQL, gives us a map where every key is the title
 %% of a work, and the value is a list of all its authors.
 authors_to_map(AuthorList) ->
-    lists:foldl(fun ({Title, Author}, Accum) ->
-            AuthorTuple = {name, Author},
+    lists:foldl(fun ({Title, AuthorId, Author}, Accum) ->
+            AuthorTuple = #person{id=AuthorId, name=Author},
             case maps:get(Title, Accum, none) of
                 none ->
                     maps:put(Title, [AuthorTuple], Accum);
@@ -477,7 +478,7 @@ prepare_statements(C) ->
     %% SELECT Statements
 
     %% This will get the show's metadata
-    GetShowSql = "SELECT s.title, o.name, s.special_thanks, d.show_date "
+    GetShowSql = "SELECT s.title, o.name, o.org_id, s.special_thanks, d.show_date "
         ++ "FROM shows AS s INNER JOIN organizations AS o ON (s.producing_org_id = o.org_id) "
         ++ "INNER JOIN show_dates AS d USING (show_id) WHERE s.show_id = $1",
     {ok, GetShow} = epgsql:parse(C, "get_show_meta", GetShowSql, [uuid]),
@@ -485,17 +486,19 @@ prepare_statements(C) ->
 
     %% This monstrosity will get all the performers in a show, even if spanning
     %% Many performances.
-    GetOnstageSql = "SELECT w.title, ppl.name AS director_name, people2.name AS performer_name, po.role "
+    GetOnstageSql = "SELECT w.work_id, w.title, ppl.name AS director_name, ppl.person_id AS director_id, "
+        ++ "people2.name AS performer_name, people2.person_id AS performer_id, po.role "
         ++ "FROM works AS w INNER JOIN performances AS p USING (work_id) "
         ++ "INNER JOIN people AS ppl ON (ppl.person_id = p.director_id) "
         ++ "INNER JOIN performance_onstage AS po USING (performance_id) "
         ++ "INNER JOIN people AS people2 ON (people2.person_id = po.performer_id) "
         ++ "WHERE p.show_id = $1 "
-        ++ "GROUP BY p.performance_id, w.title, ppl.name, people2.name, po.role ORDER BY p.performance_order;",
+        ++ "GROUP BY w.work_id, ppl.person_id, people2.person_id, p.performance_id, w.title, "
+        ++ "ppl.name, people2.name, po.role ORDER BY p.performance_order;",
     {ok, GetOnstage} = epgsql:parse(C, "get_show_onstage", GetOnstageSql, [uuid]),
 
     %% Pulls the authors of a show.
-    GetAuthorsSql = "SELECT w.title, p.name AS author_name FROM "
+    GetAuthorsSql = "SELECT w.title, p.person_id AS author_id, p.name AS author_name FROM "
         ++ "(SELECT p.work_id FROM performances AS p WHERE p.show_id = $1) AS works_in_show "
         ++ "INNER JOIN works AS w USING (work_id) INNER JOIN authorship AS a USING (work_id) "
         ++ "INNER JOIN people AS p USING (person_id)",

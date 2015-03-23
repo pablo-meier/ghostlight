@@ -5,7 +5,7 @@
 {% block content %}
   <h1>{{ title }}</h1>
    <!-- If only one performance, author(s) here -->
-   <h3>Presented by {{ presenting_org_name }}</h3>
+   <h3>Presented by <a href="/organizations/{{ org.org_id }}">{{ org.name }}</a></h3>
 
    <ul>
        {% for date in dates %}
@@ -15,19 +15,28 @@
 
    {% for performance in performances %}
 
-       <h5>{{ performance.work.title }}, by 
+   <h5><a href="/works/{{ performance.work.work_id }}">{{ performance.work.title }}</a>, by 
            {% for author in performance.work.authors %}
-           {{ author }}
+           <a href="/people/{{ author.person_id }}">{{ author.name }}</a>
            {% endfor %} </h5>
        <strong> Directed by 
        {% for director in performance.directors %}
-       {{ director }}
+       <a href="/people/{{ director.id }}">{{ director.name }}</a>
        {% endfor %}</strong>
 
        <p>Starring</p>
+       <table>
+         <tr>
+             <th><strong>Role<strong></th>
+             <th><strong>Performer</strong></th>
+         </tr>
        {% for onstage in performance.onstage %}
-       <p>{{onstage.name}} &rarr; {{onstage.role}}</p>
+       <tr>
+           <td>{{ onstage.role }}</td>
+           <td><a href="/people/{{ onstage.person_id }}">{{ onstage.name }}</a></td>
+       </tr>
        {% endfor %} <!-- for onstage -->
+       </table>
 
    {% endfor %}
 

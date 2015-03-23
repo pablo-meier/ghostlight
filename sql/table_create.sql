@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS org_membership (
 );
 
 
-CREATE TABLE IF NOT EXISTS org_employee (
+CREATE TABLE IF NOT EXISTS org_employees (
     org_id UUID REFERENCES organizations(org_id) NOT NULL,
     person_id UUID REFERENCES people(person_id) NOT NULL,
     title TEXT,

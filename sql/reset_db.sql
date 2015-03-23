@@ -9,6 +9,7 @@ DELETE FROM performances;
 DELETE FROM authorship;
 DELETE FROM works;
 DELETE FROM shows;
+DELETE FROM org_employees;
 DELETE FROM organizations;
 DELETE FROM people;
 DELETE FROM users;

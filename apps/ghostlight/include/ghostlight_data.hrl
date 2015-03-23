@@ -4,7 +4,6 @@
 %% we try to define a '0 type' for each record so we don't get surprising
 %% 'undefined's. 
 
--type person() :: {name, binary()} | {id, binary()}.
 -type datetime() :: {{integer(), integer(), integer()}, {integer(), integer(), float()}}.
 -type organization_parent() :: {id, binary()}.
 
@@ -20,27 +19,32 @@
     visibility = <<"public">>  :: binary()
 }).
 
+-record(person, {
+    id = <<"">>  :: binary(),
+    name = <<"">> :: binary()
+}).
+
 -record(work, {
     id = <<"">>    :: binary(),
     title = <<"">> :: binary(),
-    authors = []   :: list(person())
+    authors = []   :: list(#person{})
 }).
 
 -record(onstage, {
-    role = <<"">>           :: binary(),
-    person = {name, <<"">>} :: person()
+    role = <<"">>      :: binary(),
+    person = #person{} :: #person{}
 }).
 
 -record(offstage, {
     job = <<"">>            :: binary(),
-    person = {name, <<"">>} :: person()
+    person = #person{} :: #person{}
 }).
 
 -record(performance, {
     work = #work{} :: #work{},
     onstage = []   :: list(#onstage{}),
     offstage = []  :: list(#offstage{}),
-    directors = [] :: list(person())
+    directors = [] :: list(#person{})
 }).
 
 -record(show, {

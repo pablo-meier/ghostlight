@@ -16,7 +16,7 @@
       </tr>
     {% for onstage in onstage_list %}
       <tr>
-        <td><a href="/shows/{{ onstage.show_id }}">{{ onstage.title }}</a></td>
+        <td><a href="/shows/{{ onstage.show_id }}">{{ onstage.show_title }}</a></td>
         <td><a href="/organizations/{{ onstage.org_id }}">{{ onstage.org_name }}</a></td>
         <td><a href="/works/{{ onstage.work_id }}">{{ onstage.work_title }}</a></td>
         <td><strong>{{ onstage.role }}</strong></td>
@@ -35,7 +35,7 @@
       </tr>
     {% for offstage in offstage_list %}
       <tr>
-        <td><a href="/shows/{{ offstage.show_id }}">{{ offstage.title }}</a></td>
+        <td><a href="/shows/{{ offstage.show_id }}">{{ offstage.show_title }}</a></td>
         <td><a href="/organizations/{{ offstage.org_id }}">{{ offstage.org_name }}</a></td>
         <td><strong>{{ onstage.job }}</strong></td>
       </tr>

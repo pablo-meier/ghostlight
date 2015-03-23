@@ -105,19 +105,25 @@ handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
                                                         get_person_orgs=GO,
                                                         get_person_onstage=POn,
                                                         get_person_offstage=POff}) ->
-    %% A person could:
-    %% * have been an onstage performer
-    %%   - get all 'shows' where they were onstage on a performance
-    %% * been an offstage contributor
-    %%   - ditto
-    %% * be a director of a performance
-    %%   - ditto
-    %% * be an author of a work
-    %%   - get the work(s) that they are listed as a an author of.
-    %% * be affiliated with an org
-    %%   - get all orgs they work for (not necessarily members of)
+
+    %% In many ways, the person resource is the most important one -- we're
+    %% doing this, in part, to bring make something of a portfolio to see and
+    %% grow. You want to be proud when you see this resource. You want to feel
+    %% inspired to add to it.
     %%
-    %% Query should fetch all of this and make it presentable.
+    %% While there will probably be a lot more later on, here is a start for
+    %% what to return when looking up a person:
+    %%
+    %% * What is their name and other "person" data (i.e. a bio, photo urls, etc.)
+    %% * Where have been an onstage performer?
+    %% * Where have they been an offstage contributor?
+    %% * Have they directed any performances?
+    %% * Are they authors or creators of original work?
+    %% * Are they affiliated with organizations?
+    %%
+    %% Query should fetch all of this and make it presentable. Unfortunately,
+    %% until I beef up on Views or Postgres features, this is a batch of 5 queries,
+    %% 6 once I get directors. I'll see what I can do.
     
     Batch = [ {GN, [PersonId]},
               {GA, [PersonId]},

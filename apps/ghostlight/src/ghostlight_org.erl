@@ -26,7 +26,7 @@ content_types_accepted(Req, State) ->
      ], Req, State}.
 
 org_to_html(Req, State) ->
-    OrgId = cowboy_req:binding(org_ig, Req),
+    OrgId = cowboy_req:binding(org_id, Req),
     case OrgId of
         <<"new">> ->
             {ok, Body} = insert_org_template:render([]),
@@ -35,67 +35,51 @@ org_to_html(Req, State) ->
             OrgRecord = ghostlight_db:get_org(OrgId),
             lager:info("OrgRecord returned from DB is ~p~n", [OrgRecord]),
             ForTemplate = record_to_proplist(OrgRecord),
-            {ok, Body} = person_template:render(ForTemplate),
+            lager:info("~n~nProplist is ~p~n", [ForTemplate]),
+            {ok, Body} = org_template:render(ForTemplate),
             {Body, Req, State}
     end.
 
 %% Makes the Record returned from the DB into a proplist we can feed the template.
 %% Aw hell yeah Pattern Matching.
-record_to_proplist(#person_return{
-                     name=Name,
-                     authored=Authored,
-                     directed=_Directed,
-                     onstage=Onstage,
-                     offstage=Offstage,
-                     orgs=Orgs}) ->
-
-    OnstageProplist = [ [{show_id, ShowId},
-                         {show_title, ShowTitle},
-                         {org_id, OrgId},
-                         {org_name, OrgName},
-                         {work_id, WorkId},
-                         {work_title, WorkTitle},
-                         {role, Role}] || #show{ title=ShowTitle,
-                                                 id=ShowId,
-                                                 org=#organization{id=OrgId, name=OrgName},
-                                                 performances=[#performance{
-                                                                 work=#work{ id=WorkId, title=WorkTitle },
-                                                                 onstage=#onstage{ role=Role }
-                                                              }]} <- Onstage],
-    OffstageProplist = [ [{show_id, ShowId}, 
-                          {show_title, ShowTitle},
-                          {org_id, OrgId},
-                          {org_name, OrgName},
-                          {work_id, WorkId},
-                          {work_title, WorkTitle},
-                          {job, Job}] || #show{ title=ShowTitle,
-                                                id=ShowId,
-                                                org=#organization{id=OrgId, name=OrgName},
-                                                performances=[#performance{
-                                                                work=#work{ id=WorkId, title=WorkTitle },
-                                                                offstage=#offstage{ job=Job }
-                                                             }]
-                                              } <- Offstage],
-    AuthorshipProplist = [ [{work_id, WorkId},
-                            {title, Title}] || #work{id=WorkId, title=Title} <- Authored],
-
-    OrgProplist = [ [{org_id, OrgId},
-                     {org_name, OrgName},
-                     {position, Position}] || #org_work{org_id=OrgId, org_name=OrgName, title=Position} <- Orgs ],
-      
-    [{name, Name},
-     {onstage_list, OnstageProplist},
-     {offstage_list, OffstageProplist},
-     {authorship, AuthorshipProplist},
-     {organizations, OrgProplist}].
+record_to_proplist(#org_return{
+                     org=#organization{
+                         name=Name,
+                         tagline=Tagline,
+                         description=Description
+                     },
+                     shows_produced=Shows,
+                     employees=Employees}) ->
+  ShowProplist = [ [{show_id, ShowId},
+                    {show_title, ShowTitle},
+                    {performances, [ [{work_id, WorkId}, {work_title, WorkTitle}] 
+                                       || #performance{work=#work{id=WorkId, title=WorkTitle}} <- Performances ]} 
+                   ] || #show{ id=ShowId,
+                               title=ShowTitle,
+                               performances=Performances
+                             } <- Shows ],
+  EmployeesProplist = [ [{person_id, PersonId},
+                         {person_name, PersonName},
+                         {title, Title}] || #org_employee{ title=Title,
+                                                           person=#person{
+                                                                     id=PersonId,
+                                                                     name=PersonName
+                                                                    }
+                                                         } <- Employees ],
 
 
-json_to_record({Person}) ->
-    PersonId = proplists:get_value(<<"id">>, Person, null),
-    PersonName = proplists:get_value(<<"name">>, Person, null),
-    #person{
-       id = PersonId,
-       name = PersonName
+  [{name, Name},
+   {tagline, Tagline},
+   {description, Description},
+   {shows, ShowProplist},
+   {employees, EmployeesProplist}].
+
+json_to_record({Organization}) ->
+    OrgId = proplists:get_value(<<"id">>, Organization, null),
+    OrgName = proplists:get_value(<<"name">>, Organization, null),
+    #organization{
+       id = OrgId,
+       name = OrgName 
     }.
 
 org_to_json(Req, State) ->

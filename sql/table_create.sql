@@ -113,7 +113,6 @@ CREATE TABLE IF NOT EXISTS show_dates (
 ); 
 
 
-
 CREATE TABLE IF NOT EXISTS org_membership (
     org_id UUID REFERENCES organizations(org_id) NOT NULL,
     user_id UUID REFERENCES users(user_id) NOT NULL,

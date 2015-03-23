@@ -74,7 +74,11 @@
                 get_person_orgs,
                 get_person_onstage,
                 get_person_offstage,
-                get_person_directorships
+                get_person_directorships,
+
+                get_org_meta,
+                get_produced_by_org,
+                get_org_employees
                 }).
 
 start_link() ->
@@ -152,13 +156,14 @@ handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
 %% Orgs are pretty straightforward -- who's in them, and what have they
 %% produced. Need to see if I care about in-app membership enough to 
 %% make that happen here.
-handle_call({get_org, _OrgId}, _From, State=#state{}) ->
-
-    Batch = [ %{GN, [OrgId]},
-            ],
+handle_call({get_org, OrgId}, _From, State=#state{get_org_meta=GOM,
+                                                   get_produced_by_org=GPO,
+                                                   get_org_employees=GOE}) ->
+    Batch = [ {GOM, [OrgId]},
+              {GPO, [OrgId]},
+              {GOE, [OrgId]} ],
 
     Reply = exec_batch(Batch, State),
-
     lager:info("SQL has returned us ~p~n", [Reply]),
     {reply, Reply, State};
 
@@ -289,8 +294,43 @@ get_person(PersonId) ->
 
 
 get_org(OrgId) ->
-    _Reply = gen_server:call(?MODULE, {get_org, OrgId}),
-    #organization{}.
+    Reply = gen_server:call(?MODULE, {get_org, OrgId}),
+    [{ok, []}, {ok, Meta}, {ok, Produced}, {ok, Employees}, {ok, []}] = Reply,
+    [{Name, Tagline, Description}] = Meta,
+    ShowList = condense_performances_in_show(Produced),
+    EmployeeList = [ #org_employee{
+                        title=PersonTitle,
+                        person=#person{
+                            id=PersonId,
+                            name=PersonName
+                        }
+                     } || {PersonId, PersonName, PersonTitle} <- Employees ],
+    #org_return{
+      org=#organization{
+             id=OrgId,
+             name=Name,
+             tagline=Tagline,
+             description=Description
+          },
+      shows_produced=ShowList,
+      employees=EmployeeList
+    }.
+
+condense_performances_in_show(ShowList) ->
+    AsMap = lists:foldl(fun ({ShowId, ShowTitle, WorkId, WorkTitle}, Accum) ->
+                                NewPerformance = #performance{work=#work{id=WorkId, title=WorkTitle}},
+                                case maps:get({ShowId, ShowTitle}, Accum, none) of
+                                    none ->
+                                        maps:put({ShowId, ShowTitle}, [NewPerformance], Accum);
+                                    PerformanceList ->
+                                        maps:put({ShowId, ShowTitle}, [NewPerformance|PerformanceList], Accum)
+                                end
+                        end, maps:new(), ShowList),
+    [ #show{
+         id = ShowId,
+         title = ShowTitle,
+         performances = maps:get({ShowId, ShowTitle}, AsMap)
+      } || {ShowId, ShowTitle} <- maps:keys(AsMap) ].
 
 %%%===================================================================
 %%% Internal functions
@@ -507,14 +547,13 @@ prepare_statements(C) ->
     {ok, InsertDates} = epgsql:parse(C, "insert_show_dates", DatesSql, [uuid, timestamptz]),
 
 
-    %% SELECT Statements
 
+    %% SELECT Statements
     %% This will get the show's metadata
     GetShowSql = "SELECT s.title, o.name, o.org_id, s.special_thanks, d.show_date "
         ++ "FROM shows AS s INNER JOIN organizations AS o ON (s.producing_org_id = o.org_id) "
         ++ "INNER JOIN show_dates AS d USING (show_id) WHERE s.show_id = $1",
     {ok, GetShow} = epgsql:parse(C, "get_show_meta", GetShowSql, [uuid]),
-
 
     %% This monstrosity will get all the performers in a show, even if spanning
     %% Many performances.
@@ -536,6 +575,8 @@ prepare_statements(C) ->
         ++ "INNER JOIN people AS p USING (person_id)",
     {ok, GetAuthors} = epgsql:parse(C, "get_show_authors", GetAuthorsSql, [uuid]),
  
+
+
     GetPersonNameSql = "SELECT name FROM people WHERE person_id = $1",
     {ok, GetPersonName} = epgsql:parse(C, "get_person_name", GetPersonNameSql, [uuid]),
     
@@ -561,6 +602,20 @@ prepare_statements(C) ->
         ++ "WHERE po.person_id = $1",
     {ok, GetPersonOffstage} = epgsql:parse(C, "get_person_offstage", GetPersonOffstageSql, [uuid]),
 
+
+
+    GetOrgMetaSql = "SELECT o.name, o.tagline, o.description FROM organizations AS o WHERE o.org_id = $1",
+    {ok, GetOrgMeta} = epgsql:parse(C, "get_org_meta", GetOrgMetaSql, [uuid]),
+
+    GetProducedByOrgSql = "SELECT s.show_id, s.title, w.work_id, w.title FROM shows AS s "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+        ++ "INNER JOIN works AS w ON (p.work_id = w.work_id) WHERE o.org_id = $1",
+    {ok, GetProducedByOrg} = epgsql:parse(C, "get_produced_by_org", GetProducedByOrgSql, [uuid]),
+
+    GetOrgEmployeesSql = "SELECT p.person_id, p.name, oe.title FROM org_employee AS oe INNER JOIN people AS p USING "
+        ++ "(person_id) WHERE oe.org_id = $1",
+    {ok, GetOrgEmployees} = epgsql:parse(C, "get_org_employees", GetOrgEmployeesSql, [uuid]),
+
     State = #state{connection=C,
                    begin_statement=BeginStmt,
                    commit_statement=CommitStmt,
@@ -583,6 +638,10 @@ prepare_statements(C) ->
                    get_person_authorship=GetShowsAuthored,
                    get_person_orgs=GetPersonOrgs,
                    get_person_onstage=GetPersonOnstage,
-                   get_person_offstage=GetPersonOffstage
+                   get_person_offstage=GetPersonOffstage,
+
+                   get_org_meta=GetOrgMeta,
+                   get_produced_by_org=GetProducedByOrg,
+                   get_org_employees=GetOrgEmployees
                    },
     State.

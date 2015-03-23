@@ -36,8 +36,13 @@
 }).
 
 -record(offstage, {
-    job = <<"">>            :: binary(),
+    job = <<"">>       :: binary(),
     person = #person{} :: #person{}
+}).
+
+-record(org_employee, {
+    person = #person{} :: #person{},
+    title = <<"">>     :: binary()
 }).
 
 -record(performance, {
@@ -76,4 +81,9 @@
     orgs = []      :: list(#organization{})
 }).
 
+-record(org_return, {
+    org = #organization{} :: #organization{},
+    shows_produced = []   :: list(#show{}),
+    employees = []        :: list(#org_employee{})
+}).
 

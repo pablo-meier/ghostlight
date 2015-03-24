@@ -1,0 +1,170 @@
+{
+  "title" : "Director's Salon: Alumni Night",
+  "special_thanks" : "iEveryone who made this year's salong possible, including: Art/NY, Anna/Kate, Ars Nova, Brooklyn Brewery, Eric Tucker and Bedlam Theater, Red Flamboyant, Red Rising Marketing, Signature Theatre, the TEAM, Think Coffee, The Wild Project.",
+  "dates" : ["2015-03-20T19:00:00.000Z"],
+  "org" : {
+    "name": "Working Theatre"
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "#liberated",
+        "authors": [{"name": "Lillian Meredith"},
+                    {"name": "Jaki Bradley"},
+                    {"name": "Zoe Sophia Garcia"},
+                    {"name": "Marianna McClellan"},
+                    {"name": "Maggie Raymond"},
+                    {"name": "Gabby Sherpa"}]
+      },
+      "directors": [{"name": "Lillian Meredith"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Jaki Bradley"}
+        },
+        {
+          "performer" : {"name": "Amanda Culp"}
+        },
+        {
+          "performer" : {"name": "Zoe Sophia Garcia"}
+        },
+        {
+          "performer" : {"name": "Rachel Karp"}
+        },
+        {
+          "performer" : {"name": "Marianna McClellan"}
+        },
+        {
+          "performer" : {"name": "Maggie Raymond"}
+        },
+        {
+          "performer" : {"name": "Gabby Sherpa"}
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "who we let in",
+        "authors": [{"name": "Charly Evon Simpson"}]
+      },
+      "directors": [{"name": "Illana Stein"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Monica Jones"}
+        },
+        {
+          "performer" : {"name": "Vanessa Bartlett"}
+        },
+        {
+          "performer" : {"name": "Brian Burns"}
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Love, lost and found",
+        "authors": [{"name": "Sabrina Rodriguez"}]
+      },
+      "directors": [{"name": "Daniela Thome"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Rebecca Martinez"}
+        },
+        {
+          "performer" : {"name": "Karlin Mendez"}
+        },
+        {
+          "performer" : {"name": "David Mila"}
+        },
+        {
+          "performer" : {"name": "Richy Nouel"}
+        },
+        {
+          "performer" : {"name": "Arisbeth Pavia"}
+        },
+        {
+          "performer" : {"name": "Daniela Thome"}
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Leaf Storm",
+        "authors": [
+            {"name": "Shana Solomon"},
+            {"name": "Kaitlyn Cantoni"},
+            {"name": "Catherine Gasta"},
+            {"name": "Elijah Laurant"},
+            {"name": "Adam Pagdon"},
+            {"name": "Vanessa Guinto"},
+            {"name": "Ashley Zimmermann"}
+        ]
+      },
+      "directors": [{"name": "Shana Solomon"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Kaitlyn Cantoni"}
+        },
+        {
+          "performer" : {"name": "Catherine Gasta"}
+        },
+        {
+          "performer" : {"name": "Elijah Laurant"}
+        },
+        {
+          "performer" : {"name": "Adam Pagdon"}
+        },
+        {
+          "performer" : {"name": "Vanessa Guinto"}
+        },
+        {
+          "performer" : {"name": "Ashley Zimmermann"}
+        }
+      ],
+      "offstage": [{ "contributor": { "name" : "Catherine Gasta" }, "job" : "Assistant Director" }]
+    },
+    {
+      "work" : {
+        "title" : "Here Lies Henry",
+        "authors": [{"name": "Daniel MacIvor"}]
+      },
+      "directors": [{"name": "Emerie Snyder"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Nick Lewis"},
+          "role" : "Henry"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "everything's whispered (for now)",
+        "authors": [
+          {"name": "Michael Grew"},
+          {"name": "Amanda Marikar"},
+          {"name": "Lilleth Meredith"},
+          {"name": "Lucinda Rogers"},
+          {"name": "Tracy Willet"},
+          {"name": "Dina Vovsi"}
+        ]
+      },
+      "directors": [{"name": "Dina Vovsi"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Michael Grew"}
+        },
+        {
+          "performer" : {"name": "Amanda Marikar"}
+        },
+        {
+          "performer" : {"name": "Lilleth Meredith"}
+        },
+        {
+          "performer" : {"name": "Lucinda Rogers"}
+        },
+        {
+          "performer" : {"name": "Tracy Willet"}
+        }
+      ]
+    }
+  ]
+}

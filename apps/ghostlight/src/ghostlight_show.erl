@@ -95,7 +95,6 @@ post_json(Req, State) ->
     % upload the body, return yes or no
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     ShowRecord = show_json_to_record(RequestBody),
-    lager:info("~nShowRecord is ~p", [ShowRecord]),
     Response = ghostlight_db:insert_show(ShowRecord),
     lager:info("~nResponse from DB server is ~p~n", [Response]),
 
@@ -104,7 +103,6 @@ post_json(Req, State) ->
 
 show_json_to_record(JsonInput) ->
     {Decoded} = jiffy:decode(JsonInput),
-    lager:info("~nWe have an Erlang object: ~p~n", [{Decoded}]),
 
     Title = proplists:get_value(<<"title">>, Decoded),
     SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),

@@ -114,7 +114,9 @@ init([]) ->
 
 handle_call({insert_show, Show}, _From, State) ->
     Inserts = get_show_inserts(Show, State),
+    lager:info("GOT THE INSERTS! THEY ARE ~n~p", [Inserts]),
     Reply = exec_batch(Inserts, State),
+    lager:info("EXECED!~n"),
     {reply, Reply, State};
 
 %% As with insertions, querying a show is a pretty hairy endeavor since it touches
@@ -488,7 +490,7 @@ get_offstage_inserts(PerformanceId, OffstageList, State=#state{insert_offstage_s
     ListOfLists = lists:map(fun (#offstage{ job=Job,
                                             person=Person }) ->
                                 {PersonInserts, [PersonId]} = get_people_inserts([Person], State),
-                                OffstageInsert = {IO, [PerformanceId, PersonId, Job, null, null, null]},
+                                OffstageInsert = {IO, [PerformanceId, PersonId, Job, null, null]},
                                 lists:reverse([OffstageInsert|PersonInserts])
                             end, OffstageList),
     lists:flatten(ListOfLists).
@@ -540,12 +542,12 @@ get_work_inserts(#work{title=Title,
 
 
 get_people_inserts(PersonList, #state{insert_person_statement=IP}) ->
-    PersonPairs = lists:map(fun ({Type, Value}) ->
-                                  case Type of
-                                      name -> 
+    PersonPairs = lists:map(fun (#person{id=PersonId, name=PersonName}) ->
+                                  case PersonId of
+                                      null -> 
                                           PersonUUID = fresh_uuid(),
-                                          {{IP, [PersonUUID, Value]}, PersonUUID};
-                                      id ->
+                                          {{IP, [PersonUUID, PersonName]}, PersonUUID};
+                                      Value ->
                                           {none, Value}
                                   end
                               end,  PersonList),

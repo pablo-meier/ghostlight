@@ -36,7 +36,6 @@ person_to_html(Req, State) ->
             {Body, Req, State};
         _ ->
             PersonRecord = ghostlight_db:get_person(PersonId),
-            lager:info("PersonRecord returned from DB is ~p~n", [PersonRecord]),
             ForTemplate = record_to_proplist(PersonRecord),
             {ok, Body} = person_template:render(ForTemplate),
             {Body, Req, State}

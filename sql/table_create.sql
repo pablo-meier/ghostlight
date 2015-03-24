@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS performances (
 CREATE TABLE IF NOT EXISTS performance_onstage (
     performance_id UUID REFERENCES performances(performance_id) NOT NULL,
     performer_id UUID REFERENCES people(person_id) NOT NULL,
-    role TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'Ensemble',
     -- Maybe understudies should be a new table? Given that they can change around, like performers.
     understudy_id UUID REFERENCES people(person_id),
     date_started DATE,

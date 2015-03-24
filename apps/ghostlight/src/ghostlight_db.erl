@@ -63,6 +63,8 @@
          get_org/1,
          get_work/1]).
 
+-export([fix_dups/0]).
+
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
 -define(SERVER, ?MODULE).
@@ -114,9 +116,7 @@ init([]) ->
 
 handle_call({insert_show, Show}, _From, State) ->
     Inserts = get_show_inserts(Show, State),
-    lager:info("GOT THE INSERTS! THEY ARE ~n~p", [Inserts]),
     Reply = exec_batch(Inserts, State),
-    lager:info("EXECED!~n"),
     {reply, Reply, State};
 
 %% As with insertions, querying a show is a pretty hairy endeavor since it touches
@@ -195,6 +195,35 @@ handle_call({get_work, WorkId}, _From, State=#state{get_work_meta=GWM,
 
     Reply = exec_batch(Batch, State),
     {reply, Reply, State};
+
+
+handle_call(fix_dups, _From, State=#state{connection=C, begin_statement=BEGIN, commit_statement=COMMIT}) ->
+    {ok, _Columns, Rows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT p1.person_id AS id1, p2.person_id AS id2, "
+        ++ "p1.name, row_number() OVER (PARTITION BY p1.name) AS row_num FROM people AS p1, people AS p2 "
+        ++ "WHERE p1.name = p2.name AND p1.person_id != p2.person_id ORDER BY p1.name) AS tmp WHERE row_num < 2"),
+
+    {ok, Parsed1} = epgsql:parse(C, "consolidate_1", "UPDATE authorship SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed2} = epgsql:parse(C, "consolidate_2", "UPDATE org_employee SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed3} = epgsql:parse(C, "consolidate_3", "UPDATE performance_offstage SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed4} = epgsql:parse(C, "consolidate_4", "UPDATE performance_onstage SET performer_id = $1 WHERE performer_id = $2", [uuid, uuid]),
+    {ok, Parsed5} = epgsql:parse(C, "consolidate_5", "UPDATE performances SET director_id = $1 WHERE director_id = $2", [uuid, uuid]),
+    {ok, Parsed6} = epgsql:parse(C, "consolidate_6", "UPDATE users SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed7} = epgsql:parse(C, "consolidate_7", "DELETE FROM people WHERE person_id = $2", [uuid, uuid]),
+
+    lists:foreach(fun ({GoodId, BadId, Name}) ->
+                     lager:info("Swapping out ~p for ~p for user ~p", [BadId, GoodId, Name]),
+
+                     epgsql:execute_batch(C, [{BEGIN, []},
+                                              {Parsed1, [GoodId, BadId]},
+                                              {Parsed2, [GoodId, BadId]},
+                                              {Parsed3, [GoodId, BadId]},
+                                              {Parsed4, [GoodId, BadId]},
+                                              {Parsed5, [GoodId, BadId]},
+                                              {Parsed6, [GoodId, BadId]},
+                                              {Parsed7, [GoodId, BadId]},
+                                              {COMMIT, []}])
+                  end, Rows),
+    {reply, ok, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -713,3 +742,7 @@ prepare_statements(C) ->
                    get_work_shows=GetWorkShows
                    },
     State.
+
+%%% SUPER SECRET FUNCTIONS
+fix_dups() ->
+    gen_server:call(?MODULE, fix_dups).

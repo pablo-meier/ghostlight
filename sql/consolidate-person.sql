@@ -12,5 +12,5 @@ UPDATE org_employee SET person_id = $1 WHERE person_id = $2;
 UPDATE performance_offstage SET person_id = $1 WHERE person_id = $2;
 UPDATE performance_onstage SET performer_id = $1 WHERE performer_id = $2;
 UPDATE performances SET director_id = $1 WHERE director_id = $2;
-UPDATE users SET person_id $1 = WHERE person_id = $2;
+UPDATE users SET person_id = $1 WHERE person_id = $2;
 DELETE FROM people WHERE person_id = $2;

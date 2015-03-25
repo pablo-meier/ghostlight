@@ -19,9 +19,9 @@
 %%
 %% JSON
 %%
-%% GET /id
+%% GET /id         ------------- DONE
 %% GET /
-%% POST /
+%% POST /          ------------- DONE
 %% PUT /id
 %% DELETE /id
 

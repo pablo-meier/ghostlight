@@ -1,0 +1,7 @@
+/* Ghostlight was made by Pablo Meier */
+/* morepaul.com */
+/* humanstxt.org */
+
+/* SITE */
+  Standards: HTML5, CSS3
+  Components: wboy, Erlang, Postgres, Vim

@@ -4,8 +4,14 @@
 
 %%% Module responsible for logging every request.
 execute(Req, Env) ->
-    Method = cowboy_req:method(Req),
     Path = cowboy_req:path(Req),
-    Now = iso8601:format(now()),
-    lager:info("~s  ~s - ~s", [Now, Method, Path]),
+    case re:run(Path, "^/static/.*$") of
+        nomatch ->
+            Method = cowboy_req:method(Req),
+            Now = iso8601:format(now()),
+            lager:info("~s  ~s - ~s", [Now, Method, Path]);
+        _Else ->
+            ok
+    end,
     {ok, Req, Env}.
+

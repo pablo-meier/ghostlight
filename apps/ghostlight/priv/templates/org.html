@@ -5,7 +5,7 @@
 {% block content %}
   <h1>{{ name }}</h1>
   {% if tagline %}
-    <h3>{{ tagline }}</h3>
+    <h2 class="subheader">{{ tagline }}</h2>
   {% endif %}
 
   {% if description %}
@@ -24,7 +24,7 @@
         <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>
         <td>
           {% for performance in show.performances %}
-            <a href="/works/{{ performance.work_id }}">{{ performance.work_title }}</a>&nbsp;
+          <a href="/works/{{ performance.work_id }}">{{ performance.work_title }}</a><br />
           {% endfor %}
         </td>
       </tr>

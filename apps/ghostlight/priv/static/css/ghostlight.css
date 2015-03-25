@@ -1,3 +1,8 @@
-h1, h2, h3, h4, h5 {
-    text-decoration: underline;
+
+#footer {
+    height: auto;
+}
+
+#footer p {
+    border-top: 1px solid #222222;
 }

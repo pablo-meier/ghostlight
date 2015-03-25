@@ -33,6 +33,9 @@ content_types_accepted(Req, State) ->
 show_to_html(Req, State) ->
     ShowId = cowboy_req:binding(show_id, Req),
     case ShowId of
+        undefined ->
+            Body = <<"ok">>,
+            {Body, Req, State};
         <<"new">> ->
             {ok, Body} = insert_show_template:render([]),
             {Body, Req, State};

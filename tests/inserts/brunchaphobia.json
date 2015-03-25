@@ -1,0 +1,136 @@
+{
+  "title" : "Brunchaphobia",
+  "special_thanks" : "The Harold & Mimi Steinberg Trust for the their support of Youngblood and new play productions at EST.",
+  "dates" : ["2015-03-01T13:00:00.000Z"],
+  "org" : {
+    "name": "EST Youngblood",
+    "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "Performance Review",
+        "authors": [{"name": "Christopher Sullivan"}]
+      },
+      "directors": [{"name": "Abigail Zealy Bess"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Abby Rosebrock"},
+          "role" : "Molly"
+        },
+        {
+          "performer" : {"name": "Lucy DeVito"},
+          "role" : "Janice"
+        },
+        {
+          "performer" : {"name": "Jim Murtaugh"},
+          "role" : "Craig"
+        },
+        {
+          "performer" : {"name": "Thomas Lyons"},
+          "role" : "Mr. Egan"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Into the Deep",
+        "authors": [{"name": "Charly Evon Simpson"}]
+      },
+      "directors": [{"name": "Colette Robert"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Lynnette Freeman"},
+          "role" : "Susan"
+        },
+        {
+          "performer" : {"name": "Denny Dale Bess"},
+          "role" : "Will"
+        },
+        {
+          "performer" : {"name": "Shawn Randall"},
+          "role" : "Henry"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Sensitive Young Men",
+        "authors": [{"name": "Kim Davies"}]
+      },
+      "directors": [{"name": "Kel Haney"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Lilli Stein"},
+          "role" : "Kim Davies"
+        },
+        {
+          "performer" : {"name": "Evan William Smith"},
+          "role" : "1"
+        },
+        {
+          "performer" : {"name": "Michael Grew"},
+          "role" : "2"
+        },
+        {
+          "performer" : {"name": "Keloa Simpson"},
+          "role" : "3"
+        },
+        {
+          "performer" : {"name": "Alex Grubbs"},
+          "role" : "4"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "A Real Problem",
+        "authors": [{"name": "Brendan Hill"}]
+      },
+      "directors": [{"name": "Jeremy Bloom"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Megan Tusing"},
+          "role" : "Leann"
+        },
+        {
+          "performer" : {"name": "Erica Lutz"},
+          "role" : "Maggie"
+        },
+        {
+          "performer" : {"name": "Dave Thomas Brown"},
+          "role" : "Dave"
+        },
+        {
+          "performer" : {"name": "Briana Pozner"},
+          "role" : "Elle"
+        },
+        {
+          "performer" : {"name": "Chris Wight"},
+          "role" : "Gowen"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Halo",
+        "authors": [{"name": "Ana Nogeuiera"}]
+      },
+      "directors": [{"name": "RJ Tolan"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Haskell King"},
+          "role" : "Jim"
+        },
+        {
+          "performer" : {"name": "Mike Smith Rivera"},
+          "role" : "Burt"
+        },
+        {
+          "performer" : {"name": "Julie Fitzpatrick"},
+          "role" : "Trixie"
+        }
+      ]
+    }
+  ]
+}

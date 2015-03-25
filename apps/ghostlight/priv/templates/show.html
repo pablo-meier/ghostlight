@@ -5,7 +5,7 @@
 {% block content %}
   <h1>{{ title }}</h1>
    <!-- If only one performance, author(s) here -->
-   <h3>Presented by <a href="/organizations/{{ org.org_id }}">{{ org.name }}</a></h3>
+   <h3>Presented by <a href="/organizations/{{ org.org_id }}">{{ org.org_name }}</a></h3>
 
    <ul>
        {% for date in dates %}

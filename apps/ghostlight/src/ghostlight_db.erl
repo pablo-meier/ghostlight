@@ -254,13 +254,14 @@ get_show(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
     %% handle if this call fails.
     [_, {ok, Meta}, {ok, Performances}, {ok, Authorship}, _] = Response,
-    [{Title, OrgName, OrgId, SpecialThanks, Date}] = Meta,
+    [{Title, OrgName, OrgId, SpecialThanks, _}|_] = Meta,
+    Dates = [ Date || {_, _, _, _, Date} <- Meta ],
 
     Authors = authors_to_map(Authorship),
     #show{
         title = Title,
         special_thanks = SpecialThanks,
-        dates = [Date],
+        dates = Dates,
         org = #organization{
                    id = OrgId,
                    name = OrgName

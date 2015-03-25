@@ -6,7 +6,8 @@
 -export([person_to_html/2,
          person_to_json/2]).
 
--export([json_to_record/1]).
+-export([json_to_record/1,
+         record_to_json/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -103,3 +104,12 @@ json_to_record({Person}) ->
 person_to_json(Req, State) ->
     {<<"{ \"status\": \"ok\" }">>, Req, State}.
 
+
+record_to_json(#person{
+                  id=PersonId,
+                  name=PersonName
+               }) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"person_id">>, PersonId},
+        {<<"name">>, PersonName}
+    ]).

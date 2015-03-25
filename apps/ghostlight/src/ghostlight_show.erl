@@ -5,11 +5,25 @@
          allowed_methods/2]).
 -export([show_to_html/2,
          show_to_json/2,
-        
          post_json/2]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
+%% HTML
+%%
+%% GET /id         ------------- DONE
+%% GET /
+%% GET /new
+%% GET /id/delete
+%% GET /id/edit
+%%
+%% JSON
+%%
+%% GET /id
+%% GET /
+%% POST /
+%% PUT /id
+%% DELETE /id
 
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
@@ -89,9 +103,52 @@ personlist_as_proplist(DirectorList) ->
 
 show_to_json(Req, State) ->
     ShowId = cowboy_req:binding(show_id, Req),
-    _ShowRecord = ghostlight_db:get_show(ShowId),
-%    Body = jiffy:encode({CorrectedPropList}),
-    {<<"{ \"status\": \"ok\" }">>, Req, State}.
+    ShowRecord = ghostlight_db:get_show(ShowId),
+    AsJson = jiffy:encode(record_to_json(ShowRecord)),
+    {AsJson, Req, State}.
+
+record_to_json(#show{
+                  id=ShowId,
+                  title=ShowTitle,
+                  performances=Performances,
+                  org=Org,
+                  special_thanks=SpecialThanks,
+                  dates=Dates}) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"show_id">>, ShowId},
+        {<<"show_title">>, ShowTitle},
+        {<<"special_thanks">>, SpecialThanks},
+        {<<"producing_org">>, ghostlight_org:record_to_json(Org)},
+        {<<"performances">>, [ performance_record_to_json(Performance) || Performance <- Performances ]},
+        {<<"dates">>, [ ghostlight_utils:erl_date_to_iso8601(Date) || Date <- Dates ]}
+    ]).
+performance_record_to_json(#performance{
+                             work=Work,
+                             directors=Directors,
+                             onstage=Onstage,
+                             offstage=Offstage}) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"work">>, ghostlight_work:record_to_json(Work)},
+        {<<"directors">>, [ ghostlight_people:record_to_json(Director) || Director <- Directors ]},
+        {<<"onstage">>, [ onstage_as_json(Performer) || Performer <- Onstage ]},
+        {<<"offstage">>, [ offstage_as_json(Contributor) || Contributor <- Offstage ]}
+    ]).
+onstage_as_json(#onstage{
+                   role=Role,
+                   person=Person
+                }) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"role">>, Role},
+        {<<"person">>, ghostlight_people:record_to_json(Person)}
+    ]).
+offstage_as_json(#offstage{
+                   job=Job,
+                   person=Person
+                }) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"job">>, Job},
+        {<<"person">>, ghostlight_people:record_to_json(Person)}
+    ]).
 
 
 post_json(Req, State) ->

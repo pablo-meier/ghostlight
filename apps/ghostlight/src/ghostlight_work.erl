@@ -6,7 +6,8 @@
 -export([work_to_html/2,
          work_to_json/2]).
 
--export([json_to_record/1]).
+-export([json_to_record/1,
+         record_to_json/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -67,6 +68,17 @@ record_to_proplist(#work_return{
 
 work_to_json(_Req, _State) ->
   <<"wat">>.
+
+record_to_json(#work{
+                  id=WorkId,
+                  title=WorkTitle,
+                  authors=WorkAuthors
+               }) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"work_id">>, WorkId},
+        {<<"title">>, WorkTitle},
+        {<<"authors">>, [ ghostlight_people:record_to_json(Author) || Author <- WorkAuthors ]}
+    ]).
 
 json_to_record({_Work}) ->
     #work{

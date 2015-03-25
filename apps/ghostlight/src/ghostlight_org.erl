@@ -6,7 +6,8 @@
 -export([org_to_html/2,
          org_to_json/2]).
 
--export([json_to_record/1]).
+-export([json_to_record/1,
+         record_to_json/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -71,6 +72,25 @@ record_to_proplist(#org_return{
    {description, Description},
    {shows, ShowProplist},
    {employees, EmployeesProplist}].
+
+
+record_to_json(#organization{
+                  id=OrgId,
+                  name=OrgName,
+                  tagline=OrgTagline,
+                  parent=_OrgParent,
+                  description=Description,
+                  vanity_name=_VanityName,
+                  date_founded=DateFounded,
+                  visibility=_Visibility
+}) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"id">>, OrgId},
+        {<<"name">>, OrgName},
+        {<<"tagline">>, OrgTagline},
+        {<<"description">>, Description},
+        {<<"date_founded">>, ghostlight_utils:erl_date_to_iso8601(DateFounded)}
+    ]).
 
 json_to_record({Organization}) ->
     OrgId = proplists:get_value(<<"id">>, Organization, null),

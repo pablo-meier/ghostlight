@@ -177,12 +177,14 @@ handle_call(get_show_listings, _From, State=#state{connection=C, get_show_listin
 handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
                                                         get_person_authorship=GA,
                                                         get_person_orgs=GO,
+                                                        get_person_directorships=GD,
                                                         get_person_onstage=POn,
                                                         get_person_offstage=POff}) ->
 
     Batch = [ {GN, [PersonId]},
               {GA, [PersonId]},
               {GO, [PersonId]},
+              {GD, [PersonId]},
               {POn, [PersonId]},
               {POff, [PersonId]} ],
     Reply = exec_batch(Batch, State),
@@ -347,7 +349,7 @@ authors_to_map(AuthorList) ->
 
 get_person(PersonId) ->
     Response = gen_server:call(?MODULE, {get_person, PersonId}),
-    [{ok, _}, {ok, [{Name}]}, {ok, AuthorshipList}, {ok, OrgsList}, {ok, OnstageList}, {ok, OffstageList}, {ok, _}] = Response,
+    [{ok, _}, {ok, [{Name}]}, {ok, AuthorshipList}, {ok, OrgsList}, {ok, DirectedList}, {ok, OnstageList}, {ok, OffstageList}, {ok, _}] = Response,
     Authors = [ #work{id=WorkId, title=Title, authors=[Author]} || {WorkId, Title, Author} <- AuthorshipList],
     Orgs = [ #org_work{org_id=OrgId, org_name=OrgName, title=Job} || {OrgId, OrgName, Job} <- OrgsList],
     Onstage = [ #show{ title=ShowTitle,
@@ -366,11 +368,18 @@ get_person(PersonId) ->
                                        offstage=#offstage{ job=Job }
                                     }]
                      } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName, Job} <- OffstageList ],
+    Directed = [ #show{ title=ShowTitle,
+                        id=ShowId,
+                        org=#organization{id=OrgId, name=OrgName},
+                        performances=[#performance{
+                                        work=#work{ id=WorkId, title=WorkTitle }
+                                     }]
+                      } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName} <- DirectedList ],
 
     #person_return{
        name = Name,
        authored = Authors,
-       directed = [],
+       directed = Directed,
        onstage = Onstage,
        offstage = Offstage,
        orgs = Orgs
@@ -733,6 +742,11 @@ prepare_statements(C) ->
         ++ "WHERE po.person_id = $1",
     {ok, GetPersonOffstage} = epgsql:parse(C, "get_person_offstage", GetPersonOffstageSql, [uuid]),
 
+    GetPersonDirectedSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name FROM shows AS s "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+        ++ "INNER JOIN performance_directors AS pd USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
+        ++ "WHERE pd.director_id = $1",
+    {ok, GetPersonDirected} = epgsql:parse(C, "get_person_directed", GetPersonDirectedSql, [uuid]),
 
 
     GetOrgMetaSql = "SELECT o.name, o.tagline, o.description FROM organizations AS o WHERE o.org_id = $1",
@@ -802,6 +816,7 @@ prepare_statements(C) ->
                    get_person_orgs=GetPersonOrgs,
                    get_person_onstage=GetPersonOnstage,
                    get_person_offstage=GetPersonOffstage,
+                   get_person_directorships=GetPersonDirected,
 
                    get_org_meta=GetOrgMeta,
                    get_produced_by_org=GetProducedByOrg,

@@ -25,6 +25,24 @@
     </table>
   {% endif %}
 
+  {% if director %}
+    <h3>Director</h3>
+    <table>
+      <tr>
+        <th><strong>Show</strong></th>
+        <th><strong>Producing Organization</strong></th>
+        <th><strong>Piece</strong></th>
+      </tr>
+      {% for show in director %}
+      <tr>
+          <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>
+          <td><a href="/organizations/{{ show.org_id }}">{{ show.org_name }}</a></td>
+          <td><a href="/works/{{ show.work_id }}">{{ show.work_title }}</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+
   {% if offstage_list %}
     <h3>Production Work!</h3>
     <table>

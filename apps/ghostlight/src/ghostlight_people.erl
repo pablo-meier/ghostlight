@@ -65,7 +65,7 @@ person_to_html(Req, State) ->
 record_to_proplist(#person_return{
                      name=Name,
                      authored=Authored,
-                     directed=_Directed,
+                     directed=Directed,
                      onstage=Onstage,
                      offstage=Offstage,
                      orgs=Orgs}) ->
@@ -100,14 +100,28 @@ record_to_proplist(#person_return{
     AuthorshipProplist = [ [{work_id, WorkId},
                             {title, Title}] || #work{id=WorkId, title=Title} <- Authored],
 
+    DirectorProplist = [[{show_id, ShowId},
+                         {show_title, ShowTitle},
+                         {org_id, OrgId},
+                         {org_name, OrgName},
+                         {work_id, WorkId},
+                         {work_title, WorkTitle}] || #show{ title=ShowTitle,
+                                                            id=ShowId,
+                                                            org=#organization{id=OrgId, name=OrgName},
+                                                            performances=[#performance{
+                                                                            work=#work{ id=WorkId, title=WorkTitle }
+                                                                         }]} <- Directed ],
+
     OrgProplist = [ [{org_id, OrgId},
                      {org_name, OrgName},
                      {position, Position}] || #org_work{org_id=OrgId, org_name=OrgName, title=Position} <- Orgs ],
+
       
     [{name, Name},
      {onstage_list, OnstageProplist},
      {offstage_list, OffstageProplist},
      {authorship, AuthorshipProplist},
+     {director, DirectorProplist},
      {organizations, OrgProplist}].
 
 

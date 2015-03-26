@@ -1,0 +1,103 @@
+{
+  "title" : "5-10: Loving and Leaving",
+  "dates" : ["2014-11-17T20:00:00.000Z"],
+  "org" : {
+    "name": "plumage.",
+    "tagline" : "A Co-Lab between blackbird delight and Marrow's Edge"
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "The Match",
+        "authors": [{"name": "Robert Kuang"}]
+      },
+      "directors": [{"name": "Iyvon Edebiri"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Shaquan Perkins"},
+          "role" : "Graham"
+        },
+        {
+          "performer" : {"name": "Conor Wright"},
+          "role" : "Oliver"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Nothing Pleases Aphrodite",
+        "authors": [{"name": "Elijah Guo"}]
+      },
+      "directors": [{"name": "Philip Gates"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Elizabeth Bays"},
+          "role" : "Aphrodite"
+        },
+        {
+          "performer" : {"name": "Nadia Sepsenwol"},
+          "role" : "Sappho"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Surprise",
+        "authors": [{"name": "Charly Evon Simpson"}]
+      },
+      "directors": [{"name": "Adam Scott Mazer"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Cristina Pitter"},
+          "role" : "Dawn"
+        },
+        {
+          "performer" : {"name": "Curry Whitmore"},
+          "role" : "Stew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Boldly Go",
+        "authors": [{"name": "Matt Barbot"}]
+      },
+      "directors": [{"name": "Ria T. DiLullo"}],
+      "onstage": [
+        {
+          "performer" : {"name": "John Racioppo"},
+          "role" : "Mason"
+        },
+        {
+          "performer" : {"name": "Will Austin"},
+          "role" : "Gil"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "After You",
+        "authors": [{"name": "Daria Miyeko Marinelli"}]
+      },
+      "directors": [{"name": "Karen Eilbacher"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Lynnese Page"},
+          "role" : "She"
+        },
+        {
+          "performer" : {"name": "Matthew Jeffers"},
+          "role" : "He"
+        },
+        {
+          "performer" : {"name": "Rachel Lin"},
+          "role" : "One of Many Girls"
+        },
+        {
+          "performer" : {"name": "Jordan Ho"},
+          "role" : "One of Many Guys"
+        }
+      ]
+    }
+  ]
+}

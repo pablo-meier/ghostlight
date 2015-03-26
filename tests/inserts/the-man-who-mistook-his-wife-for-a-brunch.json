@@ -1,0 +1,116 @@
+{
+  "title" : "The Man Who Mistook His Wife for a Brunch",
+  "special_thanks" : "The Jerome Foundation, The Tournesol Project and The Harold & Mimi Steinberg Trust for the their support of Youngblood and new play productions at EST.",
+  "dates" : ["2015-11-02T13:00:00.000Z"],
+  "org" : {
+    "name": "EST Youngblood",
+    "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "Battle Cry",
+        "authors": [{"name": "Eric Dufault"}]
+      },
+      "directors": [{"name": "Larissa Lury"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Curran Connor"},
+          "role" : "Sam"
+        },
+        {
+          "performer" : {"name": "Ali Ahn"},
+          "role" : "Casey"
+        },
+        {
+          "performer" : {"name": "Abby Rosebrock"},
+          "role" : "Cave Person"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Kerry Washington of Tech",
+        "authors": [{"name": "Charly Evon Simpson"}]
+      },
+      "directors": [{"name": "Colette Robert"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Lynnette Freeman"},
+          "role" : "Estelle"
+        },
+        {
+          "performer" : {"name": "Brian Quijada"},
+          "role" : "Travis"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Dr. Kessler",
+        "authors": [{"name": "Ana Noguiera"}]
+      },
+      "directors": [{"name": "Claudia Weill"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Geneva Carr"},
+          "role" : "Dr. Kessler"
+        },
+        {
+          "performer" : {"name": "Katie Schorr"},
+          "role" : "Carol"
+        },
+        {
+          "performer" : {"name": "Lance Rubin"},
+          "role" : "Mark"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Jolene, Jolene",
+        "authors": [{"name": "Abby Rosebrock"}]
+      },
+      "directors": [{"name": "Morgan Gould"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Molly Ward"},
+          "role" : "Laura Sander"
+        },
+        {
+          "performer" : {"name": "Ryan Karels"},
+          "role" : "Don Finan"
+        },
+        {
+          "performer" : {"name": "Matt Jellison"},
+          "role" : "J. Charles McTato"
+        },
+        {
+          "performer" : {"name": "Lucy DeVito"},
+          "role" : "Tina Brickman/Kerry Thornton/Jolene Ohsu"
+        },
+        {
+          "performer" : {"name": "Clay Thornton"},
+          "role" : "Ryan Dowler"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Music Therapy",
+        "authors": [{"name": "Martyna Majok"}]
+      },
+      "directors": [{"name": "RJ Tolan"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Danny Binstock"},
+          "role" : "Jay"
+        },
+        {
+          "performer" : {"name": "Sarah Sokolovic"},
+          "role" : "D"
+        }
+      ]
+    }
+  ]
+}

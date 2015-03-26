@@ -61,7 +61,9 @@
          get_show/1,
          get_person/1,
          get_org/1,
-         get_work/1]).
+         get_work/1,
+        
+         get_show_listings/0]).
 
 -export([fix_dups/0]).
 
@@ -85,6 +87,8 @@
                 get_show_meta,
                 get_show_onstage,
                 get_show_authorship,
+
+                get_show_listings,
 
                 get_person_name,
                 get_person_authorship,
@@ -137,6 +141,11 @@ handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM, get_show_o
     Reply = exec_batch(Batch, State),
     {reply, Reply, State};
 
+
+handle_call(get_show_listings, _From, State=#state{connection=C, get_show_listings=GL}) ->
+    epgsql:bind(C, GL, "", []),
+    {ok, Rows} = epgsql:execute(C, GL),
+    {reply, Rows, State};
 
 %% In many ways, the person resource is the most important one -- we're
 %% doing this, in part, to make something of a portfolio to see and
@@ -256,6 +265,17 @@ code_change(_OldVsn, State, _Extra) ->
 
 insert_show(Show) ->
     gen_server:call(?MODULE, {insert_show, Show}).
+
+get_show_listings() ->
+    Response = gen_server:call(?MODULE, get_show_listings),
+    [ #show{
+         id=ShowId,
+         title=ShowName,
+         org=#organization{
+                id=OrgId,
+                name=OrgName
+               }
+        } || {ShowId, ShowName, OrgId, OrgName } <- Response ].
 
 get_show(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
@@ -664,6 +684,12 @@ prepare_statements(C) ->
         ++ "INNER JOIN people AS p USING (person_id)",
     {ok, GetAuthors} = epgsql:parse(C, "get_show_authors", GetAuthorsSql, [uuid]),
  
+    %% For show listings -- much like the meta of a single one.
+    GetShowListingsSql = "SELECT s.show_id, s.title, o.org_id, o.name "
+        ++ "FROM shows AS s INNER JOIN organizations AS o ON (s.producing_org_id = o.org_id) "
+        ++ "LIMIT 30",
+    {ok, GetShowListings} = epgsql:parse(C, "get_show_listings", GetShowListingsSql, []),
+
 
 
     GetPersonNameSql = "SELECT name FROM people WHERE person_id = $1",
@@ -679,8 +705,7 @@ prepare_statements(C) ->
         ++ "WHERE oe.person_id = $1 AND o.visibility = 'public'",
     {ok, GetPersonOrgs} = epgsql:parse(C, "get_person_orgs", GetPersonOrgsSql, [uuid]),
 
-    GetPersonOnstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.role FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+    GetPersonOnstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.role FROM shows AS s " ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
         ++ "INNER JOIN performance_onstage AS po USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
         ++ "WHERE po.performer_id = $1",
     {ok, GetPersonOnstage} = epgsql:parse(C, "get_person_onstage", GetPersonOnstageSql, [uuid]),
@@ -735,6 +760,8 @@ prepare_statements(C) ->
                    get_show_meta=GetShow,
                    get_show_onstage=GetOnstage,
                    get_show_authorship=GetAuthors,
+
+                   get_show_listings=GetShowListings,
 
                    get_person_name=GetPersonName,
                    get_person_authorship=GetShowsAuthored,

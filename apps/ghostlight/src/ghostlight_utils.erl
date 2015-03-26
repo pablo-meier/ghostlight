@@ -1,7 +1,8 @@
 -module(ghostlight_utils).
 
 -export([erl_date_to_iso8601/1,
-         json_with_valid_values/1]).
+         json_with_valid_values/1,
+         proplist_with_valid_values/1]).
 
 %% iso8601 is pretty great, and epgsql are pretty great, but they don't play well together.
 %% Namely, epgsql returns dates where the seconds value is a float, which iso8601 doesn't 
@@ -20,9 +21,15 @@ json_with_valid_values(Candidates) ->
                               end, Candidates),
     {Inclusions}.
 
+proplist_with_valid_values(Candidates) ->
+    lists:filter(fun({_K, V}) ->
+        suitable_to_show(V)
+    end, Candidates).
+
 
 %% Helps us filter out unshowable values.
 suitable_to_show(<<"">>) -> false;
+suitable_to_show([]) -> false;
 suitable_to_show(null) -> false;
 suitable_to_show(undefined) -> false;
 suitable_to_show(_) -> true.

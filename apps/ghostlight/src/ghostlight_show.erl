@@ -12,7 +12,7 @@
 %% HTML
 %%
 %% GET /id         ------------- DONE
-%% GET /
+%% GET /           ------------- DONE
 %% GET /new
 %% GET /id/delete
 %% GET /id/edit
@@ -20,7 +20,7 @@
 %% JSON
 %%
 %% GET /id         ------------- DONE
-%% GET /
+%% GET /           ------------- DONE
 %% POST /          ------------- DONE
 %% PUT /id
 %% DELETE /id
@@ -48,7 +48,9 @@ show_to_html(Req, State) ->
     ShowId = cowboy_req:binding(show_id, Req),
     case ShowId of
         undefined ->
-            Body = <<"ok">>,
+            ShowList = ghostlight_db:get_show_listings(),
+            ForTemplate = [{shows, [ record_to_proplist(Show) || Show <- ShowList ]}],
+            {ok, Body} = show_listing_template:render(ForTemplate),
             {Body, Req, State};
         <<"new">> ->
             {ok, Body} = insert_show_template:render([]),
@@ -60,7 +62,25 @@ show_to_html(Req, State) ->
             {Body, Req, State}
     end.
 
+show_to_json(Req, State) ->
+    ShowId = cowboy_req:binding(show_id, Req),
+    case ShowId of
+        undefined ->
+            ShowList = ghostlight_db:get_show_listings(),
+            ToEncode = {[{<<"shows">>, [ record_to_json(Show) || Show <- ShowList ]}]},
+            Body = jiffy:encode(ToEncode),
+            {Body, Req, State};
+        _ ->
+            ShowRecord = ghostlight_db:get_show(ShowId),
+            AsJson = jiffy:encode(record_to_json(ShowRecord)),
+            {AsJson, Req, State}
+    end.
+
+
+%% HTML
+
 record_to_proplist(#show{
+                     id=ShowId,
                      title=Title,
                      org=#organization{
                             id=OrgId,
@@ -69,25 +89,30 @@ record_to_proplist(#show{
                      special_thanks=SpecialThanks,
                      performances=Performances,
                      dates=Dates}) ->
-    [{title, Title},
+    [{show_id, ShowId},
+     {title, Title},
      {org, [{org_id, OrgId}, {org_name, OrgName}]},
      {special_thanks, SpecialThanks},
      {dates, Dates},
-     {performances, performances_to_proplists(Performances)}
+     {performances, [ performance_to_proplists(Performance) || Performance <- Performances ] }
     ].
 
 
-performances_to_proplists(Performances) ->
-    [ [{work, [{title, WorkTitle},
-               {work_id, WorkId},
-               {authors, personlist_as_proplist(WorkAuthors)}]},
-       {directors, personlist_as_proplist(Directors)},
-       {onstage, onstage_as_proplists(Onstage)},
-       {offstage, offstage_as_proplists(Offstage)}] || #performance{ 
-                                                           work=#work{ id = WorkId, title = WorkTitle, authors = WorkAuthors},
-                                                           onstage=Onstage,
-                                                           offstage=Offstage,
-                                                           directors=Directors} <- Performances ].
+performance_to_proplists(#performance{ 
+                             work=#work{
+                                 id = WorkId,
+                                 title = WorkTitle,
+                                 authors = WorkAuthors
+                             },
+                             onstage=Onstage,
+                             offstage=Offstage,
+                             directors=Directors}) ->
+    [{work, [{title, WorkTitle},
+             {work_id, WorkId},
+             {authors, personlist_as_proplist(WorkAuthors)}]},
+     {directors, personlist_as_proplist(Directors)},
+     {onstage, onstage_as_proplists(Onstage)},
+     {offstage, offstage_as_proplists(Offstage)}].
 
 onstage_as_proplists(OnstageList) ->
     [ [{name, Name},
@@ -101,11 +126,7 @@ personlist_as_proplist(DirectorList) ->
     [ [{name, Name},
        {person_id, PersonId}] || #person{id = PersonId, name = Name} <- DirectorList].
 
-show_to_json(Req, State) ->
-    ShowId = cowboy_req:binding(show_id, Req),
-    ShowRecord = ghostlight_db:get_show(ShowId),
-    AsJson = jiffy:encode(record_to_json(ShowRecord)),
-    {AsJson, Req, State}.
+%% JSON
 
 record_to_json(#show{
                   id=ShowId,

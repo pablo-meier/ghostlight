@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Shows{% endblock %}
+
+{% block content %}
+  <h1>Shows</h1>
+
+  <table>
+      <tr>
+          <th>Show</th>
+          <th>Presented By</th>
+      </tr>
+
+      {% for show in shows %}
+      <tr>
+          <td><a href="/shows/{{ show.show_id }}">{{ show.title }}</a></td>
+          <td><a href="/organizations/{{ show.org.org_id }}">{{ show.org.org_name }}</a></td>
+      </tr>
+      {% endfor %}
+  </table>
+  
+{% endblock %}

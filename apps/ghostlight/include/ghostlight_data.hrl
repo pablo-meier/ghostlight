@@ -25,9 +25,11 @@
 }).
 
 -record(work, {
-    id = <<"">>    :: binary(),
-    title = <<"">> :: binary(),
-    authors = []   :: list(#person{})
+    id = <<"">>          :: binary(),
+    title = <<"">>       :: binary(),
+    authors = []         :: list(#person{}),
+    description = null   :: null | binary(),
+    minutes_long = null  :: null | integer()
 }).
 
 -record(onstage, {

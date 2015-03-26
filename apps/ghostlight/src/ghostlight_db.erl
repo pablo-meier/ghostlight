@@ -57,6 +57,7 @@
          code_change/3]).
 
 -export([insert_show/1,
+         insert_work/1,
 
          get_show/1,
          get_person/1,
@@ -125,6 +126,11 @@ init([]) ->
 
 handle_call({insert_show, Show}, _From, State) ->
     Inserts = get_show_inserts(Show, State),
+    Reply = exec_batch(Inserts, State),
+    {reply, Reply, State};
+
+handle_call({insert_work, Work}, _From, State) ->
+    {Inserts, _Ids} = get_work_inserts(Work, State),
     Reply = exec_batch(Inserts, State),
     {reply, Reply, State};
 
@@ -273,6 +279,10 @@ code_change(_OldVsn, State, _Extra) ->
 
 insert_show(Show) ->
     gen_server:call(?MODULE, {insert_show, Show}).
+
+insert_work(Work) ->
+    gen_server:call(?MODULE, {insert_work, Work}).
+
 
 get_show_listings() ->
     Response = gen_server:call(?MODULE, get_show_listings),
@@ -598,7 +608,9 @@ null_if_unspecified(<<"">>) -> null;
 null_if_unspecified(Else) -> Else.
 
 get_work_inserts(#work{title=Title,
-                       authors=Authors},
+                       authors=Authors,
+                       description=Description,
+                       minutes_long=MinutesLong},
                  State=#state{insert_work_statement=IW,
                               insert_authorship_statement=IA}) ->
     WorkUUID = fresh_uuid(),
@@ -608,7 +620,7 @@ get_work_inserts(#work{title=Title,
                                       {IA, [WorkUUID, AuthorUUID]}
                                   end, Ids),
 
-    WorkInserts = lists:append([ [{IW, [WorkUUID, Title, <<"public">>]}],
+    WorkInserts = lists:append([ [{IW, [WorkUUID, Title, Description, MinutesLong, <<"public">>]}],
                                  PersonInserts,
                                  AuthorshipInserts]),
     {WorkInserts, WorkUUID}.
@@ -645,8 +657,8 @@ prepare_statements(C) ->
     PersonSql = "INSERT INTO people (person_id, name, photo_url, date_added) VALUES($1, $2, NULL, CURRENT_DATE)", 
     {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text]),
 
-    WorksSql = "INSERT INTO works (work_id, title, acl) VALUES($1, $2, $3)", 
-    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text]),
+    WorksSql = "INSERT INTO works (work_id, title, description, minutes_long, acl) VALUES($1, $2, $3, $4, $5)", 
+    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, int8, text]),
 
     OrgsSql = "INSERT INTO organizations (org_id, parent_org, name, tagline, description, vanity_name, date_founded, visibility)"
         ++ " VALUES($1, $2, $3, $4, $5, $6, $7::date, $8)",

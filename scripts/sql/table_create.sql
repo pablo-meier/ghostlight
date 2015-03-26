@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS works (
     work_id UUID PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
+    minutes_long INTEGER,
     acl TEXT NOT NULL DEFAULT 'public'
 );
 

@@ -116,7 +116,7 @@ performance_to_proplists(#performance{
 
 onstage_as_proplists(OnstageList) ->
     [ [{name, Name},
-       {role, Role},
+       {role, remove_null(Role)},
        {person_id, PersonId}] || #onstage{ person=#person{id = PersonId, name = Name}, role = Role} <- OnstageList].
 offstage_as_proplists(OnstageList) ->
     [ [{name, Name},
@@ -125,6 +125,9 @@ offstage_as_proplists(OnstageList) ->
 personlist_as_proplist(DirectorList) ->
     [ [{name, Name},
        {person_id, PersonId}] || #person{id = PersonId, name = Name} <- DirectorList].
+
+remove_null(null) -> <<"">>;
+remove_null(E) -> E.
 
 %% JSON
 
@@ -201,7 +204,7 @@ show_json_to_record(JsonInput) ->
 
 
 performance_json_to_record({Proplist}) ->
-    Work = work_json_to_record(proplists:get_value(<<"work">>, Proplist)),
+    Work = ghostlight_work:json_to_record(proplists:get_value(<<"work">>, Proplist)),
     Onstage = lists:map(fun onstage_json_to_record/1, proplists:get_value(<<"onstage">>, Proplist, [])),
     Offstage = lists:map(fun offstage_json_to_record/1, proplists:get_value(<<"offstage">>, Proplist, [])),
     Directors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"directors">>, Proplist)),
@@ -210,13 +213,6 @@ performance_json_to_record({Proplist}) ->
        directors = Directors,
        onstage = Onstage,
        offstage = Offstage
-    }.
-
-
-work_json_to_record({Proplist}) ->
-    #work {
-       title = proplists:get_value(<<"title">>, Proplist),
-       authors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"authors">>, Proplist))
     }.
 
 

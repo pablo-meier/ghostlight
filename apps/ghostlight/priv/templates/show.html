@@ -5,7 +5,7 @@
 {% block content %}
   <h1>{{ title }}</h1>
    <!-- If only one performance, author(s) here -->
-   <h3>Presented by <a href="/organizations/{{ org.org_id }}">{{ org.org_name }}</a></h3>
+   <h2>Presented by <a href="/organizations/{{ org.org_id }}">{{ org.org_name }}</a></h2>
 
    <ul>
        {% for date in dates %}
@@ -14,17 +14,17 @@
    </ul>
 
    {% for performance in performances %}
-
-   <h5><a href="/works/{{ performance.work.work_id }}">{{ performance.work.title }}</a>, by 
-           {% for author in performance.work.authors %}
+   <hr />
+   <h3><a href="/works/{{ performance.work.work_id }}">{{ performance.work.title }}</a></h3>
+   <h4>by {% for author in performance.work.authors %}
            <a href="/people/{{ author.person_id }}">{{ author.name }}</a>
-           {% endfor %} </h5>
-       <strong> Directed by 
-       {% for director in performance.directors %}
+           {% endfor %} </h4>
+   <h4> Directed by 
+   {% for director in performance.directors %}
        <a href="/people/{{ director.person_id }}">{{ director.name }}</a>
-       {% endfor %}</strong>
+   {% endfor %}</h4>
 
-       <p>Starring</p>
+       <h5>Starring</h5>
        <table>
          <tr>
              <th><strong>Role<strong></th>
@@ -39,7 +39,5 @@
        </table>
 
    {% endfor %}
-
-   <p><small>Special thanks to {{ special_thanks }}</small></p>
-
+   <p class="text-center"><small>Special thanks to {{ special_thanks }}</small></p>
 {% endblock %}

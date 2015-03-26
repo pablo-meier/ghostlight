@@ -4,12 +4,30 @@
          content_types_accepted/2,
          allowed_methods/2]).
 -export([work_to_html/2,
-         work_to_json/2]).
+         work_to_json/2,
+         
+         post_json/2]).
 
 -export([json_to_record/1,
          record_to_json/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
+
+%% HTML
+%%
+%% GET /id         ------------- DONE
+%% GET /           
+%% GET /new
+%% GET /id/delete
+%% GET /id/edit
+%%
+%% JSON
+%%
+%% GET /id         
+%% GET /           
+%% POST /          ------------- DONE
+%% PUT /id
+%% DELETE /id
 
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
@@ -80,8 +98,20 @@ record_to_json(#work{
         {<<"authors">>, [ ghostlight_people:record_to_json(Author) || Author <- WorkAuthors ]}
     ]).
 
-json_to_record({_Work}) ->
-    #work{
-       title = <<"Pablo!!!">>
-    }.
 
+post_json(Req, State) ->
+    % upload the body, return yes or no
+    {ok, RequestBody, Req2} = cowboy_req:body(Req),
+    WorkJson = jiffy:decode(RequestBody),
+    WorkRecord = json_to_record(WorkJson),
+    Response = ghostlight_db:insert_work(WorkRecord),
+    lager:info("~nResponse from DB server is ~p~n", [Response]),
+    {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State}.
+
+json_to_record({Proplist}) ->
+    #work {
+       title = proplists:get_value(<<"title">>, Proplist),
+       authors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"authors">>, Proplist)),
+       description = proplists:get_value(<<"description">>, Proplist, null),
+       minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null)
+    }.

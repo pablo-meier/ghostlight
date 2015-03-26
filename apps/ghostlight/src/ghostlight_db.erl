@@ -79,6 +79,7 @@
                 insert_person_statement,
                 insert_org_statement,
                 insert_performance_statement,
+                insert_director_statement,
                 insert_onstage_statement,
                 insert_offstage_statement,
                 insert_show_statement,
@@ -87,6 +88,7 @@
                 get_show_meta,
                 get_show_onstage,
                 get_show_authorship,
+                get_show_directors,
 
                 get_show_listings,
 
@@ -102,7 +104,10 @@
                 get_org_employees,
 
                 get_work_meta,
-                get_work_shows
+                get_work_shows,
+
+                person_de_dupes,
+                org_de_dupes
                 }).
 
 start_link() ->
@@ -134,10 +139,14 @@ handle_call({insert_show, Show}, _From, State) ->
 %%
 %% Later maybe we could do things like who went/who's going, or sorting by
 %% shows that haven't closed yet.
-handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM, get_show_onstage=SO, get_show_authorship=SA}) ->
+handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM,
+                                                    get_show_onstage=SO,
+                                                    get_show_authorship=SA,
+                                                    get_show_directors=SD}) ->
     Batch = [ {SM, [ShowId]},
               {SO, [ShowId]},
-              {SA, [ShowId]}],
+              {SA, [ShowId]},
+              {SD, [ShowId]}],
     Reply = exec_batch(Batch, State),
     {reply, Reply, State};
 
@@ -206,39 +215,36 @@ handle_call({get_work, WorkId}, _From, State=#state{get_work_meta=GWM,
     {reply, Reply, State};
 
 
-handle_call(fix_dups, _From, State=#state{connection=C, begin_statement=BEGIN, commit_statement=COMMIT}) ->
-    {ok, _Columns, Rows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT p1.person_id AS id1, p2.person_id AS id2, "
+handle_call(fix_dups, _From, State=#state{connection=C,
+                                          begin_statement=BEGIN,
+                                          commit_statement=COMMIT,
+                                          person_de_dupes=PplDeDupes,
+                                          org_de_dupes=OrgDeDupes}) ->
+    {ok, _Columns, PeopleRows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT p1.person_id AS id1, p2.person_id AS id2, "
         ++ "p1.name, row_number() OVER (PARTITION BY p1.name) AS row_num FROM people AS p1, people AS p2 "
         ++ "WHERE p1.name = p2.name AND p1.person_id != p2.person_id ORDER BY p1.name) AS tmp WHERE row_num < 2"),
 
-    {ok, Parsed1} = epgsql:parse(C, "consolidate_1", "UPDATE authorship SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
-    {ok, Parsed2} = epgsql:parse(C, "consolidate_2", "UPDATE org_employee SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
-    {ok, Parsed3} = epgsql:parse(C, "consolidate_3", "UPDATE performance_offstage SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
-    {ok, Parsed4} = epgsql:parse(C, "consolidate_4", "UPDATE performance_onstage SET performer_id = $1 WHERE performer_id = $2", [uuid, uuid]),
-    {ok, Parsed5} = epgsql:parse(C, "consolidate_5", "UPDATE performances SET director_id = $1 WHERE director_id = $2", [uuid, uuid]),
-    {ok, Parsed6} = epgsql:parse(C, "consolidate_6", "UPDATE users SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
-    {ok, Parsed7} = epgsql:parse(C, "consolidate_7", "DELETE FROM people WHERE person_id = $2", [uuid, uuid]),
-
     lists:foreach(fun ({GoodId, BadId, Name}) ->
                      lager:info("Swapping out ~p for ~p for user ~p", [BadId, GoodId, Name]),
+                     Statements = [ {Parsed, [GoodId, BadId]} || Parsed <- PplDeDupes ],
+                     epgsql:execute_batch(C, lists:append([ [{BEGIN, []}], Statements, [{COMMIT, []}] ]))
+                  end, PeopleRows),
 
-                     epgsql:execute_batch(C, [{BEGIN, []},
-                                              {Parsed1, [GoodId, BadId]},
-                                              {Parsed2, [GoodId, BadId]},
-                                              {Parsed3, [GoodId, BadId]},
-                                              {Parsed4, [GoodId, BadId]},
-                                              {Parsed5, [GoodId, BadId]},
-                                              {Parsed6, [GoodId, BadId]},
-                                              {Parsed7, [GoodId, BadId]},
-                                              {COMMIT, []}])
-                  end, Rows),
+    {ok, _Columns, OrgRows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT o1.org_id AS id1, o2.org_id AS id2, "
+        ++ "o1.name, row_number() OVER (PARTITION BY o1.name) AS row_num FROM organizations AS o1, organizations AS o2 "
+        ++ "WHERE o1.name = o2.name AND o1.org_id != o2.org_id ORDER BY o1.name) AS tmp WHERE row_num < 2"),
+
+    lists:foreach(fun ({GoodId, BadId, Name}) ->
+                     lager:info("Swapping out ~p for ~p for org ~p", [BadId, GoodId, Name]),
+                     Statements = [ {Parsed, [GoodId, BadId]} || Parsed <- OrgDeDupes ],
+                     epgsql:execute_batch(C, lists:append([ [{BEGIN, []}], Statements, [{COMMIT, []}] ]))
+                  end, OrgRows),
+
     {reply, ok, State};
 
 %% handle_call(fix_org_dups, _From, State) ->
 %% bad ID = e867c679-4627-4d60-82ac-c92c1002f144
 %% good ID = a2eb8a0b-495e-4f9b-8b49-9d7122cf503d
-%%
-%% 
 
 
 handle_call(_Request, _From, State) ->
@@ -280,11 +286,12 @@ get_show_listings() ->
 get_show(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
     %% handle if this call fails.
-    [_, {ok, Meta}, {ok, Performances}, {ok, Authorship}, _] = Response,
+    [_, {ok, Meta}, {ok, Performances}, {ok, Authorship}, {ok, Directors}, _] = Response,
     [{Title, OrgName, OrgId, SpecialThanks, _}|_] = Meta,
     Dates = [ Date || {_, _, _, _, Date} <- Meta ],
 
     Authors = authors_to_map(Authorship),
+    DirectorMap = authors_to_map(Directors),
     #show{
         title = Title,
         special_thanks = SpecialThanks,
@@ -293,11 +300,11 @@ get_show(ShowId) ->
                    id = OrgId,
                    name = OrgName
                 },
-        performances = make_performance_record_list(Performances, Authors)
+        performances = make_performance_record_list(Performances, Authors, DirectorMap)
       }.
 
-make_performance_record_list(Performances, AuthorMap) ->
-    PerformancesMap = lists:foldl(fun ({WorkId, Title, _, _, PerformerName, PerformerId, Role}, Accum) ->
+make_performance_record_list(Performances, AuthorMap, DirectorMap) ->
+    PerformancesMap = lists:foldl(fun ({WorkId, Title, PerformerName, PerformerId, Role}, Accum) ->
                                       PerformerRecord = #onstage{
                                                            role = Role,
                                                            person = #person{
@@ -313,14 +320,6 @@ make_performance_record_list(Performances, AuthorMap) ->
                                       end
                                   end, maps:new(), Performances),
 
-    DirectorMap = lists:foldl(fun ({WorkId, _, DirectorName, DirectorId, _, _, _}, Accum) ->
-                                  case maps:get(WorkId, Accum, none) of
-                                      none ->
-                                          maps:put(WorkId, #person{name=DirectorName, id=DirectorId}, Accum);
-                                      _ ->
-                                          Accum
-                                  end
-                              end, maps:new(), Performances),
     [ #performance{
           work = #work {
                      id = WorkId,
@@ -328,7 +327,7 @@ make_performance_record_list(Performances, AuthorMap) ->
                      authors = maps:get(Title, AuthorMap)
                  },
           onstage = maps:get({WorkId, Title}, PerformancesMap),
-          directors = [maps:get(WorkId, DirectorMap)]
+          directors = maps:get(Title, DirectorMap)
       } || {WorkId, Title} <- maps:keys(PerformancesMap) ].
 
 
@@ -521,17 +520,25 @@ get_performance_inserts(WorksWithIds,
                         State=#state{insert_performance_statement=IP}) ->
     PerformanceId = fresh_uuid(),
     WorkId = proplists:get_value(Work, WorksWithIds),
-    {DirectorInserts, [DirectorId]} = get_people_inserts(Directors, State),
-    PerformanceInserts = [{IP, [PerformanceId, WorkId, ShowId, DirectorId, PerformanceOrder]}],
+    PerformanceInserts = [{IP, [PerformanceId, WorkId, ShowId, PerformanceOrder]}],
+    DirectorInserts = get_director_inserts(PerformanceId, Directors, State),
     OnstageInserts = get_onstage_inserts(PerformanceId, Onstage, State),
     OffstageInserts = get_offstage_inserts(PerformanceId, Offstage, State),
 
-    Inserts = lists:append([DirectorInserts,
-                            PerformanceInserts,
+    Inserts = lists:append([PerformanceInserts,
+                            DirectorInserts,
                             OnstageInserts,
                             OffstageInserts]),
     {Inserts, PerformanceId}.
 
+
+get_director_inserts(PerformanceId, Directors, State=#state{insert_director_statement=ID}) ->
+    ListOfLists = lists:map(fun (Person) ->
+                                {PersonInserts, [PersonId]} = get_people_inserts([Person], State),
+                                DirectorInsert = {ID, [PerformanceId, PersonId]},
+                                lists:reverse([DirectorInsert|PersonInserts])
+                            end, Directors),
+    lists:flatten(ListOfLists).
 
 get_onstage_inserts(PerformanceId, OnstageList, State=#state{insert_onstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#onstage{ role=Role,
@@ -629,16 +636,19 @@ prepare_statements(C) ->
     PersonSql = "INSERT INTO people (person_id, name, photo_url, date_added) VALUES($1, $2, NULL, CURRENT_DATE)", 
     {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text]),
 
-    WorksSql = "INSERT INTO works (work_id, title, visibility) VALUES($1, $2, $3)", 
+    WorksSql = "INSERT INTO works (work_id, title, acl) VALUES($1, $2, $3)", 
     {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text]),
 
     OrgsSql = "INSERT INTO organizations (org_id, parent_org, name, tagline, description, vanity_name, date_founded, visibility)"
         ++ " VALUES($1, $2, $3, $4, $5, $6, $7::date, $8)",
     {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, uuid, text, text, text, text, date, text]),
 
-    PerformanceSql = "INSERT INTO performances (performance_id, work_id, show_id, director_id, performance_order)"
-        ++ " VALUES($1, $2, $3, $4, $5)",
-    {ok, InsertPerformance} = epgsql:parse(C, "insert_performance", PerformanceSql, [uuid, uuid, uuid, uuid, int4]),
+    PerformanceSql = "INSERT INTO performances (performance_id, work_id, show_id, performance_order)"
+        ++ " VALUES($1, $2, $3, $4)",
+    {ok, InsertPerformance} = epgsql:parse(C, "insert_performance", PerformanceSql, [uuid, uuid, uuid, int4]),
+
+    DirectorSql = "INSERT INTO performance_directors (performance_id, director_id) VALUES($1, $2)",
+    {ok, InsertDirector} = epgsql:parse(C, "insert_performance_director", DirectorSql, [uuid, uuid]),
 
     OnstageSql = "INSERT INTO performance_onstage (performance_id, performer_id, role, understudy_id, date_started, date_ended)"
         ++ " VALUES($1, $2, $3, $4, $5, $6)",
@@ -666,15 +676,14 @@ prepare_statements(C) ->
 
     %% This monstrosity will get all the performers in a show, even if spanning
     %% Many performances.
-    GetOnstageSql = "SELECT w.work_id, w.title, ppl.name AS director_name, ppl.person_id AS director_id, "
+    GetOnstageSql = "SELECT w.work_id, w.title, "
         ++ "people2.name AS performer_name, people2.person_id AS performer_id, po.role "
         ++ "FROM works AS w INNER JOIN performances AS p USING (work_id) "
-        ++ "INNER JOIN people AS ppl ON (ppl.person_id = p.director_id) "
         ++ "INNER JOIN performance_onstage AS po USING (performance_id) "
         ++ "INNER JOIN people AS people2 ON (people2.person_id = po.performer_id) "
         ++ "WHERE p.show_id = $1 "
-        ++ "GROUP BY w.work_id, ppl.person_id, people2.person_id, p.performance_id, w.title, "
-        ++ "ppl.name, people2.name, po.role ORDER BY p.performance_order;",
+        ++ "GROUP BY w.work_id, people2.person_id, p.performance_id, w.title, "
+        ++ "people2.name, po.role ORDER BY p.performance_order;",
     {ok, GetOnstage} = epgsql:parse(C, "get_show_onstage", GetOnstageSql, [uuid]),
 
     %% Pulls the authors of a show.
@@ -683,6 +692,14 @@ prepare_statements(C) ->
         ++ "INNER JOIN works AS w USING (work_id) INNER JOIN authorship AS a USING (work_id) "
         ++ "INNER JOIN people AS p USING (person_id)",
     {ok, GetAuthors} = epgsql:parse(C, "get_show_authors", GetAuthorsSql, [uuid]),
+
+    %% Pulls the directors of a show.
+    GetDirectorsSql = "SELECT w.title, p.person_id AS director_id, p.name AS director_name FROM "
+        ++ "works AS w INNER JOIN performances AS perf USING (work_id) INNER JOIN "
+        ++ "performance_directors AS pd USING (performance_id) INNER JOIN people AS p "
+        ++ "ON (p.person_id = pd.director_id) INNER JOIN shows AS s ON (perf.show_id = s.show_id) "
+        ++ "WHERE s.show_id = $1",
+    {ok, GetDirectors} = epgsql:parse(C, "get_show_directors", GetDirectorsSql, [uuid]),
  
     %% For show listings -- much like the meta of a single one.
     GetShowListingsSql = "SELECT s.show_id, s.title, o.org_id, o.name "
@@ -698,10 +715,10 @@ prepare_statements(C) ->
     %% Pulls the works authored by a person.
     GetShowsAuthoredSql = "SELECT w.work_id, w.title, p.name FROM authorship AS a "
         ++ "INNER JOIN works AS w USING (work_id) INNER JOIN people AS p using (person_id) "
-        ++ "WHERE w.visibility = 'public' AND p.person_id = $1",
+        ++ "WHERE w.acl = 'public' AND p.person_id = $1",
     {ok, GetShowsAuthored} = epgsql:parse(C, "get_authorships", GetShowsAuthoredSql, [uuid]),
 
-    GetPersonOrgsSql = "SELECT o.org_id, o.name, oe.title FROM organizations AS o, org_employee AS oe "
+    GetPersonOrgsSql = "SELECT o.org_id, o.name, oe.title FROM organizations AS o, org_employees AS oe "
         ++ "WHERE oe.person_id = $1 AND o.visibility = 'public'",
     {ok, GetPersonOrgs} = epgsql:parse(C, "get_person_orgs", GetPersonOrgsSql, [uuid]),
 
@@ -726,7 +743,7 @@ prepare_statements(C) ->
         ++ "INNER JOIN works AS w ON (p.work_id = w.work_id) WHERE o.org_id = $1",
     {ok, GetProducedByOrg} = epgsql:parse(C, "get_produced_by_org", GetProducedByOrgSql, [uuid]),
 
-    GetOrgEmployeesSql = "SELECT p.person_id, p.name, oe.title FROM org_employee AS oe INNER JOIN people AS p USING "
+    GetOrgEmployeesSql = "SELECT p.person_id, p.name, oe.title FROM org_employees AS oe INNER JOIN people AS p USING "
         ++ "(person_id) WHERE oe.org_id = $1",
     {ok, GetOrgEmployees} = epgsql:parse(C, "get_org_employees", GetOrgEmployeesSql, [uuid]),
 
@@ -742,6 +759,21 @@ prepare_statements(C) ->
 
     {ok, GetWorkShows} = epgsql:parse(C, "get_work_shows", GetWorkShowsSql, [uuid]),
                 
+    %% De-duping
+    {ok, Parsed1} = epgsql:parse(C, "consolidate_1", "UPDATE authorship SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed2} = epgsql:parse(C, "consolidate_2", "UPDATE org_employees SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed3} = epgsql:parse(C, "consolidate_3", "UPDATE performance_offstage SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed4} = epgsql:parse(C, "consolidate_4", "UPDATE performance_directors SET director_id = $1 WHERE director_id = $2", [uuid, uuid]),
+    {ok, Parsed5} = epgsql:parse(C, "consolidate_5", "UPDATE performance_onstage SET performer_id = $1 WHERE performer_id = $2", [uuid, uuid]),
+    {ok, Parsed6} = epgsql:parse(C, "consolidate_7", "UPDATE users SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed7} = epgsql:parse(C, "consolidate_8", "DELETE FROM people WHERE person_id = $2", [uuid, uuid]),
+    PplDeDupes = [Parsed1, Parsed2, Parsed3, Parsed4, Parsed5, Parsed6, Parsed7],
+
+    {ok, OrgParsed1} = epgsql:parse(C, "consolidate_a", "UPDATE org_employees SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
+    {ok, OrgParsed2} = epgsql:parse(C, "consolidate_b", "UPDATE org_memberships SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
+    {ok, OrgParsed3} = epgsql:parse(C, "consolidate_c", "UPDATE shows SET producing_org_id = $1 WHERE producing_org_id = $2", [uuid, uuid]),
+    {ok, OrgParsed4} = epgsql:parse(C, "consolidate_d", "DELETE FROM organizations WHERE org_id = $2", [uuid, uuid]),
+    OrgDeDupes = [OrgParsed1, OrgParsed2, OrgParsed3, OrgParsed4],
  
     State = #state{connection=C,
                    begin_statement=BeginStmt,
@@ -751,6 +783,7 @@ prepare_statements(C) ->
                    insert_authorship_statement=InsertAuthorship,
                    insert_person_statement=InsertPerson,
                    insert_performance_statement=InsertPerformance,
+                   insert_director_statement=InsertDirector,
                    insert_onstage_statement=InsertOnstage,
                    insert_offstage_statement=InsertOffstage,
                    insert_show_statement=InsertShow,
@@ -760,6 +793,7 @@ prepare_statements(C) ->
                    get_show_meta=GetShow,
                    get_show_onstage=GetOnstage,
                    get_show_authorship=GetAuthors,
+                   get_show_directors=GetDirectors,
 
                    get_show_listings=GetShowListings,
 
@@ -774,7 +808,10 @@ prepare_statements(C) ->
                    get_org_employees=GetOrgEmployees,
 
                    get_work_meta=GetWorkTitleAndAuthors,
-                   get_work_shows=GetWorkShows
+                   get_work_shows=GetWorkShows,
+
+                   person_de_dupes=PplDeDupes,
+                   org_de_dupes=OrgDeDupes
                    },
     State.
 

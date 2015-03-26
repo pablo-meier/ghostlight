@@ -3,13 +3,31 @@
          content_types_provided/2,
          content_types_accepted/2,
          allowed_methods/2]).
+
 -export([person_to_html/2,
          person_to_json/2]).
-
 -export([json_to_record/1,
          record_to_json/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
+
+%% HTML
+%%
+%% GET /id         ------------- DONE
+%% GET /           
+%% GET /new
+%% GET /id/delete
+%% GET /id/edit
+%%
+%% JSON
+%%
+%% GET /id         
+%% GET /           
+%% POST /          
+%% PUT /id
+%% DELETE /id
+
+
 
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.

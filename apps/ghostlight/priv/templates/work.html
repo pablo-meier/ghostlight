@@ -9,6 +9,15 @@
       <a href="/people/{{ author.author_id }}">{{ author.author_name }}</a>&nbsp;
     {% endfor %}</h3>
 
+  {% if minutes_long %}
+  <p><strong>{{ minutes_long }} minutes long.</strong></p>
+  {% endif %}
+
+  {% if description %}
+  <h3>Description</h3>
+  {{ description }}
+  {% endif %}
+
   {% if shows %}
   <h3>Productions:</h3>
   <ul>

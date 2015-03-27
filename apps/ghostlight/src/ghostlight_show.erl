@@ -5,7 +5,8 @@
          allowed_methods/2]).
 -export([show_to_html/2,
          show_to_json/2,
-         post_json/2]).
+         post_json/2,
+         record_to_json/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 

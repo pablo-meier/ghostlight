@@ -215,7 +215,7 @@ handle_call({get_org, OrgId}, _From, State=#state{get_org_meta=GOM,
 %% Works are also straightforward -- get their authors, and where they've been
 %% produced.
 handle_call({get_work, WorkId}, _From, State=#state{get_work_meta=GWM,
-                                                   get_work_shows=GWS}) ->
+                                                    get_work_shows=GWS}) ->
     Batch = [ {GWM, [WorkId]},
               {GWS, [WorkId]} ],
 
@@ -440,8 +440,8 @@ condense_performances_in_show(ShowList) ->
 get_work(WorkId) ->
     Response = gen_server:call(?MODULE, {get_work, WorkId}),
     [{ok, []}, {ok, Authors}, {ok, Shows}, {ok, []}] = Response,
-    [{WorkTitle, _, _}|_] = Authors,
-    AuthorList = [ #person{ id = AuthorId, name = AuthorName } || {_, AuthorId, AuthorName} <- Authors ],
+    [{WorkTitle, _, _, Description, MinutesLong}|_] = Authors,
+    AuthorList = [ #person{ id = AuthorId, name = AuthorName } || {_, AuthorId, AuthorName, _, _} <- Authors ],
     ShowList = [ #show{
                      id=ShowId,
                      title=ShowTitle,
@@ -454,7 +454,9 @@ get_work(WorkId) ->
        work=#work{
                id=WorkId,
                title=WorkTitle,
-               authors=AuthorList
+               authors=AuthorList,
+               description=Description,
+               minutes_long=MinutesLong
             },
        shows=ShowList
     }.
@@ -775,7 +777,7 @@ prepare_statements(C) ->
 
 
 
-    GetWorkTitleAndAuthorsSql = "SELECT w.title, p.person_id, p.name FROM works AS w INNER JOIN authorship AS a USING (work_id) "
+    GetWorkTitleAndAuthorsSql = "SELECT w.title, p.person_id, p.name, w.description, w.minutes_long FROM works AS w INNER JOIN authorship AS a USING (work_id) "
         ++ "INNER JOIN people AS p USING (person_id) WHERE a.work_id = $1",
     {ok, GetWorkTitleAndAuthors} = epgsql:parse(C, "get_work_meta", GetWorkTitleAndAuthorsSql, [uuid]),
 

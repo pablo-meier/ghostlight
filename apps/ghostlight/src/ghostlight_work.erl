@@ -61,7 +61,9 @@ work_to_html(Req, State) ->
 record_to_proplist(#work_return{
                        work=#work{
                                title = WorkTitle,
-                               authors = Authors
+                               authors = Authors,
+                               description = Description,
+                               minutes_long = MinutesLong
                            },
                        shows=Shows}) ->
 
@@ -81,21 +83,45 @@ record_to_proplist(#work_return{
 
   [{title, WorkTitle},
    {authors, AuthorsProplist},
+   {description, Description},
+   {minutes_long, MinutesLong},
    {shows, ShowsProplist}].
 
 
-work_to_json(_Req, _State) ->
-  <<"wat">>.
+work_to_json(Req, State) ->
+    WorkId = cowboy_req:binding(work_id, Req),
+    case WorkId of 
+        undefined ->
+            {<<"ok">>, Req, State};
+        _ ->
+            WorkRecord = ghostlight_db:get_work(WorkId),
+            WorkJson = record_to_json(WorkRecord),
+            Body = jiffy:encode(WorkJson),
+            {Body, Req, State}
+    end.
+
 
 record_to_json(#work{
                   id=WorkId,
                   title=WorkTitle,
-                  authors=WorkAuthors
+                  authors=WorkAuthors,
+                  description=Description,
+                  minutes_long=MinutesLong
                }) ->
     ghostlight_utils:json_with_valid_values([
         {<<"work_id">>, WorkId},
         {<<"title">>, WorkTitle},
+        {<<"description">>, Description},
+        {<<"minutes_long">>, MinutesLong},
         {<<"authors">>, [ ghostlight_people:record_to_json(Author) || Author <- WorkAuthors ]}
+    ]);
+record_to_json(#work_return{
+                  work=Work,
+                  shows=Shows
+               }) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"work">>, record_to_json(Work)},
+        {<<"shows">>, [ ghostlight_show:record_to_json(Show) || Show <- Shows ]}
     ]).
 
 

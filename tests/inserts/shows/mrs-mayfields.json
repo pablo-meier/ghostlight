@@ -1,0 +1,101 @@
+{
+  "title" : "Mrs. Mayfield's Fifth-Grade Class of '93 20-Year Reunion",
+  "special_thanks" : "Maya Derren, Eric March, Scott Rad Brown, Elizabeth Seldin, Tinka Jonakova, Nicki Miller, J. Stephen Brantley, Primary Stages ESPA, Anthony Francavilla & Lachary Laks of Form Theatricals, Trent Anderson and the cast for their development help on Mayfield 2.0.",
+  "dates" : ["2015-01-15T20:00:00.000Z",
+             "2015-01-16T20:00:00.000Z",
+             "2015-01-17T20:00:00.000Z",
+             "2015-01-18T20:00:00.000Z",
+
+             "2015-01-22T20:00:00.000Z",
+             "2015-01-23T20:00:00.000Z",
+             "2015-01-24T20:00:00.000Z",
+             "2015-01-25T20:00:00.000Z",
+
+             "2015-01-29T20:00:00.000Z",
+             "2015-01-30T20:00:00.000Z",
+             "2015-01-31T20:00:00.000Z",
+             "2015-02-01T20:00:00.000Z",
+
+             "2015-02-05T20:00:00.000Z",
+             "2015-02-06T20:00:00.000Z",
+             "2015-02-07T20:00:00.000Z",
+             "2015-02-08T20:00:00.000Z" 
+             ],
+  "org" : {
+    "name": "CAPS LOCK THEATRE",
+    "description" : "CAPS LOCK THEATRE does funny, human, ugly plays by whatever means necessary. We like plays where people are at both their worst and their best; where people screw each other - or themselves - over, and have to find a way to deal with it; where people's hearts hurt, or open, or blossom. We also believe in fun. Past productions include _The Foreplay Play_ (nominated for Outstanding Production and Outstanding Script, NYIT Awards), _Magic Trick_, _Mrs. Mayfield's Fifth-Grade Class of '93 20-Year Reunion_ (2013), The Sex With Robots Festival, and three Pussyfests. www.capslocktheatre.com"
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "Mrs. Mayfield's Fifth-Grade Class of '93 20-Year Reunion",
+        "authors": [{"name": "Mariah MacCarthy"}]
+      },
+      "directors": [{"name": "Leta Tremblay"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Diana Oh"},
+          "role" : "Amanda Carson"
+        },
+        {
+          "performer" : {"name": "Lindsey Austen"},
+          "role" : "Robin Trudeau"
+        },
+        {
+          "performer" : {"name": "Christopher Norwood"},
+          "role" : "Nathaniel Carver"
+        },
+        {
+          "performer" : {"name": "Brian Dunlop"},
+          "role" : "Preston Radcliffe"
+        },
+        {
+          "performer" : {"name": "Lauren Hennessy"},
+          "role" : "Crystal Rogers"
+        },
+        {
+          "performer" : {"name": "Jordan Tierney"},
+          "role" : "Joey Mason"
+        },
+        {
+          "performer" : {"name": "Jesse Geguzis"},
+          "role" : "Jamie Walker"
+        },
+        {
+          "performer" : {"name": "Gwenevere Sisco"},
+          "role" : "Veronica Radcliffe"
+        },
+        {
+          "performer" : {"name": "Adam La Faci"},
+          "role" : "Jason Presley"
+        }
+      ],
+      "offstage" : [
+        {
+            "contributor" : {"name" : "Trent Anderson" },
+            "job" : "Associate Director"
+        },
+        {
+            "contributor" : {"name" : "Kacey Anisa Stamats" },
+            "job" : "Stage Manager"
+        },
+        {
+            "contributor" : {"name" : "Orli Nativ" },
+            "job" : "Costume Designer"
+        },
+        {
+            "contributor" : {"name" : "Eliza Orleans" },
+            "job" : "Production Assistant"
+        },
+        {
+            "contributor" : {"name" : "Daniel John Kelley" },
+            "job" : "Associate Producer"
+        },
+        {
+            "contributor" : {"name" : "Sarah Matteucci" },
+            "job" : "Associate Producer"
+        }
+      ]
+    }
+  ]
+}

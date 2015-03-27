@@ -11,6 +11,24 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
+
+%% HTML
+%%
+%% GET /id         ------------- DONE
+%% GET /           
+%% GET /new
+%% GET /id/delete
+%% GET /id/edit
+%%
+%% JSON
+%%
+%% GET /id         
+%% GET /           
+%% POST /          
+%% PUT /id
+%% DELETE /id
+
+
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
 allowed_methods(Req, State) ->

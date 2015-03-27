@@ -64,7 +64,8 @@
          get_org/1,
          get_work/1,
         
-         get_show_listings/0]).
+         get_show_listings/0,
+         get_work_listings/0]).
 
 -export([fix_dups/0]).
 
@@ -92,6 +93,7 @@
                 get_show_directors,
 
                 get_show_listings,
+                get_work_listings,
 
                 get_person_name,
                 get_person_authorship,
@@ -162,6 +164,7 @@ handle_call(get_show_listings, _From, State=#state{connection=C, get_show_listin
     {ok, Rows} = epgsql:execute(C, GL),
     {reply, Rows, State};
 
+
 %% In many ways, the person resource is the most important one -- we're
 %% doing this, in part, to make something of a portfolio to see and
 %% grow. You want to be proud when you see this resource. You want to feel
@@ -221,6 +224,12 @@ handle_call({get_work, WorkId}, _From, State=#state{get_work_meta=GWM,
 
     Reply = exec_batch(Batch, State),
     {reply, Reply, State};
+
+
+handle_call(get_work_listings, _From, State=#state{connection=C, get_work_listings=GW}) ->
+    epgsql:bind(C, GW, "", []),
+    {ok, Rows} = epgsql:execute(C, GW),
+    {reply, Rows, State};
 
 
 handle_call(fix_dups, _From, State=#state{connection=C,
@@ -294,6 +303,7 @@ get_show_listings() ->
                 name=OrgName
                }
         } || {ShowId, ShowName, OrgId, OrgName } <- Response ].
+
 
 get_show(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
@@ -434,6 +444,29 @@ condense_performances_in_show(ShowList) ->
          title = ShowTitle,
          performances = maps:get({ShowId, ShowTitle}, AsMap)
       } || {ShowId, ShowTitle} <- maps:keys(AsMap) ].
+
+
+
+get_work_listings() ->
+    Response = gen_server:call(?MODULE, get_work_listings),
+
+    AuthorMap = lists:foldl(fun({Id, Title, AuthorId, AuthorName}, Accum) ->
+                                Author = #person{
+                                            id=AuthorId,
+                                            name=AuthorName
+                                         },
+                                case maps:get({Id, Title}, Accum, undefined) of
+                                    undefined ->
+                                        maps:put({Id, Title}, [Author], Accum);
+                                    AuthorList ->
+                                        maps:put({Id, Title}, [Author|AuthorList], Accum)
+                                end
+                            end, maps:new(), Response),
+    [ #work{
+          id=WorkId,
+          title=WorkTitle,
+          authors=maps:get({WorkId, WorkTitle}, AuthorMap)
+      } || {WorkId, WorkTitle} <- maps:keys(AuthorMap)].
 
 
 %% Works return their list of authors, as well as when they were produced.
@@ -785,6 +818,14 @@ prepare_statements(C) ->
         ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
         ++ "INNER JOIN works AS w ON (p.work_id = w.work_id) WHERE w.work_id = $1",
 
+        
+    %% For work listings -- much like the meta of a single one.
+    GetWorkListingsSql = "SELECT w.work_id, w.title, p.person_id, p.name FROM works AS w "
+        ++ "INNER JOIN authorship AS a using (work_id) INNER JOIN people AS p USING (person_id) ORDER BY w.title ASC LIMIT 50",
+    {ok, GetWorkListings} = epgsql:parse(C, "get_work_listings", GetWorkListingsSql, []),
+
+
+
     {ok, GetWorkShows} = epgsql:parse(C, "get_work_shows", GetWorkShowsSql, [uuid]),
                 
     %% De-duping
@@ -824,6 +865,7 @@ prepare_statements(C) ->
                    get_show_directors=GetDirectors,
 
                    get_show_listings=GetShowListings,
+                   get_work_listings=GetWorkListings,
 
                    get_person_name=GetPersonName,
                    get_person_authorship=GetShowsAuthored,

@@ -23,8 +23,8 @@
 %%
 %% JSON
 %%
-%% GET /id         
-%% GET /           
+%% GET /id         ------------- DONE
+%% GET /           ------------- DONE
 %% POST /          ------------- DONE
 %% PUT /id
 %% DELETE /id
@@ -47,6 +47,10 @@ content_types_accepted(Req, State) ->
 work_to_html(Req, State) ->
     WorkId = cowboy_req:binding(work_id, Req),
     case WorkId of
+        undefined ->
+            Listings = ghostlight_db:get_work_listings(),
+            lager:info(" Listings returned are ~p~n", Listings),
+            {<<"ok">>, Req, State};
         <<"new">> ->
             {ok, Body} = insert_work_template:render([]),
             {Body, Req, State};
@@ -92,7 +96,11 @@ work_to_json(Req, State) ->
     WorkId = cowboy_req:binding(work_id, Req),
     case WorkId of 
         undefined ->
-            {<<"ok">>, Req, State};
+            Listings = ghostlight_db:get_work_listings(),
+            lager:info(" Listings returned are ~p~n", Listings),
+            Wrapped = {[{<<"shows">>, [ record_to_json(Work) || Work <- Listings ]}]},
+            Body = jiffy:encode(Wrapped),
+            {Body, Req, State};
         _ ->
             WorkRecord = ghostlight_db:get_work(WorkId),
             WorkJson = record_to_json(WorkRecord),
@@ -115,6 +123,7 @@ record_to_json(#work{
         {<<"minutes_long">>, MinutesLong},
         {<<"authors">>, [ ghostlight_people:record_to_json(Author) || Author <- WorkAuthors ]}
     ]);
+
 record_to_json(#work_return{
                   work=Work,
                   shows=Shows
@@ -131,7 +140,6 @@ post_json(Req, State) ->
     WorkJson = jiffy:decode(RequestBody),
     WorkRecord = json_to_record(WorkJson),
     Response = ghostlight_db:insert_work(WorkRecord),
-    lager:info("~nResponse from DB server is ~p~n", [Response]),
     {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State}.
 
 json_to_record({Proplist}) ->

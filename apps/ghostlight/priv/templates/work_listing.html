@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Shows{% endblock %}
+
+{% block content %}
+  <h1>Works</h1>
+
+  <table>
+      <tr>
+          <th>Title</th>
+          <th>Authors</th>
+      </tr>
+
+      {% for work in works %}
+      <tr>
+          <td><a href="/works/{{ work.work_id }}">{{ work.title }}</a></td>
+          <td>
+          {% for author in work.authors %}
+          <a href="/people/{{ author.person_id }}">{{ author.person_name }}</a><br />
+          {% endfor %}
+          </td>
+      </tr>
+      {% endfor %}
+  </table>
+  
+{% endblock %}

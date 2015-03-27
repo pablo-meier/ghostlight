@@ -6,8 +6,10 @@
 
 -export([person_to_html/2,
          person_to_json/2]).
+
 -export([json_to_record/1,
-         record_to_json/1]).
+         record_to_json/1,
+         record_to_proplist/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -122,7 +124,14 @@ record_to_proplist(#person_return{
      {offstage_list, OffstageProplist},
      {authorship, AuthorshipProplist},
      {director, DirectorProplist},
-     {organizations, OrgProplist}].
+     {organizations, OrgProplist}];
+
+record_to_proplist(#person{
+                      id=PersonId,
+                      name=PersonName
+                   }) ->
+    [{person_name, PersonName},
+     {person_id, PersonId}].
 
 
 json_to_record({Person}) ->

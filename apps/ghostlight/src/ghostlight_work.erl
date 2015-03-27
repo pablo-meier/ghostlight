@@ -16,7 +16,7 @@
 %% HTML
 %%
 %% GET /id         ------------- DONE
-%% GET /           
+%% GET /           ------------- DONE
 %% GET /new
 %% GET /id/delete
 %% GET /id/edit
@@ -49,8 +49,9 @@ work_to_html(Req, State) ->
     case WorkId of
         undefined ->
             Listings = ghostlight_db:get_work_listings(),
-            lager:info(" Listings returned are ~p~n", Listings),
-            {<<"ok">>, Req, State};
+            ForTemplate = [{<<"works">>, [ record_to_proplist(Work) || Work <- Listings ]}],
+            {ok, Body} = work_listing_template:render(ForTemplate),
+            {Body, Req, State};
         <<"new">> ->
             {ok, Body} = insert_work_template:render([]),
             {Body, Req, State};
@@ -89,7 +90,16 @@ record_to_proplist(#work_return{
    {authors, AuthorsProplist},
    {description, Description},
    {minutes_long, MinutesLong},
-   {shows, ShowsProplist}].
+   {shows, ShowsProplist}];
+
+record_to_proplist(#work{
+                      id = WorkId,
+                      title=WorkTitle,
+                      authors=Authors
+                     }) ->
+    [{<<"work_id">>, WorkId},
+     {<<"title">>, WorkTitle},
+     {<<"authors">>, [ ghostlight_people:record_to_proplist(Author) || Author <- Authors ]}].
 
 
 work_to_json(Req, State) ->
@@ -97,7 +107,6 @@ work_to_json(Req, State) ->
     case WorkId of 
         undefined ->
             Listings = ghostlight_db:get_work_listings(),
-            lager:info(" Listings returned are ~p~n", Listings),
             Wrapped = {[{<<"shows">>, [ record_to_json(Work) || Work <- Listings ]}]},
             Body = jiffy:encode(Wrapped),
             {Body, Req, State};
@@ -140,6 +149,7 @@ post_json(Req, State) ->
     WorkJson = jiffy:decode(RequestBody),
     WorkRecord = json_to_record(WorkJson),
     Response = ghostlight_db:insert_work(WorkRecord),
+    lager:info("Response from server was ~p~n", [Response]),
     {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State}.
 
 json_to_record({Proplist}) ->

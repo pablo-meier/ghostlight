@@ -1,0 +1,89 @@
+{
+  "title" : "Christmas In Queens",
+  "special_thanks" : "The Jerome Foundation, The Tournesol Project, and Tools for Life for their support of new play productions at EST/Youngblood",
+  "dates" : ["2014-12-05T20:30:00.000Z",
+             "2014-12-06T20:30:00.000Z",
+             "2014-12-07T18:00:00.000Z"],
+  "org" : {
+    "name": "EST Youngblood",
+    "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "Christmas In Queens",
+        "authors": [{"name": "Patrick Link"},
+                    {"name": "Eric March"}]
+      },
+      "directors": [{"name": "RJ Tolan"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Brad Bellamy"},
+          "role" : "Hugo Sands"
+        },
+        {
+          "performer" : {"name": "Hanna Cheek"},
+          "role" : "Julia Kelly"
+        },
+        {
+          "performer" : {"name": "Curran Connor"},
+          "role" : "Johannes"
+        },
+        {
+          "performer" : {"name": "Helen Coxe"},
+          "role" : "Captain Doyle, Liz, Mrs. Zillinski"
+        },
+        {
+          "performer" : {"name": "Merissa Czyz"},
+          "role" : "Dee Dee Sands"
+        },
+        {
+          "performer" : {"name": "Dylan Dawson"},
+          "role" : "Scoop McCoy"
+        },
+        {
+          "performer" : {"name": "Shawn Randall"},
+          "role" : "Finn, McCann, Dr. Adjani, Marietta"
+        },
+        {
+          "performer" : {"name": "Jonathan Randell Silver"},
+          "role" : "Gilbert Chase"
+        },
+        {
+          "performer" : {"name": "Brian Quijada"},
+          "role" : "Guzzy, Wally, Lin"
+        }
+      ],
+      "offstage" : [
+          {
+              "contributor" : {"name" : "Andy Roninson" },
+              "job" : "Musical Director"
+          },
+          {
+              "contributor" : {"name" : "Mikhaela Mahony" },
+              "job" : "Assistant Director"
+          },
+          {
+              "contributor" : {"name" : "Mitch Ost" },
+              "job" : "Lighting Designer"
+          },
+          {
+              "contributor" : {"name" : "Joe Lankheet" },
+              "job" : "Production Manager"
+          },
+          {
+              "contributor" : {"name" : "Eileen Lalley" },
+              "job" : "Production Stage Manager"
+          },
+          {
+              "contributor" : {"name" : "Taylor Wilkerson" },
+              "job" : "Rehearsal Stage Manager"
+          },
+          {
+              "contributor" : {"name" : "Oliva Wells" },
+              "job" : "Production Assistant"
+          }
+      ]
+    }
+  ]
+}

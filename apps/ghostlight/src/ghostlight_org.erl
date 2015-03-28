@@ -3,6 +3,7 @@
          content_types_provided/2,
          content_types_accepted/2,
          allowed_methods/2]).
+
 -export([org_to_html/2,
          org_to_json/2]).
 
@@ -24,7 +25,7 @@
 %%
 %% JSON
 %%
-%% GET /id         
+%% GET /id         ------------- DONE
 %% GET /           
 %% POST /          ------------- DONE
 %% PUT /id
@@ -112,7 +113,19 @@ record_to_json(#organization{
         {<<"tagline">>, OrgTagline},
         {<<"description">>, Description},
         {<<"date_founded">>, ghostlight_utils:erl_date_to_iso8601(DateFounded)}
+    ]);
+
+record_to_json(#org_return{
+                  org=Org,
+                  shows_produced=Shows,
+                  employees=Employees
+}) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"org">>, record_to_json(Org)},
+        {<<"shows_produced">>, [ ghostlight_show:record_to_json(Show) || Show <- Shows ]},
+        {<<"employees">>, [ghostlight_people:record_to_json(Employee) || Employee <- Employees]}
     ]).
+
 
 json_to_record({Organization}) ->
     OrgId = proplists:get_value(<<"id">>, Organization, null),
@@ -126,8 +139,20 @@ json_to_record({Organization}) ->
        description=OrgDescription
     }.
 
+
 org_to_json(Req, State) ->
-    {<<"{ \"status\": \"ok\" }">>, Req, State}.
+    OrgId = cowboy_req:binding(org_id, Req),
+    case OrgId of
+        undefined ->
+            OrgList = ghostlight_db:get_org_listings(),
+            ToEncode = {[{<<"organizations">>, [ record_to_json(Org) || Org <- OrgList ]}]},
+            Body = jiffy:encode(ToEncode),
+            {Body, Req, State};
+        _ ->
+            OrgRecord = ghostlight_db:get_org(OrgId),
+            AsJson = jiffy:encode(record_to_json(OrgRecord)),
+            {AsJson, Req, State}
+    end.
 
 
 post_json(Req, State) ->

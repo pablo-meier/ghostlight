@@ -44,7 +44,7 @@
 %%% Here's where it gets interesting: given than a show contains performances, _it_
 %%% will call get_performance_inserts, and bundle THOSE inserts into its own. So it
 %%% really becomes something like Russian Nesting Dolls.
-%%%
+
 -module(ghostlight_db).
 -behaviour(gen_server).
 
@@ -59,6 +59,7 @@
 -export([insert_show/1,
          insert_work/1,
          insert_org/1,
+         insert_person/1,
 
          get_show/1,
          get_person/1,
@@ -66,7 +67,9 @@
          get_work/1,
         
          get_show_listings/0,
-         get_work_listings/0]).
+         get_work_listings/0,
+         get_org_listings/0,
+         get_person_listings/0]).
 
 -export([fix_dups/0]).
 
@@ -95,6 +98,8 @@
 
                 get_show_listings,
                 get_work_listings,
+                get_org_listings,
+                get_person_listings,
 
                 get_person_name,
                 get_person_authorship,
@@ -139,6 +144,11 @@ handle_call({insert_work, Work}, _From, State) ->
 
 handle_call({insert_org, Org}, _From, State) ->
     {Inserts, _Ids} = get_org_inserts(Org, State),
+    Reply = exec_batch(Inserts, State),
+    {reply, Reply, State};
+
+handle_call({insert_person, Person}, _From, State) ->
+    {Inserts, _Ids} = get_people_inserts([Person], State),
     Reply = exec_batch(Inserts, State),
     {reply, Reply, State};
 
@@ -207,6 +217,12 @@ handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
     {reply, Reply, State};
 
 
+handle_call(get_person_listings, _From, State=#state{connection=C, get_person_listings=GP}) ->
+    epgsql:bind(C, GP, "", []),
+    {ok, Rows} = epgsql:execute(C, GP),
+    {reply, Rows, State};
+
+
 %% Orgs are pretty straightforward -- who's in them, and what have they
 %% produced. Need to see if I care about in-app membership enough to 
 %% make that happen here.
@@ -219,6 +235,12 @@ handle_call({get_org, OrgId}, _From, State=#state{get_org_meta=GOM,
 
     Reply = exec_batch(Batch, State),
     {reply, Reply, State};
+
+
+handle_call(get_org_listings, _From, State=#state{connection=C, get_org_listings=GO}) ->
+    epgsql:bind(C, GO, "", []),
+    {ok, Rows} = epgsql:execute(C, GO),
+    {reply, Rows, State};
 
 
 %% Works are also straightforward -- get their authors, and where they've been
@@ -265,10 +287,6 @@ handle_call(fix_dups, _From, State=#state{connection=C,
 
     {reply, ok, State};
 
-%% handle_call(fix_org_dups, _From, State) ->
-%% bad ID = e867c679-4627-4d60-82ac-c92c1002f144
-%% good ID = a2eb8a0b-495e-4f9b-8b49-9d7122cf503d
-
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -300,6 +318,9 @@ insert_work(Work) ->
 
 insert_org(Org) ->
     gen_server:call(?MODULE, {insert_org, Org}).
+
+insert_person(Person) ->
+    gen_server:call(?MODULE, {insert_person, Person}).
 
 get_show_listings() ->
     Response = gen_server:call(?MODULE, get_show_listings),
@@ -375,10 +396,15 @@ authors_to_map(AuthorList) ->
         end, maps:new(), AuthorList).
 
 
+get_person_listings() ->
+    Response = gen_server:call(?MODULE, get_person_listings),
+    [ #person{id=PersonId, name=PersonName} || {PersonId, PersonName} <- Response ].
+
+
 get_person(PersonId) ->
     Response = gen_server:call(?MODULE, {get_person, PersonId}),
     [{ok, _}, {ok, [{Name}]}, {ok, AuthorshipList}, {ok, OrgsList}, {ok, DirectedList}, {ok, OnstageList}, {ok, OffstageList}, {ok, _}] = Response,
-    Authors = [ #work{id=WorkId, title=Title, authors=[Author]} || {WorkId, Title, Author} <- AuthorshipList],
+    Authors = [ #work{id=WorkId, title=Title } || {WorkId, Title, _Author} <- AuthorshipList],
     Orgs = [ #org_work{org_id=OrgId, org_name=OrgName, title=Job} || {OrgId, OrgName, Job} <- OrgsList],
     Onstage = [ #show{ title=ShowTitle,
                        id=ShowId,
@@ -405,6 +431,7 @@ get_person(PersonId) ->
                       } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName} <- DirectedList ],
 
     #person_return{
+       id = PersonId,
        name = Name,
        authored = Authors,
        directed = Directed,
@@ -412,6 +439,16 @@ get_person(PersonId) ->
        offstage = Offstage,
        orgs = Orgs
     }.
+
+
+get_org_listings() ->
+    Results = gen_server:call(?MODULE, get_org_listings),
+    [ #organization{
+         id=OrgId,
+         name=OrgName,
+         tagline=Tagline,
+         description=Description
+        } || {OrgId, OrgName, Tagline, Description} <- Results].
 
 
 get_org(OrgId) ->
@@ -802,6 +839,9 @@ prepare_statements(C) ->
         ++ "WHERE pd.director_id = $1",
     {ok, GetPersonDirected} = epgsql:parse(C, "get_person_directed", GetPersonDirectedSql, [uuid]),
 
+    GetPersonListingsSql = "SELECT p.person_id, p.name FROM people AS p ORDER BY p.name ASC",
+    {ok, GetPersonListings} = epgsql:parse(C, "get_person_listings", GetPersonListingsSql, []),
+
 
     GetOrgMetaSql = "SELECT o.name, o.tagline, o.description FROM organizations AS o WHERE o.org_id = $1",
     {ok, GetOrgMeta} = epgsql:parse(C, "get_org_meta", GetOrgMetaSql, [uuid]),
@@ -814,6 +854,9 @@ prepare_statements(C) ->
     GetOrgEmployeesSql = "SELECT p.person_id, p.name, oe.title FROM org_employees AS oe INNER JOIN people AS p USING "
         ++ "(person_id) WHERE oe.org_id = $1",
     {ok, GetOrgEmployees} = epgsql:parse(C, "get_org_employees", GetOrgEmployeesSql, [uuid]),
+
+    GetOrgListingsSql = "SELECT o.org_id, o.name, o.tagline, o.description FROM organizations AS o ORDER BY o.name ASC LIMIT 50",
+    {ok, GetOrgListings} = epgsql:parse(C, "get_org_listings", GetOrgListingsSql, []),
 
 
 
@@ -873,6 +916,8 @@ prepare_statements(C) ->
 
                    get_show_listings=GetShowListings,
                    get_work_listings=GetWorkListings,
+                   get_org_listings=GetOrgListings,
+                   get_person_listings=GetPersonListings,
 
                    get_person_name=GetPersonName,
                    get_person_authorship=GetShowsAuthored,

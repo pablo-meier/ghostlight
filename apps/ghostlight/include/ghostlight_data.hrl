@@ -75,9 +75,10 @@
 %% touch so many things.
 
 -record(person_return, {
+    id = <<"">>    :: binary(),
     name = <<"">>  :: binary(),
     authored = []  :: list(#work{}),
-    directed = []  :: list(#performance{}),
+    directed = []  :: list(#show{}),
     onstage = []   :: list(#show{}),
     offstage = []  :: list(#show{}),
     orgs = []      :: list(#organization{})

@@ -49,13 +49,13 @@
       <tr>
         <th><strong>Show</strong></th>
         <th><strong>Producing Organization</strong></th>
-        <th><strong>Role</strong></th>
+        <th><strong>Job</strong></th>
       </tr>
     {% for offstage in offstage_list %}
       <tr>
         <td><a href="/shows/{{ offstage.show_id }}">{{ offstage.show_title }}</a></td>
         <td><a href="/organizations/{{ offstage.org_id }}">{{ offstage.org_name }}</a></td>
-        <td><strong>{{ onstage.job }}</strong></td>
+        <td><strong>{{ offstage.job }}</strong></td>
       </tr>
     {% endfor %}
     </table>

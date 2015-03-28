@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Shows{% endblock %}
+
+{% block content %}
+  <h1>People</h1>
+
+  <table>
+      {% for person in people %}
+      {% cycle 'first' 'second' 'third' 'last' as index silent %}
+        {% if index == 'first' %}
+        <tr>
+            <td class="text-center"><a href="/people/{{ person.person_id }}">{{ person.person_name }}</a></td>
+        {% elif index == 'last' %}
+            <td class="text-center"><a href="/people/{{ person.person_id }}">{{ person.person_name }}</a></td>
+        </tr>
+        {% else %}
+            <td class="text-center"><a href="/people/{{ person.person_id }}">{{ person.person_name }}</a></td>
+        {% endif %}
+      {% endfor %}
+  </table>
+  
+{% endblock %}

@@ -117,7 +117,7 @@ performance_to_proplists(#performance{
 
 onstage_as_proplists(OnstageList) ->
     [ [{name, Name},
-       {role, remove_null(Role)},
+       {role, ghostlight_utils:remove_null(Role)},
        {person_id, PersonId}] || #onstage{ person=#person{id = PersonId, name = Name}, role = Role} <- OnstageList].
 offstage_as_proplists(OnstageList) ->
     [ [{name, Name},
@@ -126,11 +126,6 @@ offstage_as_proplists(OnstageList) ->
 personlist_as_proplist(DirectorList) ->
     [ [{name, Name},
        {person_id, PersonId}] || #person{id = PersonId, name = Name} <- DirectorList].
-
-remove_null(null) -> <<"">>;
-remove_null(E) -> E.
-
-%% JSON
 
 record_to_json(#show{
                   id=ShowId,

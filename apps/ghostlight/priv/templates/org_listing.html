@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Organizations{% endblock %}
+
+{% block content %}
+  <h1>Organizations</h1>
+
+  <table>
+      <tr>
+          <th>Organization</th>
+          <th>Tagline</th>
+          <th>Description</th>
+      </tr>
+
+      {% for org in orgs %}
+      <tr>
+          <td><a href="/organizations/{{ org.org_id }}">{{ org.name }}</a></td>
+          <td>{{ org.tagline }}</td>
+          <td>{{ org.description }}</td>
+      </tr>
+      {% endfor %}
+  </table>
+  
+{% endblock %}

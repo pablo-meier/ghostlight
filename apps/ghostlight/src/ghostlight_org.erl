@@ -14,11 +14,10 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-
 %% HTML
 %%
 %% GET /id         ------------- DONE
-%% GET /           
+%% GET /           ------------- DONE
 %% GET /new
 %% GET /id/delete
 %% GET /id/edit
@@ -26,7 +25,7 @@
 %% JSON
 %%
 %% GET /id         ------------- DONE
-%% GET /           
+%% GET /           ------------- DONE
 %% POST /          ------------- DONE
 %% PUT /id
 %% DELETE /id
@@ -52,6 +51,11 @@ content_types_accepted(Req, State) ->
 org_to_html(Req, State) ->
     OrgId = cowboy_req:binding(org_id, Req),
     case OrgId of
+        undefined ->
+            OrgList = ghostlight_db:get_org_listings(),
+            ForTemplate = [{orgs, [ record_to_proplist(Org) || Org <- OrgList ]}],
+            {ok, Body} = org_listing_template:render(ForTemplate),
+            {Body, Req, State};
         <<"new">> ->
             {ok, Body} = insert_org_template:render([]),
             {Body, Req, State};
@@ -90,11 +94,22 @@ record_to_proplist(#org_return{
                                                          } <- Employees ],
 
 
-  [{name, Name},
-   {tagline, Tagline},
-   {description, Description},
-   {shows, ShowProplist},
-   {employees, EmployeesProplist}].
+    [{name, Name},
+     {tagline, Tagline},
+     {description, Description},
+     {shows, ShowProplist},
+     {employees, EmployeesProplist}];
+
+record_to_proplist(#organization{
+                       id=Id,
+                       name=Name,
+                       tagline=Tagline,
+                       description=Description
+                   }) ->
+    [{org_id, Id},
+     {name, Name},
+     {tagline, ghostlight_utils:remove_null(Tagline)},
+     {description, ghostlight_utils:remove_null(Description)}].
 
 
 record_to_json(#organization{
@@ -157,12 +172,11 @@ org_to_json(Req, State) ->
 
 post_json(Req, State) ->
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
-    lager:info("Entered POST JSON"),
     AsJson = jiffy:decode(RequestBody),
     OrgRecord = json_to_record(AsJson),
     case OrgRecord#organization.id of
         null ->
-            Response = ghostlight_db:insert_org(OrgRecord),
+            _Response = ghostlight_db:insert_org(OrgRecord),
             {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State};
         _Else ->
             Body = jiffy:encode({[{<<"error">>, <<"You may not insert an organization with the field 'id'.">>}]}),

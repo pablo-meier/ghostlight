@@ -2,7 +2,8 @@
 
 -export([erl_date_to_iso8601/1,
          json_with_valid_values/1,
-         proplist_with_valid_values/1]).
+         proplist_with_valid_values/1,
+         remove_null/1]).
 
 %% iso8601 is pretty great, and epgsql are pretty great, but they don't play well together.
 %% Namely, epgsql returns dates where the seconds value is a float, which iso8601 doesn't 
@@ -33,3 +34,9 @@ suitable_to_show([]) -> false;
 suitable_to_show(null) -> false;
 suitable_to_show(undefined) -> false;
 suitable_to_show(_) -> true.
+
+
+remove_null(null) -> <<"">>;
+remove_null(E) -> E.
+
+

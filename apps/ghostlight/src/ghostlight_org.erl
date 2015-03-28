@@ -79,10 +79,13 @@ record_to_proplist(#org_return{
   ShowProplist = [ [{show_id, ShowId},
                     {show_title, ShowTitle},
                     {performances, [ [{work_id, WorkId}, {work_title, WorkTitle}] 
-                                       || #performance{work=#work{id=WorkId, title=WorkTitle}} <- Performances ]} 
+                                       || #performance{work=#work{id=WorkId, title=WorkTitle}} <- Performances ]},
+                    {first_show, lists:last(Dates)},
+                    {last_show, lists:nth(1, Dates)}
                    ] || #show{ id=ShowId,
                                title=ShowTitle,
-                               performances=Performances
+                               performances=Performances,
+                               dates=Dates
                              } <- Shows ],
   EmployeesProplist = [ [{person_id, PersonId},
                          {person_name, PersonName},

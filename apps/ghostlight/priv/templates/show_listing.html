@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}Shows{% endblock %}
+{% block title %}Productions{% endblock %}
 
 {% block content %}
-  <h1>Shows</h1>
+  <h1>Productions</h1>
 
   <table>
       <tr>
-          <th>Show</th>
+          <th>Production</th>
+          <th>Piece(s)</th>
           <th>Presented By</th>
+          <th>Directed By</th>
+          <th>Run</th>
       </tr>
 
       {% for show in shows %}

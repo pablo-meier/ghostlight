@@ -16,17 +16,23 @@
     <h3>Shows produced</h3>
     <table>
       <tr>
-        <th>Show</th>
-        <th>Works</th>
+        <th>Piece(s)</th>
+        <th>Production</th>
+        <th>Run</th>
       </tr>
     {% for show in shows %}
       <tr>
-        <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>
         <td>
           {% for performance in show.performances %}
           <a href="/works/{{ performance.work_id }}">{{ performance.work_title }}</a><br />
           {% endfor %}
         </td>
+        <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>
+        {% if show.first_show == show.last_show %}
+            <td class="text-center">{{ show.first_show|date:"n/j/o" }}</td>
+        {% else %}
+            <td class="text-center">{{ show.first_show|date:"n/j/o" }} &ndash; {{ show.last_show|date:"n/j/o" }}</td>
+        {% endif %}
       </tr>
     {% endfor %}
     </table>

@@ -7,7 +7,9 @@
          org_to_json/2]).
 
 -export([json_to_record/1,
-         record_to_json/1]).
+         record_to_json/1,
+
+         post_json/2]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -24,16 +26,18 @@
 %%
 %% GET /id         
 %% GET /           
-%% POST /          
+%% POST /          ------------- DONE
 %% PUT /id
 %% DELETE /id
 
 
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
+
 allowed_methods(Req, State) ->
     {[<<"GET">>, <<"POST">>, <<"DELETE">>],
      Req, State}.
+
 content_types_provided(Req, State) ->
     {[
       {<<"text/html">>, org_to_html},
@@ -113,11 +117,32 @@ record_to_json(#organization{
 json_to_record({Organization}) ->
     OrgId = proplists:get_value(<<"id">>, Organization, null),
     OrgName = proplists:get_value(<<"name">>, Organization, null),
+    OrgDescription = proplists:get_value(<<"description">>, Organization, null),
+    OrgTagline = proplists:get_value(<<"tagline">>, Organization, null),
     #organization{
-       id = OrgId,
-       name = OrgName 
+       id=OrgId,
+       name=OrgName,
+       tagline=OrgTagline,
+       description=OrgDescription
     }.
 
 org_to_json(Req, State) ->
     {<<"{ \"status\": \"ok\" }">>, Req, State}.
+
+
+post_json(Req, State) ->
+    {ok, RequestBody, Req2} = cowboy_req:body(Req),
+    lager:info("Entered POST JSON"),
+    AsJson = jiffy:decode(RequestBody),
+    OrgRecord = json_to_record(AsJson),
+    case OrgRecord#organization.id of
+        null ->
+            Response = ghostlight_db:insert_org(OrgRecord),
+            {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State};
+        _Else ->
+            Body = jiffy:encode({[{<<"error">>, <<"You may not insert an organization with the field 'id'.">>}]}),
+            Req3 = cowboy_req:set_resp_body(Body, Req2),
+            {false, Req3, State}
+    end.
+
 

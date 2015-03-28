@@ -58,6 +58,7 @@
 
 -export([insert_show/1,
          insert_work/1,
+         insert_org/1,
 
          get_show/1,
          get_person/1,
@@ -133,6 +134,11 @@ handle_call({insert_show, Show}, _From, State) ->
 
 handle_call({insert_work, Work}, _From, State) ->
     {Inserts, _Ids} = get_work_inserts(Work, State),
+    Reply = exec_batch(Inserts, State),
+    {reply, Reply, State};
+
+handle_call({insert_org, Org}, _From, State) ->
+    {Inserts, _Ids} = get_org_inserts(Org, State),
     Reply = exec_batch(Inserts, State),
     {reply, Reply, State};
 
@@ -292,6 +298,8 @@ insert_show(Show) ->
 insert_work(Work) ->
     gen_server:call(?MODULE, {insert_work, Work}).
 
+insert_org(Org) ->
+    gen_server:call(?MODULE, {insert_org, Org}).
 
 get_show_listings() ->
     Response = gen_server:call(?MODULE, get_show_listings),
@@ -522,7 +530,7 @@ get_show_inserts(#show{title=Title,
                                insert_dates_statement=ID}) ->
     Works = extract_works(Performances),
     {AllWorkInserts, WorksWithId} = fold_over_works(Works, State),
-    {OrgInserts, OrgId} = get_producing_org_inserts(Org, State),
+    {OrgInserts, OrgId} = get_org_inserts(Org, State),
     ShowId = fresh_uuid(),
     ShowInserts = [{IS, [ShowId, Title, OrgId, SpecialThanks]}],
     DateInserts = lists:map(fun (Date) ->
@@ -614,16 +622,15 @@ get_offstage_inserts(PerformanceId, OffstageList, State=#state{insert_offstage_s
     lists:flatten(ListOfLists).
 
 
-get_producing_org_inserts(#organization {
-                             name=Name,
-                             tagline=Tagline,
-                             description=Description,
-                             parent=Parent,
-                             vanity_name=VanityName,
-                             date_founded=DateFounded,
-                             visibility=Visibility
-                          },
-                          #state{insert_org_statement=IO}) ->
+get_org_inserts(#organization {
+                    name=Name,
+                    tagline=Tagline,
+                    description=Description,
+                    parent=Parent,
+                    vanity_name=VanityName,
+                    date_founded=DateFounded,
+                    visibility=Visibility
+                }, #state{insert_org_statement=IO}) ->
     OrgId = fresh_uuid(),
     ParentInsert = case Parent of
                        {id, <<"">>} -> null;

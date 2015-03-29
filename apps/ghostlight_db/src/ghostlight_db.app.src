@@ -1,0 +1,16 @@
+{application, ghostlight_db,
+ [{description, "Persistent Data for Ghostlight"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {'ghostlight_db_app', []}},
+  {applications,
+   [
+    epgsql,
+    kernel,
+    stdlib,
+    lager,
+    uuid  
+   ]},
+   {env,[]},
+   {modules, []}
+ ]}.

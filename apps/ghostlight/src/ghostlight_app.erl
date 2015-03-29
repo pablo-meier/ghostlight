@@ -6,8 +6,6 @@
 -module(ghostlight_app).
 
 -behaviour(application).
-%-compile([{compile_transform, lager_transform}]).
-%% Application callbacks
 -export([start/2, stop/1]).  
 
 %%====================================================================
@@ -19,6 +17,7 @@ start(_StartType, _StartArgs) ->
     lager:info("__~-~-*^*HELLO GHOSTLIGHT*^*-~-~__"),
     initiate_listening_to_endpoints(),
     compile_all_templates(),
+    application:start(ghostlight_db),
     ghostlight_sup:start_link().
 
 %%--------------------------------------------------------------------

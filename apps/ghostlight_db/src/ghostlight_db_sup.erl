@@ -1,9 +1,9 @@
 %%%-------------------------------------------------------------------
-%% @doc ghostlight top level supervisor.
+%% @doc ghostlight_db top level supervisor.
 %% @end
 %%%-------------------------------------------------------------------
 
--module(ghostlight_sup).
+-module(ghostlight_db_sup).
 
 -behaviour(supervisor).
 
@@ -28,7 +28,12 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, {{one_for_all, 5, 60}, []}}.
+    {ok, { {one_for_all, 5, 60}, [{postgres_server,
+           {ghostlight_db, start_link, []},
+           permanent,
+           5000,
+           worker,
+           [ghostlight_db]}]} }.
 
 %%====================================================================
 %% Internal functions

@@ -330,6 +330,8 @@ insert_person(Person) ->
 
 get_show_listings() ->
     Response = gen_server:call(?MODULE, get_show_listings),
+% "SELECT s.show_id, s.title, w.work_id, w.title, p.person_id, p.name, o.org_id, o.name, d.show_date "
+
     [ #show{
          id=ShowId,
          title=ShowName,
@@ -337,7 +339,8 @@ get_show_listings() ->
                 id=OrgId,
                 name=OrgName
                }
-        } || {ShowId, ShowName, OrgId, OrgName } <- Response ].
+        } || {ShowId, ShowName, OrgId, OrgName} <- Response ].
+
 
 
 get_show(ShowId) ->
@@ -843,9 +846,7 @@ prepare_statements(C) ->
     GetShowListingsSql = "SELECT s.show_id, s.title, o.org_id, o.name "
         ++ "FROM shows AS s INNER JOIN organizations AS o ON (s.producing_org_id = o.org_id) "
         ++ "LIMIT 30",
-    {ok, GetShowListings} = epgsql:parse(C, "get_show_listings", GetShowListingsSql, []),
-
-
+    {ok, GetShowListings} = epgsql:parse(C, "show_listings_meta", GetShowListingsSql, []),
 
     GetPersonNameSql = "SELECT name FROM people WHERE person_id = $1",
     {ok, GetPersonName} = epgsql:parse(C, "get_person_name", GetPersonNameSql, [uuid]),

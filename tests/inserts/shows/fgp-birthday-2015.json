@@ -1,0 +1,182 @@
+{
+  "title" : "fgp birthday 2015",
+  "special_thanks" : "Micah Bucey and Judson Church, Zach Moseley, Bob Wuss, Ben Mann, Jerrit Pruyn, Barrett Law, Kris Opperman, Cassidy Graves, Rachel Marder, Amy Virginia Buchanan, Elinor Vanderburg, Charly Simpson, Sixpoint Craft Ales, Insomnia Cookies, and Chris WIlliams.",
+  "dates" : ["2015-02-20T20:00:00.000Z"],
+  "org" : {
+    "name": "Fresh Ground Pepper",
+    "tagline" : "**Provokes** the artists to make artist and \n\n**Prompts** the generation of new works, new methodologies, and new mediums.",
+    "description": "For the past 6 years, FGP has nurtured hundreds of artists and developing projects. We look forward to continue to offer our community a deadline, a guideline, and a space. Fresh Ground Pepper exists because making art is not easy.\n\nWe exist because artists cannot create and edit at the same time.\nWe exist because ideas beget ideas.\nWe exist because art is worthy of celebration."
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "FGP Runway Preview.",
+        "authors": [{"name": "Salty Brine"}]
+      },
+      "onstage": [
+        {
+          "performer" : {"name": "Kate Weber"}
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor": {"name": "Scears Lee"},
+          "job": "Costume Designer"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Preview of Blood Prom",
+        "authors": [{"name": "T. Adamson"},
+                    {"name": "Cat Crowley"}]
+      },
+      "directors": [{"name": "Annie Tippe"}]
+    },
+    {
+      "work" : {
+        "title" : "'mothertongue'",
+        "authors": [{"name": "Stevo Arnoczy"},
+                    {"name": "Trevor F. Salter"}]
+      },
+      "directors": [{"name": "Stevo Arnoczy"},
+                    {"name": "Trevor F. Salter"}],
+      "onstage": [
+        { "performer" : {"name": "Brenna Coates"} },
+        { "performer" : {"name": "Tori Khalil"} },
+        { "performer" : {"name": "Paloma Rabinov"} },
+        { "performer" : {"name": "Jordi Waller"} }
+      ],
+      "offstage": [
+        {
+          "contributor" : {"name": "Jorge Morales"},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"name": "Stevo Arnoczy"},
+          "job" : "Projection Design"
+        },
+        {
+          "contributor" : {"name": "Trevor F. Salter"},
+          "job" : "Choreography"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Tom Ford in 24 Hours",
+        "authors": [{"name": "Witness Relocation"}]
+      },
+      "directors": [{"name": "Dan Safer"},
+                    {"name": "Kaz PS"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Wil Petre"},
+          "role" : "Tom Ford"
+        },
+        "offstage" : [
+          {
+            "contributor": {"name" : "Kaz PS"},
+            "job" : "Principal Photography"
+          },
+          {
+            "contributor": {"name" : "Charles Lindsay"},
+            "job" : "Sound & Lights"
+          },
+          {
+            "contributor": {"name" : "Anton Sanko"},
+            "job" : "Composer"
+          },
+          {
+            "contributor": {"name" : "Kaz PS"},
+            "job" : "Editor"
+          },
+          {
+            "contributor": {"name" : "Dan Safer"},
+            "job" : "Editor"
+          }
+        ]
+      ]
+    },
+    {
+      "work" : {
+        "title" : "FGP Aerobic Preview titled Once More, with Feeling (or, How I Learned to Stop Worrying and Become Who I Really Are",
+        "authors": [{"name": "Chris Tyler"}]
+      },
+      "directors": [{"name": "Chris Tyler"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Chris Tyler"}
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Selections from The Upper Room",
+        "authors": [{"name": "RADY&BLOOM"}]
+      },
+      "onstage": [
+        { "performer" : {"name": "Andrew Butler"} },
+        { "performer" : {"name": "Stacy Ann Price"} },
+        { "performer" : {"name": "Joyce Miller"} },
+        { "performer" : {"name": "Dana Kaplan-Angle"} },
+        { "performer" : {"name": "Tjasa Ferme"} },
+        { "performer" : {"name": "Beth Griffith"} },
+        { "performer" : {"name": "Robert Gadol Lavenstein"} },
+        { "performer" : {"name": "Heather Thirty"} },
+        { "performer" : {"name": "Joe White"} }
+      ],
+      "offstage" : [
+        {
+          "contributor": [{"name": "Catherine Brookman"}],
+          "job": "Composer"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "FGP Decades Preview: 1950's",
+        "authors": [{"name": "Kristine Haruna Lee"},
+                    {"name": "Joe Cantalupo"},
+                    {"name": "Andrew Scoville"}]
+      },
+      "onstage": [
+        { "performer" : {"name": "Kristine Haruna Lee"} },
+        { "performer" : {"name": "Joe Cantalupo"} },
+        { "performer" : {"name": "Andrew Scoville"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "You'll Still Call Me By My Name",
+        "authors": [
+          {"name": "Shaun McClain Bengson"},
+          {"name": "Abigail Nessen Bengson"},
+          {"name": "Sonya Tayeh"},
+          {"name": "Jo Lampert"}
+        ]
+      },
+      "directors": [
+        {"name": "Shaun McClain Bengson"},
+        {"name": "Abigail Nessen Bengson"},
+        {"name": "Sonya Tayeh"},
+        {"name": "Jo Lampert"}
+      ],
+      "onstage": [
+        { "performer" : {"name": "Jenn Freeman"} },
+        { "performer" : {"name": "Gabe Katz"} },
+        { "performer" : {"name": "Fredric Odgaard"} },
+        { "performer" : {"name": "Chantelle Good"} },
+        { "performer" : {"name": "Alison Ingelstrom"} },
+        { "performer" : {"name": "Rachel Locker"} },
+        { "performer" : {"name": "Yiannis Logothetis"} },
+        { "performer" : {"name": "Lily Leyva"} },
+        { "performer" : {"name": "Hannah Seiden"} },
+        { "performer" : {"name": "Melanie Moore"} },
+        { "performer" : {"name": "Douglas Burkhardt"} },
+        { "performer" : {"name": "Mia DeWeese"} },
+        { "performer" : {"name": "Barrie McLain"} }
+      ]
+    }
+  ]
+}

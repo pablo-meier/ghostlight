@@ -1,0 +1,40 @@
+{
+  "title" : "Lovertits",
+  "special_thanks" : "Amy Smith, for her generous support and faith in the piece. David Brick and Andrew Simoniet for guidance surrounding getting the word out, and faith in the piece. Mascher Space Cooperative for being my creative home. Alec Duffy for presenting the work. Megan Thibodeaux for painting trees, Anna Drozdowski for that coat rack, Chris Haig and Keighty McLallen for additional help. Lille DeArmon and Amanda Hunt, for their invaluable support during the tech process. The New Yorkers who opened their homes to us during this week. This work would not be possible without you. Thank you.",
+  "dates" : ["2015-03-26T20:00:00.000Z",
+             "2015-04-25T20:00:00.000Z",
+             "2015-04-26T20:00:00.000Z"],
+  "org" : {
+    "name": "Annie Wilson"
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "Lovertits",
+        "authors" : [{"name": "Annie Wilson"}]
+      },
+      "directors": [{"name": "Annie Wilson"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Christina Gesualdi"}
+        },
+        {
+          "performer" : {"name": "Jenna Horton"}
+        },
+        {
+          "performer" : {"name": "Ilse Torlin Zoerb"}
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"name" : "Adriano Shaplin" },
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"name" : "Andrew Thompson" },
+          "job" : "Lighting Designer"
+        }
+      ]
+    }
+  ]
+}

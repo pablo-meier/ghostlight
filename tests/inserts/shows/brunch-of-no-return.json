@@ -1,0 +1,83 @@
+{
+  "title" : "The Brunch of No Return",
+  "special_thanks" : "The Harold & Mimi Steinberg Trust for the their support of Youngblood and new play productions at EST.",
+  "dates" : ["2015-01-04T13:00:00.000Z"],
+  "org" : {
+    "name": "EST Youngblood",
+    "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
+  },
+  "performances": [
+    {
+      "work" : {
+        "title" : "Swan Song",
+        "authors": [{"name": "Clare Barron"}]
+      },
+      "directors": [{"name": "Clare Barron"}],
+      "onstage": [
+        { "performer" : {"name": "Clare Barron"} },
+        { "performer" : {"name": "Alexander Borinsky"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Wedding",
+        "authors": [{"name": "Alexander Borinsky"}]
+      },
+      "directors": [{"name": "Colleen Sullivan"}],
+      "onstage": [
+        { "performer" : {"name": "Patrick Link"} },
+        { "performer" : {"name": "RJ Tolan"} },
+        { "performer" : {"name": "Paul Cameron Hardy"} },
+        { "performer" : {"name": "Zhu Yi"} },
+        { "performer" : {"name": "Jonas Petkus"} },
+        { "performer" : {"name": "Ana Noguiera"} },
+        { "performer" : {"name": "Leah Nanako Winkler"} },
+        { "performer" : {"name": "Lucy Gillespie"} },
+        { "performer" : {"name": "Will Snyder"} },
+        { "performer" : {"name": "Charly Evon Simpson"} },
+        { "performer" : {"name": "Jack Plowe"} },
+        { "performer" : {"name": "Jonathan Huggins"} },
+        { "performer" : {"name": "Samantha Sembler"} },
+        { "performer" : {"name": "Anna Haney"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Eat Fresh",
+        "authors": [{"name": "Cory Finley"}]
+      },
+      "directors": [{"name": "Liz Carlson"}],
+      "onstage": [
+        { "performer" : {"name": "Steven Boyer"} },
+        { "performer" : {"name": "Debargo Sanyal"} },
+        { "performer" : {"name": "Chris Wight"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Happy Anniversary",
+        "authors": [{"name": "Chary Evon Simpson"}]
+      },
+      "directors": [{"name": "Nicole Ricciardi"}],
+      "onstage": [
+        { "performer" : {"name": "Bradley Anderson"} },
+        { "performer" : {"name": "Cleo Gray"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "My Name is ______ And I Belong To You",
+        "authors": [{"name": "Lucy Gillespie"}]
+      },
+      "directors": [{"name": "Nick Leavens"}],
+      "onstage": [
+        { "performer" : {"name": "Mike Smith Riviera"} },
+        { "performer" : {"name": "Rachel Lin"} },
+        { "performer" : {"name": "Merissa Czyz"} },
+        { "performer" : {"name": "Diana Ruppe"} },
+        { "performer" : {"name": "Dawn McGee"} },
+        { "performer" : {"name": "Lou Liberatore"} }
+      ]
+    }
+  ]
+}

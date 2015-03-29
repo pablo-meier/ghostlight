@@ -402,9 +402,9 @@ make_performance_record_list(Onstage, Offstage, AuthorMap, DirectorMap) ->
                      title = Title,
                      authors = maps:get(Title, AuthorMap)
                  },
-          onstage = maps:get({WorkId, Title}, PerformancesMap),
-          offstage = maps:get({WorkId, Title}, OffstageMap),
-          directors = maps:get(Title, DirectorMap)
+          onstage = maps:get({WorkId, Title}, PerformancesMap, []),
+          offstage = maps:get({WorkId, Title}, OffstageMap, []),
+          directors = maps:get(Title, DirectorMap, [])
       } || {WorkId, Title} <- maps:keys(PerformancesMap) ].
 
 

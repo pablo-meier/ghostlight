@@ -93,6 +93,7 @@
 
                 get_show_meta,
                 get_show_onstage,
+                get_show_offstage,
                 get_show_authorship,
                 get_show_directors,
 
@@ -166,10 +167,12 @@ handle_call({insert_person, Person}, _From, State) ->
 %% shows that haven't closed yet.
 handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM,
                                                     get_show_onstage=SO,
+                                                    get_show_offstage=SOff,
                                                     get_show_authorship=SA,
                                                     get_show_directors=SD}) ->
     Batch = [ {SM, [ShowId]},
               {SO, [ShowId]},
+              {SOff, [ShowId]},
               {SA, [ShowId]},
               {SD, [ShowId]}],
     Reply = exec_batch(Batch, State),
@@ -340,7 +343,7 @@ get_show_listings() ->
 get_show(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
     %% handle if this call fails.
-    [_, {ok, Meta}, {ok, Performances}, {ok, Authorship}, {ok, Directors}, _] = Response,
+    [_, {ok, Meta}, {ok, Onstage}, {ok, Offstage}, {ok, Authorship}, {ok, Directors}, _] = Response,
     [{Title, OrgName, OrgId, SpecialThanks, _}|_] = Meta,
     Dates = [ Date || {_, _, _, _, Date} <- Meta ],
 
@@ -354,10 +357,10 @@ get_show(ShowId) ->
                    id = OrgId,
                    name = OrgName
                 },
-        performances = make_performance_record_list(Performances, Authors, DirectorMap)
+        performances = make_performance_record_list(Onstage, Offstage, Authors, DirectorMap)
       }.
 
-make_performance_record_list(Performances, AuthorMap, DirectorMap) ->
+make_performance_record_list(Onstage, Offstage, AuthorMap, DirectorMap) ->
     PerformancesMap = lists:foldl(fun ({WorkId, Title, PerformerName, PerformerId, Role}, Accum) ->
                                       PerformerRecord = #onstage{
                                                            role = Role,
@@ -372,7 +375,23 @@ make_performance_record_list(Performances, AuthorMap, DirectorMap) ->
                                           Performers ->
                                               maps:put({WorkId, Title}, [PerformerRecord|Performers], Accum)
                                       end
-                                  end, maps:new(), Performances),
+                                  end, maps:new(), Onstage),
+
+    OffstageMap = lists:foldl(fun ({WorkId, Title, Job, PersonId, PersonName}, Accum) ->
+                                  PersonRecord = #offstage{
+                                                    job = Job,
+                                                    person = #person{
+                                                                id = PersonId,
+                                                                name = PersonName 
+                                                             }
+                                                 },
+                                  case maps:get({WorkId, Title}, Accum, none) of
+                                      none ->
+                                          maps:put({WorkId, Title}, [PersonRecord], Accum);
+                                      People ->
+                                          maps:put({WorkId, Title}, [PersonRecord|People], Accum)
+                                  end
+                              end, maps:new(), Offstage),
 
     [ #performance{
           work = #work {
@@ -381,6 +400,7 @@ make_performance_record_list(Performances, AuthorMap, DirectorMap) ->
                      authors = maps:get(Title, AuthorMap)
                  },
           onstage = maps:get({WorkId, Title}, PerformancesMap),
+          offstage = maps:get({WorkId, Title}, OffstageMap),
           directors = maps:get(Title, DirectorMap)
       } || {WorkId, Title} <- maps:keys(PerformancesMap) ].
 
@@ -799,6 +819,11 @@ prepare_statements(C) ->
         ++ "people2.name, po.role ORDER BY p.performance_order;",
     {ok, GetOnstage} = epgsql:parse(C, "get_show_onstage", GetOnstageSql, [uuid]),
 
+    GetOffstageSql = "SELECT w.work_id, w.title, off.job, person.person_id, person.name FROM performance_offstage AS off "
+        ++ "INNER JOIN people AS person USING (person_id) INNER JOIN performances AS p USING (performance_id) "
+        ++ "INNER JOIN shows USING (show_id) INNER JOIN works AS w ON (w.work_id = p.work_id) WHERE show_id = $1",
+    {ok, GetOffstage} = epgsql:parse(C, "get_show_offstage", GetOffstageSql, [uuid]),
+
     %% Pulls the authors of a show.
     GetAuthorsSql = "SELECT w.title, p.person_id AS author_id, p.name AS author_name FROM "
         ++ "(SELECT p.work_id FROM performances AS p WHERE p.show_id = $1) AS works_in_show "
@@ -929,6 +954,7 @@ prepare_statements(C) ->
 
                    get_show_meta=GetShow,
                    get_show_onstage=GetOnstage,
+                   get_show_offstage=GetOffstage,
                    get_show_authorship=GetAuthors,
                    get_show_directors=GetDirectors,
 

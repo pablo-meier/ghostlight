@@ -15,14 +15,14 @@
 
    {% for performance in performances %}
    <hr />
-   <h3><a href="/works/{{ performance.work.work_id }}">{{ performance.work.title }}</a></h3>
-   <h4>by {% for author in performance.work.authors %}
-           <a href="/people/{{ author.person_id }}">{{ author.name }}</a>
-           {% endfor %} </h4>
-   <h4> Directed by 
-   {% for director in performance.directors %}
-       <a href="/people/{{ director.person_id }}">{{ director.name }}</a>
-   {% endfor %}</h4>
+       <h3><a href="/works/{{ performance.work.work_id }}">{{ performance.work.title }}</a></h3>
+       <h4>by {% for author in performance.work.authors %}
+               <a href="/people/{{ author.person_id }}">{{ author.name }}</a>
+               {% endfor %} </h4>
+       <h4> Directed by 
+       {% for director in performance.directors %}
+           <a href="/people/{{ director.person_id }}">{{ director.name }}</a>
+       {% endfor %}</h4>
 
        <h5>Starring</h5>
        <table>
@@ -37,6 +37,22 @@
        </tr>
        {% endfor %} <!-- for onstage -->
        </table>
+
+       {% if performance.offstage %}
+       <h5>Creative Team</h5>
+       <table>
+           <tr>
+               <td>Position</td>
+               <td>Contributor</td>
+           </tr>
+       {% for offstage in performance.offstage %}
+         <tr>
+             <td>{{ offstage.job }}</td>
+             <td><a href="/people/{{ offstage.person_id }}">{{ offstage.name }}</a></td>
+         </tr>
+       {% endfor %}
+       </table>
+       {% endif %}
 
    {% endfor %}
    <p class="text-center"><small>Special thanks to {{ special_thanks }}</small></p>

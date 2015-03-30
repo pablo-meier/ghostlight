@@ -17,7 +17,6 @@ start(_StartType, _StartArgs) ->
     lager:info("__~-~-*^*HELLO GHOSTLIGHT*^*-~-~__"),
     initiate_listening_to_endpoints(),
     compile_all_templates(),
-    application:start(ghostlight_db),
     ghostlight_sup:start_link().
 
 %%--------------------------------------------------------------------

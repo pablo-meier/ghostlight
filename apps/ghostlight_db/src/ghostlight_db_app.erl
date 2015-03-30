@@ -4,7 +4,6 @@
 %%%-------------------------------------------------------------------
 
 -module(ghostlight_db_app).
-
 -behaviour(application).
 
 %% Application callbacks
@@ -16,6 +15,7 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
+    lager:start(),
     ghostlight_db_sup:start_link().
 
 %%--------------------------------------------------------------------

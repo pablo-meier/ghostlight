@@ -84,14 +84,14 @@ record_to_proplist(#person_return{
                          {org_name, OrgName},
                          {work_id, WorkId},
                          {work_title, WorkTitle},
-                         {role, ghostlight_utils:remove_null(Role)}] 
+                         {role, ghostlight_utils:remove_null(Role)}]
                             || #show{ title=ShowTitle,
                                       id=ShowId,
                                       org=#organization{id=OrgId, name=OrgName},
                                       performances=[#performance{
                                                       work=#work{ id=WorkId, title=WorkTitle },
-                                                      onstage=#onstage{ role=Role }
-                                                   }]} <- Onstage],
+                                                      onstage=#onstage{ role=Role }}]
+                                    } <- Onstage],
     OffstageProplist = [ [{show_id, ShowId}, 
                           {show_title, ShowTitle},
                           {org_id, OrgId},

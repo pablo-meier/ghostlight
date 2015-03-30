@@ -28,13 +28,7 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, {{one_for_all, 5, 60},
-          [{postgres_server,
-           {ghostlight_db, start_link, []},
-           permanent,
-           5000,
-           worker,
-           [ghostlight_db]}]}}.
+    {ok, {{one_for_all, 5, 60}, []}}.
 
 %%====================================================================
 %% Internal functions

@@ -6,8 +6,6 @@
 -module(ghostlight_app).
 
 -behaviour(application).
-%-compile([{compile_transform, lager_transform}]).
-%% Application callbacks
 -export([start/2, stop/1]).  
 
 %%====================================================================

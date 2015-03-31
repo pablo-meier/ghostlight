@@ -10,17 +10,19 @@ static ERL_NIF_TERM parse_markdown_nif(ErlNifEnv* env, int argc, const ERL_NIF_T
         return enif_make_badarg(env);
     }
 
-    char* processed = cmark_markdown_to_html(input_bin.data, input_bin.size, NULL);
-    
-    ErlNifBinary cmarked;
-    cmarked.data = processed;
+    char* processed = cmark_markdown_to_html(input_bin.data, input_bin.size, CMARK_OPT_DEFAULT);
 
     // BOO strlen! BOO!!!!
     // But most of the 'safe' alternatives require a maxlen, and I don't want to cut us
     // off. Plus, we're doing this for CMark output, which I trust.
-    cmarked.size = strlen(processed);
+    size_t length_of_processed = strlen(processed);
+    
+    ErlNifBinary cmarked;
+    enif_alloc_binary(length_of_processed, &cmarked);
+    cmarked.data = processed;
+    cmarked.size = length_of_processed;
 
-    enif_make_binary(env, &cmarked);
+    return enif_make_binary(env, &cmarked);
 }
 
 static ErlNifFunc nif_funcs[] = {

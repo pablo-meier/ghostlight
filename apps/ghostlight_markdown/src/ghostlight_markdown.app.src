@@ -1,0 +1,13 @@
+{application, ghostlight_markdown,
+ [{description, "Web-safe Markdown parser for Ghostlight (using NIFs and Java)"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {'ghostlight_markdown_app', []}},
+  {applications,
+   [kernel,
+    lager,
+    stdlib
+   ]},
+   {env,[]},
+   {modules, []}
+ ]}.

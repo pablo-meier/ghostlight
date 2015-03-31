@@ -1,0 +1,1 @@
+clang -o ./priv/ghostlight_markdown_nifs.so -bundle -flat_namespace -undefined suppress -lcmark -Ic_src -I /Users/pablo/scripts/erlangs/17.4/erts-6.3/include ./c_src/ghostlight_cmark_caller.c

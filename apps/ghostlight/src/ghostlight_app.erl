@@ -61,8 +61,7 @@ compile_all_templates() ->
                     FileAbsName = filename:join([Native, File]),
                     lager:info("  Compiling a template module named ~p~n", [ModuleName]),
                     case erlydtl:compile_file(FileAbsName, list_to_atom(ModuleName), [{out_dir, false},
-                                                                                      {return_errors, true},
-                                                                                      {auto_escape, false}]) of
+                                                                                      {return_errors, true}]) of
                         {ok, _} ->
                             lager:info("    Success");
                         Else ->

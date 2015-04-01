@@ -38,10 +38,6 @@ public class GhostlightHtmlSanitizer {
 
         OtpNode node = new OtpNode(nodeName, cookie);
         mBox = node.createMbox("owasp_java_server");
-
-        for (String name : node.getNames()) {
-            System.out.println("  We have a name " + name);
-        }
     }
 
     public void listen() {
@@ -52,12 +48,10 @@ public class GhostlightHtmlSanitizer {
                 OtpErlangTuple tuple = (OtpErlangTuple) msg;
                 OtpErlangPid from = (OtpErlangPid) tuple.elementAt(0);
                 OtpErlangRef ref = (OtpErlangRef) tuple.elementAt(1);
-
                 String dirty = ((OtpErlangString) tuple.elementAt(2)).stringValue();
 
-                String greeting = "Greetings from Java, " + dirty + "!";
-                System.out.println(greeting);
                 String sanitized = sanitizer.sanitize(dirty);
+
                 OtpErlangString replyString = new OtpErlangString(sanitized);
                 OtpErlangTuple outMsg = new OtpErlangTuple(new OtpErlangObject[]{mBox.self(), ref, replyString});
                 mBox.send(from, outMsg);

@@ -4,6 +4,10 @@ import com.ericsson.otp.erlang.*;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.*;
+
 import java.io.IOException;
 
 
@@ -18,12 +22,12 @@ import java.io.IOException;
  */
 public class GhostlightHtmlSanitizer {
 
+    private ExecutorService exec;
     private OtpMbox mBox;
     private PolicyFactory sanitizer;
 
-    public GhostlightHtmlSanitizer(String nodeName, String mBoxName, String cookie) throws IOException {
-        OtpNode node = new OtpNode(nodeName, cookie);
-        mBox = node.createMbox(mBoxName);
+    public GhostlightHtmlSanitizer(String nodeName, String cookie) throws IOException {
+        exec = Executors.newFixedThreadPool(10);
 
         // Permissive -- we really just want to stop XSS.
         sanitizer = Sanitizers.FORMATTING
@@ -31,21 +35,31 @@ public class GhostlightHtmlSanitizer {
                         .and(Sanitizers.LINKS)
                         .and(Sanitizers.IMAGES)
                         .and(Sanitizers.STYLES);
+
+        OtpNode node = new OtpNode(nodeName, cookie);
+        mBox = node.createMbox("owasp_java_server");
+
+        for (String name : node.getNames()) {
+            System.out.println("  We have a name " + name);
+        }
     }
 
     public void listen() {
+        System.out.println("____----~~~~////    yOu GoT sOmE jAvA iN yOuR eRlAnG...");
         while (true) {
             try {
                 OtpErlangObject msg = mBox.receive();
                 OtpErlangTuple tuple = (OtpErlangTuple) msg;
                 OtpErlangPid from = (OtpErlangPid) tuple.elementAt(0);
+                OtpErlangRef ref = (OtpErlangRef) tuple.elementAt(1);
 
-                String dirty = ((OtpErlangString) tuple.elementAt(1)).stringValue();
+                String dirty = ((OtpErlangString) tuple.elementAt(2)).stringValue();
+
                 String greeting = "Greetings from Java, " + dirty + "!";
                 System.out.println(greeting);
                 String sanitized = sanitizer.sanitize(dirty);
                 OtpErlangString replyString = new OtpErlangString(sanitized);
-                OtpErlangTuple outMsg = new OtpErlangTuple(new OtpErlangObject[]{mBox.self(), replyString});
+                OtpErlangTuple outMsg = new OtpErlangTuple(new OtpErlangObject[]{mBox.self(), ref, replyString});
                 mBox.send(from, outMsg);
             } catch (OtpErlangDecodeException e) {
                 System.err.println("Failed to decode Erlang term. Details: " + e.getMessage());
@@ -58,15 +72,14 @@ public class GhostlightHtmlSanitizer {
 
     public static void main(String[] args) {
 
-        if (args.length != 3) {
+        if (args.length != 2) {
             System.err.println("Wrong number of arguments:");
-            System.err.println("Expected: nodeName mailboxName cookie");
+            System.err.println("Expected: nodeName cookie");
             System.exit(1);
         }
-        System.out.println("____----~~~~////    yOu GoT sOmE jAvA iN yOuR eRlAnG...");
 
         try {
-            GhostlightHtmlSanitizer sanitizer = new GhostlightHtmlSanitizer(args[0], args[1], args[2]);
+            GhostlightHtmlSanitizer sanitizer = new GhostlightHtmlSanitizer(args[0], args[1]);
             sanitizer.listen();
         } catch (IOException e) {
             System.err.println("IOException creating the OtpNode.");

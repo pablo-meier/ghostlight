@@ -1,0 +1,22 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    manifest {
+        attributes 'Main-class': 'io.ghostlight.sanitizer.GhostlightHtmlSanitizer'
+    }
+}
+
+dependencies {
+    compile 'org.erlang.otp:jinterface:1.5.3.1'
+    compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:r239'
+}
+

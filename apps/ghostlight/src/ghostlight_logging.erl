@@ -8,7 +8,7 @@ execute(Req, Env) ->
     case re:run(Path, "^/static/.*$") of
         nomatch ->
             Method = cowboy_req:method(Req),
-            Now = iso8601:format(now()),
+            Now = iso8601:format(os:timestamp()),
             lager:info("~s  ~s - ~s", [Now, Method, Path]);
         _Else ->
             ok

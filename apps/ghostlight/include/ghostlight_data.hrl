@@ -25,11 +25,12 @@
 }).
 
 -record(work, {
-    id = <<"">>          :: binary(),
-    title = <<"">>       :: binary(),
-    authors = []         :: list(#person{}),
-    description = null   :: null | binary(),
-    minutes_long = null  :: null | integer()
+    id = <<"">>                :: binary(),
+    title = <<"">>             :: binary(),
+    authors = []               :: list(#person{}),
+    description = null         :: null | binary(),
+    collaborating_org = null   :: null | #organization{},
+    minutes_long = null        :: null | integer()
 }).
 
 -record(onstage, {
@@ -93,5 +94,52 @@
 -record(work_return, {
     work = #work{}   :: #work{},
     shows = []       :: list(#show{})
+}).
+
+
+%% Fuck epgsql and the false promise of prepared statements. Everything is tied to the goddamn
+%% collection and now everyone has to share this shit and break my refactor.
+-record(db_state, {connection,
+                   begin_statement,
+                   commit_statement,
+
+                   %% Works
+                   insert_work_statement,
+                   insert_authorship_statement,
+                   get_work_listings,
+                   get_work_meta,
+                   get_work_shows,
+
+                   %% Orgs
+                   insert_org_statement,
+                   get_org_listings,
+                   get_org_meta,
+                   get_org_show_dates,
+                   get_produced_by_org,
+                   get_org_employees,
+
+                   %% Productions
+                   insert_performance_statement,
+                   insert_director_statement,
+                   insert_onstage_statement,
+                   insert_offstage_statement,
+                   insert_show_statement,
+                   insert_dates_statement,
+                   get_show_listings,
+                   get_show_meta,
+                   get_show_onstage,
+                   get_show_offstage,
+                   get_show_authorship,
+                   get_show_directors,
+
+                   %% People
+                   insert_person_statement,
+                   get_person_listings,
+                   get_person_name,
+                   get_person_authorship,
+                   get_person_orgs,
+                   get_person_onstage,
+                   get_person_offstage,
+                   get_person_directorships
 }).
 

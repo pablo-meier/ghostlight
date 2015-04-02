@@ -68,7 +68,8 @@ record_to_proplist(#work_return{
                                title = WorkTitle,
                                authors = Authors,
                                description = Description,
-                               minutes_long = MinutesLong
+                               minutes_long = MinutesLong,
+                               collaborating_org = CollabOrg
                            },
                        shows=Shows}) ->
 
@@ -85,11 +86,22 @@ record_to_proplist(#work_return{
                                                        name=OrgName
                                                       }
                                                } <- Shows ],
+  CollabOrgProplist = case CollabOrg of
+                          null ->
+                              undefined;
+                          #organization{
+                              id=CollabOrgId,
+                              name=CollabOrgName
+                            } -> 
+                              [{org_id, CollabOrgId}, {org_name, CollabOrgName}]
+                      end,
+
 
   [{title, WorkTitle},
    {authors, AuthorsProplist},
    {description, Description},
    {minutes_long, MinutesLong},
+   {collab_org, CollabOrgProplist},
    {shows, ShowsProplist}];
 
 record_to_proplist(#work{
@@ -148,14 +160,19 @@ post_json(Req, State) ->
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     WorkJson = jiffy:decode(RequestBody),
     WorkRecord = json_to_record(WorkJson),
-    Response = ghostlight_db:insert_work(WorkRecord),
-    lager:info("Response from server was ~p~n", [Response]),
-    {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State}.
+    WorkId = ghostlight_db:insert_work(WorkRecord),
+    Response = jiffy:encode({[{<<"id">>, list_to_binary(WorkId)}, {<<"status">>, <<"ok">>}]}),
+    {true, cowboy_req:set_resp_body(Response, Req2), State}.
 
 json_to_record({Proplist}) ->
+    CollabOrg = case proplists:get_value(<<"collaborating_org">>, Proplist, null) of
+                    null -> null;
+                    Org -> ghostlight_org:json_to_record(Org)
+                end,
     #work {
        title = proplists:get_value(<<"title">>, Proplist),
        authors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"authors">>, Proplist)),
        description = proplists:get_value(<<"description">>, Proplist, null),
-       minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null)
+       minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null),
+       collaborating_org = CollabOrg
     }.

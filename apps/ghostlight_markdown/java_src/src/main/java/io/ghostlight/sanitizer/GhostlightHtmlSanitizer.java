@@ -1,6 +1,7 @@
 package io.ghostlight.sanitizer;
 
 import com.ericsson.otp.erlang.*;
+import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
@@ -22,19 +23,20 @@ import java.io.IOException;
  */
 public class GhostlightHtmlSanitizer {
 
-    private ExecutorService exec;
+//    private ExecutorService exec;
     private OtpMbox mBox;
     private PolicyFactory sanitizer;
 
     public GhostlightHtmlSanitizer(String nodeName, String cookie) throws IOException {
-        exec = Executors.newFixedThreadPool(10);
+//        exec = Executors.newFixedThreadPool(10);
 
         // Permissive -- we really just want to stop XSS.
         sanitizer = Sanitizers.FORMATTING
                         .and(Sanitizers.BLOCKS)
                         .and(Sanitizers.LINKS)
                         .and(Sanitizers.IMAGES)
-                        .and(Sanitizers.STYLES);
+                        .and(Sanitizers.STYLES)
+                        .and(new HtmlPolicyBuilder().allowElements("em").toFactory());
 
         OtpNode node = new OtpNode(nodeName, cookie);
         mBox = node.createMbox("owasp_java_server");

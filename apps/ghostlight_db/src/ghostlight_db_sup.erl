@@ -21,7 +21,6 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    lager:info("CALLED INIT!"),
     {ok, { {one_for_one, 5, 60}, 
            [{postgres_toplevel,
              {ghostlight_db, start_link, []},

@@ -3,23 +3,29 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <h1>{{ title }}</h1>
+<h1><em>{{ title }}</em></h1>
   <h3>By
     {% for author in authors %}
       <a href="/people/{{ author.author_id }}">{{ author.author_name }}</a>&nbsp;
-    {% endfor %}</h3>
+    {% endfor %}
+  {% if collab_org %}
+      with <a href="/organizations/{{ collab_org.org_id }}">{{ collab_org.org_name }}</a></h3>
+  {% else %}
+      </h3>
+  {% endif %}
 
   {% if minutes_long %}
-  <p><strong>{{ minutes_long }} minutes long.</strong></p>
+  <p><strong>{{ minutes_long }} minutes.</strong></p>
   {% endif %}
 
   {% if description %}
-  <h3>Description</h3>
-  {{ description }}
+    {% autoescape off %}
+        {{ description }}
+    {% endautoescape %}
   {% endif %}
 
   {% if shows %}
-  <h3>Productions:</h3>
+  <h3>Production History:</h3>
   <ul>
     {% for show in shows %}
     <li><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a>, produced by <a href="/organizations/{{ show.org_id }}">{{ show.org_name }}</a></li>

@@ -68,7 +68,12 @@ CREATE TABLE IF NOT EXISTS shows (
 CREATE TABLE IF NOT EXISTS works (
     work_id UUID PRIMARY KEY,
     title TEXT NOT NULL,
-    description TEXT,
+    description_src TEXT,
+    description_markdown TEXT,
+
+    -- Sometimes a work is made 'with' an org. Think You On The Moors Now with TRE, etc.
+    collaborating_org_id UUID REFERENCES organizations(org_id),
+
     minutes_long INTEGER,
     acl TEXT NOT NULL DEFAULT 'public'
 );

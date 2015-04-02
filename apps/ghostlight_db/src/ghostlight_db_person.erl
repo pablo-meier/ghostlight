@@ -30,50 +30,38 @@
 -export([get/1,
          listings/0,
          insert/1,
-         get_inserts/1]).
+
+         get_inserts/1,
+         prepare_statements/2]).
 
 -define(SERVER, ?MODULE).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
--record(state, {connection,
-                begin_statement,
-                commit_statement,
-
-                insert_person_statement,
-                get_person_listings,
-                get_person_name,
-                get_person_authorship,
-                get_person_orgs,
-                get_person_onstage,
-                get_person_offstage,
-                get_person_directorships
-               }).
-
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 init([]) ->
     C = ghostlight_db_utils:connect_to_postgres(),
-    State = prepare_statements(C),
+    State = ghostlight_db_utils:get_state(C),
     {ok, State}.
 handle_cast(_Msg, State) ->
     {noreply, State}.
 handle_info(_Info, State) ->
     {noreply, State}.
-terminate(Reason, #state{connection=C}) ->
+terminate(Reason, #db_state{connection=C}) ->
     lager:error("DB server (PEOPLE) terminating: ~p", [Reason]),
     epgsql:close(C).
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
 
-handle_call(get_person_listings, _From, State=#state{connection=C, get_person_listings=GP}) ->
+handle_call(get_person_listings, _From, State=#db_state{connection=C, get_person_listings=GP}) ->
     epgsql:bind(C, GP, "", []),
     {ok, Rows} = epgsql:execute(C, GP),
     {reply, Rows, State};
 
 
-handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
+handle_call({get_person, PersonId}, _From, State=#db_state{get_person_name=GN,
                                                         get_person_authorship=GA,
                                                         get_person_orgs=GO,
                                                         get_person_directorships=GD,
@@ -85,20 +73,20 @@ handle_call({get_person, PersonId}, _From, State=#state{get_person_name=GN,
               {GD, [PersonId]},
               {POn, [PersonId]},
               {POff, [PersonId]} ],
-    Reply = exec_batch(Batch, State),
+    Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
 
 handle_call({insert_person, Person}, _From, State) ->
     {Inserts, _Ids} = get_inserts(Person),
-    Reply = exec_batch(Inserts, State),
+    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
     {reply, Reply, State};
 
 handle_call({get_inserts, #person{
                             id=_Id,
                             name=Name}},
             _From, 
-            State=#state{insert_person_statement=IP}) ->
+            State=#db_state{insert_person_statement=IP}) ->
     PersonId = ghostlight_db_utils:fresh_uuid(),
     Reply = {{IP, [PersonId, Name]}, PersonId},
     {reply, Reply, State};
@@ -163,10 +151,7 @@ get_inserts(Person) ->
     gen_server:call(?MODULE, {get_inserts, Person}).
 
 
-prepare_statements(C) ->
-    {ok, BeginStmt} = epgsql:parse(C, "begin_statement", "BEGIN", []),
-    {ok, CommitStmt} = epgsql:parse(C, "commit_statement", "COMMIT", []),
-
+prepare_statements(C, State) ->
     PersonSql = "INSERT INTO people (person_id, name, photo_url, date_added) VALUES($1, $2, NULL, CURRENT_DATE)", 
     {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text]),
 
@@ -204,12 +189,8 @@ prepare_statements(C) ->
     {ok, GetPersonListings} = epgsql:parse(C, "get_person_listings", GetPersonListingsSql, []),
 
 
-    #state{
-       connection=C,
-       begin_statement=BeginStmt,
-       commit_statement=CommitStmt,
+    State#db_state{
        insert_person_statement=InsertPerson,
-
        get_person_listings=GetPersonListings,
        get_person_name=GetPersonName,
        get_person_authorship=GetShowsAuthored,
@@ -219,14 +200,4 @@ prepare_statements(C) ->
        get_person_directorships=GetPersonDirected
     }.
 
-
-%% TODO Put this in one place? The #state bit makes it hard tho.
-exec_batch(Batch, #state{connection=C,
-                         commit_statement=COMMIT,
-                         begin_statement=BEGIN}) ->
-    AsTransaction = lists:append([ [{BEGIN, []}],
-                                   Batch,
-                                   [{COMMIT, []}] ]),
-    Results = epgsql:execute_batch(C, AsTransaction),
-    Results.
 

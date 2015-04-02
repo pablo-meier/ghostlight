@@ -28,75 +28,51 @@
          listings/0,
          insert/1,
          
-         get_inserts/1]).
+         get_inserts/1,
+         prepare_statements/2]).
 
 -define(SERVER, ?MODULE).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
--record(state, {connection,
-                begin_statement,
-                commit_statement,
-
-                insert_work_statement,
-                insert_authorship_statement,
-
-                get_work_listings,
-                get_work_meta,
-                get_work_shows
-               }).
-
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 init([]) ->
     C = ghostlight_db_utils:connect_to_postgres(),
-    State = prepare_statements(C),
+    State = ghostlight_db_utils:get_state(C),
     {ok, State}.
 handle_cast(_Msg, State) ->
     {noreply, State}.
 handle_info(_Info, State) ->
     {noreply, State}.
-terminate(Reason, #state{connection=C}) ->
+terminate(Reason, #db_state{connection=C}) ->
     lager:error("DB server (WORKS) terminating: ~p", [Reason]),
     epgsql:close(C).
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
 
-handle_call(get_work_listings, _From, State=#state{connection=C, get_work_listings=GW}) ->
+handle_call(get_work_listings, _From, State=#db_state{connection=C, get_work_listings=GW}) ->
     epgsql:bind(C, GW, "", []),
     {ok, Rows} = epgsql:execute(C, GW),
     {reply, Rows, State};
 
-handle_call({get_work, WorkId}, _From, State=#state{get_work_meta=GWM,
-                                                    get_work_shows=GWS}) ->
+handle_call({get_work, WorkId}, _From, State=#db_state{get_work_meta=GWM,
+                                                       get_work_shows=GWS}) ->
     Batch = [ {GWM, [WorkId]},
               {GWS, [WorkId]} ],
 
-    Reply = exec_batch(Batch, State),
+    Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
 handle_call({insert_work, Work}, _From, State) ->
-    {Inserts, _Ids} = get_inserts(Work),
-    Reply = exec_batch(Inserts, State),
-    {reply, Reply, State};
+    {Inserts, WorkId} = get_inserts(Work, State),
+    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
+    lager:info("Postgres responded to insert with ~p~n", [Reply]),
+    {reply, WorkId, State};
 
-handle_call({get_inserts, #work{title=Title,
-                                authors=Authors,
-                                description=Description,
-                                minutes_long=MinutesLong}},
-            _From, 
-            State=#state{insert_work_statement=IW,
-                         insert_authorship_statement=IA}) ->
-
-    WorkUUID = ghostlight_db_utils:fresh_uuid(),
-    {PersonInserts, Ids} = lists:unzip([ ghostlight_db_person:get_inserts(Author) || Author <- Authors ]),
-    AuthorshipInserts = [ {IA, [WorkUUID, AuthorUUID]} || AuthorUUID <- Ids ],
-
-    WorkInserts = lists:append([ [{IW, [WorkUUID, Title, Description, MinutesLong, <<"public">>]}],
-                                 PersonInserts,
-                                 AuthorshipInserts]),
-    Reply = {WorkInserts, WorkUUID},
+handle_call({get_inserts, Work}, _From, State) ->
+    Reply = get_inserts(Work, State),
     {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
@@ -112,8 +88,9 @@ handle_call(_Request, _From, State) ->
 get(WorkId) ->
     Response = gen_server:call(?MODULE, {get_work, WorkId}),
     [{ok, []}, {ok, Authors}, {ok, Shows}, {ok, []}] = Response,
-    [{WorkTitle, _, _, Description, MinutesLong}|_] = Authors,
-    AuthorList = [ #person{ id = AuthorId, name = AuthorName } || {_, AuthorId, AuthorName, _, _} <- Authors ],
+    lager:info("Authors is ~p~n", [Authors]),
+    [{WorkTitle, _, _, Description, MinutesLong, CollabOrgId, CollabOrgName}|_] = Authors,
+    AuthorList = [ #person{ id = AuthorId, name = AuthorName } || {_, AuthorId, AuthorName, _, _, _, _} <- Authors ],
     ShowList = [ #show{
                      id=ShowId,
                      title=ShowTitle,
@@ -122,13 +99,23 @@ get(WorkId) ->
                             name=OrgName
                          }
                  } || {ShowId, ShowTitle, OrgId, OrgName} <- Shows],
+
+    CollabOrg = case CollabOrgId of
+                    null ->
+                        null;
+                    _Else -> #organization{
+                                    id=CollabOrgId,
+                                    name=CollabOrgName }
+                end,
+
     #work_return{
        work=#work{
                id=WorkId,
                title=WorkTitle,
                authors=AuthorList,
                description=Description,
-               minutes_long=MinutesLong
+               minutes_long=MinutesLong,
+               collaborating_org=CollabOrg
             },
        shows=ShowList
     }.
@@ -159,19 +146,42 @@ insert(Work) ->
 get_inserts(Work) ->
     gen_server:call(?MODULE, {get_inserts, Work}).
 
+get_inserts(#work{title=Title,
+                  authors=Authors,
+                  description=Description,
+                  collaborating_org=Org,
+                  minutes_long=MinutesLong},
+            #db_state{insert_work_statement=IW,
+                      insert_authorship_statement=IA}) ->
+    WorkUUID = ghostlight_db_utils:fresh_uuid(),
+    {PersonInserts, Ids} = lists:unzip([ ghostlight_db_person:get_inserts(Author) || Author <- Authors ]),
+    AuthorshipInserts = [ {IA, [WorkUUID, AuthorUUID]} || AuthorUUID <- Ids ],
+    {OrgInserts, OrgId} = case Org of 
+                              null -> {[], null};
+                              _Else -> ghostlight_db_org:get_inserts(Org)
+                          end,
 
-prepare_statements(C) ->
-    {ok, BeginStmt} = epgsql:parse(C, "begin_statement", "BEGIN", []),
-    {ok, CommitStmt} = epgsql:parse(C, "commit_statement", "COMMIT", []),
+    Parsed = ghostlight_markdown:parse_markdown(Description),
+    Markdowned = ghostlight_sanitizer:sanitize(Parsed),
 
-    WorksSql = "INSERT INTO works (work_id, title, description, minutes_long, acl) VALUES($1, $2, $3, $4, $5)", 
-    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, int8, text]),
+    WorkInserts = lists:append([ OrgInserts,
+                                 [{IW, [WorkUUID, Title, Description, Markdowned, OrgId, MinutesLong, <<"public">>]}],
+                                 PersonInserts,
+                                 AuthorshipInserts]),
+    {WorkInserts, WorkUUID}.
+
+prepare_statements(C, State) ->
+    WorksSql = "INSERT INTO works (work_id, title, description_src, description_markdown, collaborating_org_id, minutes_long, acl) VALUES($1, $2, $3, $4, $5, $6, $7)", 
+    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, text, uuid, int8, text]),
 
     AuthorshipSql = "INSERT INTO authorship (work_id, person_id) VALUES($1, $2)",
     {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid]),
 
-    GetWorkTitleAndAuthorsSql = "SELECT w.title, p.person_id, p.name, w.description, w.minutes_long FROM works AS w INNER JOIN authorship AS a USING (work_id) "
-        ++ "INNER JOIN people AS p USING (person_id) WHERE a.work_id = $1",
+    GetWorkTitleAndAuthorsSql = "SELECT w.title, p.person_id, p.name, w.description_markdown, w.minutes_long, o.org_id, o.name "
+        ++ "FROM works AS w INNER JOIN authorship AS a USING (work_id) "
+        ++ "INNER JOIN people AS p USING (person_id) "
+        ++ "LEFT OUTER JOIN organizations AS o ON (w.collaborating_org_id = o.org_id) "
+        ++ "WHERE a.work_id = $1",
     {ok, GetWorkTitleAndAuthors} = epgsql:parse(C, "get_work_meta", GetWorkTitleAndAuthorsSql, [uuid]),
 
     GetWorkShowsSql = "SELECT s.show_id, s.title, o.org_id, o.name AS org_name FROM shows AS s "
@@ -185,11 +195,7 @@ prepare_statements(C) ->
     {ok, GetWorkListings} = epgsql:parse(C, "get_work_listings", GetWorkListingsSql, []),
 
 
-    #state{
-       connection=C,
-       begin_statement=BeginStmt,
-       commit_statement=CommitStmt,
-
+    State#db_state{
        insert_work_statement=InsertWork,
        insert_authorship_statement=InsertAuthorship,
 
@@ -198,15 +204,4 @@ prepare_statements(C) ->
 
        get_work_listings=GetWorkListings
     }.
-
-
-%% TODO Put this in one place? The #state bit makes it hard tho.
-exec_batch(Batch, #state{connection=C,
-                         commit_statement=COMMIT,
-                         begin_statement=BEGIN}) ->
-    AsTransaction = lists:append([ [{BEGIN, []}],
-                                   Batch,
-                                   [{COMMIT, []}] ]),
-    Results = epgsql:execute_batch(C, AsTransaction),
-    Results.
 

@@ -19,42 +19,25 @@
 -export([get/1,
          listings/0,
          insert/1,
-         get_inserts/1]).
+
+         get_inserts/1,
+         prepare_statements/2]).
 
 -define(SERVER, ?MODULE).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
--record(state, {connection,
-                begin_statement,
-                commit_statement,
-
-                insert_performance_statement,
-                insert_director_statement,
-                insert_onstage_statement,
-                insert_offstage_statement,
-                insert_show_statement,
-                insert_dates_statement,
-
-                get_show_listings,
-                get_show_meta,
-                get_show_onstage,
-                get_show_offstage,
-                get_show_authorship,
-                get_show_directors
-               }).
-
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 init([]) ->
     C = ghostlight_db_utils:connect_to_postgres(),
-    State = prepare_statements(C),
+    State = ghostlight_db_utils:get_state(C),
     {ok, State}.
 handle_cast(_Msg, State) ->
     {noreply, State}.
 handle_info(_Info, State) ->
     {noreply, State}.
-terminate(Reason, #state{connection=C}) ->
+terminate(Reason, #db_state{connection=C}) ->
     lager:error("DB server (SHOWS) terminating: ~p", [Reason]),
     epgsql:close(C).
 code_change(_OldVsn, State, _Extra) ->
@@ -62,17 +45,17 @@ code_change(_OldVsn, State, _Extra) ->
 
 handle_call({insert_show, Show}, _From, State) ->
     Inserts = get_inserts(Show),
-    Reply = exec_batch(Inserts, State),
+    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
     {reply, Reply, State};
 
 
-handle_call(get_show_listings, _From, State=#state{connection=C, get_show_listings=GL}) ->
+handle_call(get_show_listings, _From, State=#db_state{connection=C, get_show_listings=GL}) ->
     epgsql:bind(C, GL, "", []),
     {ok, Rows} = epgsql:execute(C, GL),
     {reply, Rows, State};
 
 
-handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM,
+handle_call({get_show, ShowId}, _From, State=#db_state{get_show_meta=SM,
                                                     get_show_onstage=SO,
                                                     get_show_offstage=SOff,
                                                     get_show_authorship=SA,
@@ -82,7 +65,7 @@ handle_call({get_show, ShowId}, _From, State=#state{get_show_meta=SM,
               {SOff, [ShowId]},
               {SA, [ShowId]},
               {SD, [ShowId]}],
-    Reply = exec_batch(Batch, State),
+    Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
 handle_call({get_inserts, 
@@ -93,7 +76,7 @@ handle_call({get_inserts,
                    dates=Dates
             }},
             _From, 
-            State=#state{ insert_show_statement=IS,
+            State=#db_state{ insert_show_statement=IS,
                           insert_dates_statement=ID}) ->
     Works = extract_works(Performances),
     {AllWorkInserts, WorksWithId} = fold_over_works(Works),
@@ -130,7 +113,7 @@ get_performance_inserts(WorksWithIds,
                            onstage=Onstage,
                            offstage=Offstage,
                            directors=Directors },
-                        State=#state{insert_performance_statement=IP}) ->
+                        State=#db_state{insert_performance_statement=IP}) ->
     PerformanceId = ghostlight_db_utils:fresh_uuid(),
     WorkId = proplists:get_value(Work, WorksWithIds),
     PerformanceInserts = [{IP, [PerformanceId, WorkId, ShowId, PerformanceOrder]}],
@@ -145,7 +128,7 @@ get_performance_inserts(WorksWithIds,
     {Inserts, PerformanceId}.
 
 
-get_director_inserts(PerformanceId, Directors, #state{insert_director_statement=ID}) ->
+get_director_inserts(PerformanceId, Directors, #db_state{insert_director_statement=ID}) ->
     ListOfLists = lists:map(fun (Person) ->
                                 {PersonInserts, [PersonId]} = ghostlight_db_person:get_inserts(Person),
                                 DirectorInsert = {ID, [PerformanceId, PersonId]},
@@ -153,7 +136,7 @@ get_director_inserts(PerformanceId, Directors, #state{insert_director_statement=
                             end, Directors),
     lists:flatten(ListOfLists).
 
-get_onstage_inserts(PerformanceId, OnstageList, #state{insert_onstage_statement=IO}) ->
+get_onstage_inserts(PerformanceId, OnstageList, #db_state{insert_onstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#onstage{ role=Role,
                                            person=Person }) ->
                                 {PersonInserts, [PersonId]} = ghostlight_db_person:get_inserts(Person),
@@ -163,7 +146,7 @@ get_onstage_inserts(PerformanceId, OnstageList, #state{insert_onstage_statement=
     lists:flatten(ListOfLists).
 
 
-get_offstage_inserts(PerformanceId, OffstageList, #state{insert_offstage_statement=IO}) ->
+get_offstage_inserts(PerformanceId, OffstageList, #db_state{insert_offstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#offstage{ job=Job,
                                             person=Person }) ->
                                 {PersonInserts, [PersonId]} = ghostlight_db_person:get_inserts(Person),
@@ -289,10 +272,7 @@ get_inserts(Show) ->
     gen_server:call(?MODULE, {get_inserts, Show}).
 
 
-prepare_statements(C) ->
-    {ok, BeginStmt} = epgsql:parse(C, "begin_statement", "BEGIN", []),
-    {ok, CommitStmt} = epgsql:parse(C, "commit_statement", "COMMIT", []),
-
+prepare_statements(C, State) ->
     PerformanceSql = "INSERT INTO performances (performance_id, work_id, show_id, performance_order)"
         ++ " VALUES($1, $2, $3, $4)",
     {ok, InsertPerformance} = epgsql:parse(C, "insert_performance", PerformanceSql, [uuid, uuid, uuid, int4]),
@@ -362,11 +342,7 @@ prepare_statements(C) ->
 
 
  
-    #state{
-       connection=C,
-       begin_statement=BeginStmt,
-       commit_statement=CommitStmt,
-
+    State#db_state{
        insert_performance_statement=InsertPerformance,
        insert_director_statement=InsertDirector,
        insert_onstage_statement=InsertOnstage,
@@ -381,15 +357,4 @@ prepare_statements(C) ->
        get_show_authorship=GetAuthors,
        get_show_directors=GetDirectors
     }.
-
-
-%% TODO Put this in one place? The #state bit makes it hard tho.
-exec_batch(Batch, #state{connection=C,
-                         commit_statement=COMMIT,
-                         begin_statement=BEGIN}) ->
-    AsTransaction = lists:append([ [{BEGIN, []}],
-                                   Batch,
-                                   [{COMMIT, []}] ]),
-    Results = epgsql:execute_batch(C, AsTransaction),
-    Results.
 

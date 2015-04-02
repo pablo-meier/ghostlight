@@ -56,24 +56,30 @@ handle_call({get_org, OrgId}, _From, State=#db_state{get_org_meta=GOM,
     {reply, Reply, State};
 
 handle_call({insert_org, Org}, _From, State) ->
-    {Inserts, _Ids} = get_inserts(Org),
+    {Inserts, Id} = get_inserts(Org, State),
     Reply = ghostlight_db_utils:exec_batch(Inserts, State),
+    lager:info("Postgres returned ~p for insert", [Reply]),
+    {reply, Id, State};
+
+
+handle_call({get_inserts, Org }, _From, State) ->
+    Reply = get_inserts(Org, State),
     {reply, Reply, State};
 
+handle_call(_Request, _From, State) ->
+    Reply = ok,
+    {reply, Reply, State}.
 
-handle_call({get_inserts,
-             #organization {
-                    name=Name,
-                    tagline=Tagline,
-                    description=Description,
-                    parent=Parent,
-                    vanity_name=VanityName,
-                    date_founded=DateFounded,
-                    visibility=Visibility
-               }},
-            _From, 
-            State=#db_state{insert_org_statement=IO}) ->
 
+get_inserts(#organization {
+                name=Name,
+                tagline=Tagline,
+                description=Description,
+                parent=Parent,
+                vanity_name=VanityName,
+                date_founded=DateFounded,
+                visibility=Visibility
+           }, #db_state{insert_org_statement=IO}) ->
     OrgId = ghostlight_db_utils:fresh_uuid(),
     ParentInsert = case Parent of
                        {id, <<"">>} -> null;
@@ -85,13 +91,7 @@ handle_call({get_inserts,
     DateFoundedInsert = ghostlight_db_utils:null_if_unspecified(DateFounded),
 
     OrgInserts = [{IO, [OrgId, ParentInsert, Name, TaglineInsert, DescriptionInsert, VanityNameInsert, DateFoundedInsert, Visibility]}],
-    Reply = {OrgInserts, OrgId},
-    {reply, Reply, State};
-
-handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
-
+    {OrgInserts, OrgId}.
 
 
 %%%===================================================================

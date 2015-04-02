@@ -1,0 +1,76 @@
+{
+  "name": "Theater Reconstruction Ensemble",
+  "description": "**Theater Reconstruction Ensemble** is a New York based collective of theater artists striving to reconstruct both classical and canonical forms of theatricality through the playful development of works over time. Committed to a collaborative approach to theater making, **TRE** functions as an ensemble of actors, playwrights, designers, and directors working together to thoroughly examine each element of a theatrical text or tradition and build productions that reflect the ensemble’s personal connection to the works being explored.\n\nFounded in **2010** by John Kurzynowski and Kate Marvin, **Theater Reconstruction Ensemble** has since developed and produced six mainstage productions and brought together dozens of artists from across the downtown theater community.\n\nBased on methods explored through previous collaborations with such companies and institutions as **Target Margin Theater** and NYU's **Experimental Theatre Wing**, the founding members of **TRE** created a process of development and the creation of new material through a series of workshops dedicated to the deconstruction of a classical text or canonical theatrical practice and the eventual reconstruction of the material in play based on the ensemble's findings and discoveries. This process has paved the way for each season's ensemble to develop and create ground-breaking and unique new productions of both original and well-established works.",
+  "website_link": "http://www.reconstructionensemble.org/",
+  "email": "reconstructionensemble@gmail.com",
+  "facebook": "https://www.facebook.com/reconstructionensemble",
+  "twitter": "https://twitter.com/TREnsemble",
+  "vimeo": "https://vimeo.com/reconstructionensemble",
+  "instagram": "http://instagram.com/trensemble",
+  "newsletter": "http://reconstructionensemble.us2.list-manage.com/subscribe?u=6b8c506153ad22cc2392f9745&id=8046d77e87",
+  "employees": [
+    {
+      "person": {
+          "name" : "John Kurzynowksi"
+      },
+      "title": "Artistic Director",
+      "description" : "John Kurzynowksi is the founder of Theater Reconstruction Ensemble, for which he has developed and directed each mainstage production and educational program. He has also worked extensively as both a director and performer with Target Margin Theater and Tugboat Collective, as well as The Talking Band, Fresh Ground Pepper, and Little Lord."
+    },
+    {
+      "person": {
+          "name" : "Reed Whitney"
+      },
+      "title": "Producing Director",
+      "description" : "Reed Whitney has been with TRE since 2012, resulting in both critical and artistic growth for the company. Additional producing credits include _The Lost Light_ (SharkMother Arts Collective) and _Nuclear Love Affair_ (Built4Collapse). He previously served as the Artistic Coordinator for Ars Nova."
+    },
+    {
+      "person": {
+          "name" : "Jaclyn Backhaus"
+      },
+      "title": "Resident Playwright",
+      "description" : "Jaclyn Backhaus is a founding member of TRE, for which she has written _You On The Moors Now_, _Set in the Living Room of a Small Town American Play_ and _The Three Seagulls, or MASHAMASHAMASHA!_ Her work has been produced by Clubbed Thumb, Ars Nova, and the New Ohio. She is also a co-founder of Fresh Ground Pepper."
+    },
+    {
+      "person": {"name": "Anastasia Olowin"},
+      "title": "Associate Artistic Director"
+    },
+    {
+      "person": {"name": "Kate Marvin"},
+      "title": "Associate Artistic Director"
+    },
+
+    {
+      "person": {"name": "John Del Gaudio"},
+      "title": "Advisory Board Member"
+    },
+    {
+      "person": {"name": "Cale Hammons"},
+      "title": "Advisory Board Member"
+    },
+    {
+      "person": {"name": "David Herskovitz"},
+      "title": "Advisory Board Member"
+    },
+    {
+      "person": {"name": "Mel Marvin"},
+      "title": "Advisory Board Member"
+    },
+    {
+      "person": {"name": "Kate Scelsa"},
+      "title": "Advisory Board Member"
+    },
+    {
+      "person": {"name": "Tina Shepard"},
+      "title": "Advisory Board Member"
+    }],
+
+    "members" : [
+      { "person": { "name": "Harlan Alford" } },
+      { "person": { "name": "Jaclyn Backhaus" } },
+      { "person": { "name": "Nathaniel Basch-Gould" } },
+      { "person": { "name": "Sam Corbin" } },
+      { "person": { "name": "Eben Hoffer" } },
+      { "person": { "name": "Anastasia Olowin" } },
+      { "person": { "name": "Jon Riddleberger" }}
+    ]
+}

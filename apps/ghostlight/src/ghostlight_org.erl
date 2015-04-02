@@ -179,8 +179,9 @@ post_json(Req, State) ->
     OrgRecord = json_to_record(AsJson),
     case OrgRecord#organization.id of
         null ->
-            _Response = ghostlight_db:insert_org(OrgRecord),
-            {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State};
+            OrgId = ghostlight_db:insert_org(OrgRecord),
+            Response = jiffy:encode({[{<<"status">>, ok}, {<<"id">>, list_to_binary(OrgId)}]}),
+            {true, cowboy_req:set_resp_body(Response, Req2), State};
         _Else ->
             Body = jiffy:encode({[{<<"error">>, <<"You may not insert an organization with the field 'id'.">>}]}),
             Req3 = cowboy_req:set_resp_body(Body, Req2),

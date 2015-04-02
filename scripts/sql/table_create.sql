@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS organizations (
     parent_org UUID,
     name text NOT NULL,
     tagline TEXT,
-    description TEXT,
+    description_src TEXT,
+    description_markdown TEXT,
     vanity_name TEXT,
     date_founded date,
     visibility TEXT NOT NULL DEFAULT 'public'
@@ -134,7 +135,10 @@ CREATE TABLE IF NOT EXISTS show_dates (
 CREATE TABLE IF NOT EXISTS org_memberships (
     org_id UUID REFERENCES organizations(org_id) NOT NULL,
     user_id UUID REFERENCES users(user_id) NOT NULL,
-    role TEXT NOT NULL,
+    description_src TEXT,
+    description_markdown TEXT,
+    date_started DATE,
+    date_ended DATE,
     PRIMARY KEY(org_id, user_id)
 );
 
@@ -142,8 +146,29 @@ CREATE TABLE IF NOT EXISTS org_memberships (
 CREATE TABLE IF NOT EXISTS org_employees (
     org_id UUID REFERENCES organizations(org_id) NOT NULL,
     person_id UUID REFERENCES people(person_id) NOT NULL,
-    title TEXT,
+    title TEXT NOT NULL,
+    description_src TEXT NOT NULL,
+    description_markdown TEXT NOT NULL,
     date_started DATE,
     date_ended DATE,
     PRIMARY KEY(org_id, person_id)
 );
+
+CREATE TYPE link_type AS ENUM (
+    'website',
+    'email',
+    'facebook',
+    'twitter',
+    'instagram',
+    'vimeo',
+    'youtube',
+    'blog',
+    'newsletter');
+
+CREATE TABLE IF NOT EXISTS org_links (
+   org_id UUID REFERENCES organizations(org_id) NOT NULL,
+   link TEXT NOT NULL,
+   type link_type NOT NULL,
+   PRIMARY KEY(show_id, show_date)
+); 
+

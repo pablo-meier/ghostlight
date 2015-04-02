@@ -7,21 +7,46 @@
 -type datetime() :: {{integer(), integer(), integer()}, {integer(), integer(), float()}}.
 -type organization_parent() :: {id, binary()}.
 
+-record(person, {
+    id = <<"">>   :: binary(),
+    name = <<"">> :: binary()
+}).
+
+-record(external_links, {
+    website = null             :: null | binary(),
+    email_address = null       :: null | binary(),
+    blog = null                :: null | binary(),
+    mailing_list = null        :: null | binary(),
+    facebook = null            :: null | binary(),
+    twitter = null             :: null | binary(),
+    instagram = null           :: null | binary(),
+    vimeo = null               :: null | binary(),
+    youtube = null             :: null | binary()
+}).
+
+-record(org_member, {
+    member = null      :: null | #person{},
+    description = null :: null | binary()
+}).
+
+-record(org_employee, {
+    person = null      :: null | #person{},
+    title = null       :: null | binary(),
+    description = null :: null | binary()
+}).
 
 -record(organization, {
     id = <<"">>                :: binary(),
     name = <<"">>              :: binary(),
     tagline = <<"">>           :: binary(),
-    parent = {id, <<"">>}      :: organization_parent(),
     description = <<"">>       :: binary(),
+    parent = {id, <<"">>}      :: organization_parent(),
     vanity_name = <<"">>       :: binary(),
     date_founded = {}          :: datetime(),
+    social_media_links = null  :: null | #external_links{},
+    members = null             :: null | list(#org_member{}),
+    employees = null           :: null | list(#org_employee{}),
     visibility = <<"public">>  :: binary()
-}).
-
--record(person, {
-    id = <<"">>  :: binary(),
-    name = <<"">> :: binary()
 }).
 
 -record(work, {
@@ -41,11 +66,6 @@
 -record(offstage, {
     job = <<"">>       :: binary(),
     person = #person{} :: #person{}
-}).
-
--record(org_employee, {
-    person = #person{} :: #person{},
-    title = <<"">>     :: binary()
 }).
 
 -record(performance, {
@@ -98,7 +118,8 @@
 
 
 %% Fuck epgsql and the false promise of prepared statements. Everything is tied to the goddamn
-%% collection and now everyone has to share this shit and break my refactor.
+%% connection and now everyone in the db applications has to share this monolithic shit and
+%% break my refactor.
 -record(db_state, {connection,
                    begin_statement,
                    commit_statement,

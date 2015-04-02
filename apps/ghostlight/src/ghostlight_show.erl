@@ -175,10 +175,9 @@ post_json(Req, State) ->
     % upload the body, return yes or no
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     ShowRecord = show_json_to_record(RequestBody),
-    Response = ghostlight_db:insert_show(ShowRecord),
-    lager:info("~nResponse from DB server is ~p~n", [Response]),
-
-    {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State}.
+    ShowId = ghostlight_db:insert_show(ShowRecord),
+    Response = jiffy:encode({[{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(ShowId)}]}),
+    {true, cowboy_req:set_resp_body(Response, Req2), State}.
 
 
 show_json_to_record(JsonInput) ->

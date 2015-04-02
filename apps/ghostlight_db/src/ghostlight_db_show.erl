@@ -44,9 +44,10 @@ code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
 handle_call({insert_show, Show}, _From, State) ->
-    Inserts = get_inserts(Show),
+    {Inserts, Id} = get_inserts(Show, State),
     Reply = ghostlight_db_utils:exec_batch(Inserts, State),
-    {reply, Reply, State};
+    lager:info("Postgres returned ~p for show insert", [Reply]),
+    {reply, Id, State};
 
 
 handle_call(get_show_listings, _From, State=#db_state{connection=C, get_show_listings=GL}) ->
@@ -68,16 +69,21 @@ handle_call({get_show, ShowId}, _From, State=#db_state{get_show_meta=SM,
     Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
-handle_call({get_inserts, 
-             #show{title=Title,
-                   org=Org,
-                   performances=Performances,
-                   special_thanks=SpecialThanks,
-                   dates=Dates
-            }},
-            _From, 
-            State=#db_state{ insert_show_statement=IS,
-                          insert_dates_statement=ID}) ->
+handle_call({get_inserts, Show}, _From, State) ->
+    get_inserts(Show, State);
+
+handle_call(_Request, _From, State) ->
+    Reply = ok,
+    {reply, Reply, State}.
+
+get_inserts(#show{title=Title,
+                  org=Org,
+                  performances=Performances,
+                  special_thanks=SpecialThanks,
+                  dates=Dates
+            },
+            State=#db_state{insert_show_statement=IS,
+                            insert_dates_statement=ID}) ->
     Works = extract_works(Performances),
     {AllWorkInserts, WorksWithId} = fold_over_works(Works),
     {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org),
@@ -94,13 +100,7 @@ handle_call({get_inserts,
                           DateInserts,
                           AllPerformanceInserts
                          ]),
-    Batch;
-
-
-handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
-
+    {Batch, ShowId}.
 
 extract_works(Performances) ->
     lists:map(fun (#performance{work = Work}) -> Work end, Performances).
@@ -130,18 +130,18 @@ get_performance_inserts(WorksWithIds,
 
 get_director_inserts(PerformanceId, Directors, #db_state{insert_director_statement=ID}) ->
     ListOfLists = lists:map(fun (Person) ->
-                                {PersonInserts, [PersonId]} = ghostlight_db_person:get_inserts(Person),
+                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
                                 DirectorInsert = {ID, [PerformanceId, PersonId]},
-                                lists:reverse([DirectorInsert|PersonInserts])
+                                [PersonInserts, DirectorInsert]
                             end, Directors),
     lists:flatten(ListOfLists).
 
 get_onstage_inserts(PerformanceId, OnstageList, #db_state{insert_onstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#onstage{ role=Role,
                                            person=Person }) ->
-                                {PersonInserts, [PersonId]} = ghostlight_db_person:get_inserts(Person),
+                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
                                 OnstageInsert = {IO, [PerformanceId, PersonId, Role, null, null, null]},
-                                lists:reverse([OnstageInsert|PersonInserts])
+                                [PersonInserts, OnstageInsert]
                             end, OnstageList),
     lists:flatten(ListOfLists).
 
@@ -149,9 +149,9 @@ get_onstage_inserts(PerformanceId, OnstageList, #db_state{insert_onstage_stateme
 get_offstage_inserts(PerformanceId, OffstageList, #db_state{insert_offstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#offstage{ job=Job,
                                             person=Person }) ->
-                                {PersonInserts, [PersonId]} = ghostlight_db_person:get_inserts(Person),
+                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
                                 OffstageInsert = {IO, [PerformanceId, PersonId, Job, null, null]},
-                                lists:reverse([OffstageInsert|PersonInserts])
+                                [PersonInserts, OffstageInsert]
                             end, OffstageList),
     lists:flatten(ListOfLists).
 

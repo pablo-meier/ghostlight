@@ -158,11 +158,15 @@ get_inserts(#work{title=Title,
     AuthorshipInserts = [ {IA, [WorkUUID, AuthorUUID]} || AuthorUUID <- Ids ],
     {OrgInserts, OrgId} = case Org of 
                               null -> {[], null};
-                              _Else -> ghostlight_db_org:get_inserts(Org)
+                              _ -> ghostlight_db_org:get_inserts(Org)
                           end,
 
-    Parsed = ghostlight_markdown:parse_markdown(Description),
-    Markdowned = ghostlight_sanitizer:sanitize(Parsed),
+    Markdowned = case Description of 
+                     null -> null;
+                     _ ->
+                         Parsed = ghostlight_markdown:parse_markdown(Description),
+                         ghostlight_sanitizer:sanitize(Parsed)
+                 end,
 
     WorkInserts = lists:append([ OrgInserts,
                                  [{IW, [WorkUUID, Title, Description, Markdowned, OrgId, MinutesLong, <<"public">>]}],

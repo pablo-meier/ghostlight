@@ -78,23 +78,29 @@ handle_call({get_person, PersonId}, _From, State=#db_state{get_person_name=GN,
 
 
 handle_call({insert_person, Person}, _From, State) ->
-    {Inserts, _Ids} = get_inserts(Person),
+    {Inserts, Id} = get_inserts(Person, State),
     Reply = ghostlight_db_utils:exec_batch(Inserts, State),
-    {reply, Reply, State};
+    lager:info("Postgres responsed ~p for person insert", [Reply]),
+    {reply, Id, State};
 
-handle_call({get_inserts, #person{
-                            id=_Id,
-                            name=Name}},
-            _From, 
-            State=#db_state{insert_person_statement=IP}) ->
-    PersonId = ghostlight_db_utils:fresh_uuid(),
-    Reply = {{IP, [PersonId, Name]}, PersonId},
+handle_call({get_inserts, Person}, _From, State) ->
+    Reply = get_inserts(Person, State),
     {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
 
+
+get_inserts(#person{ name=Name,
+                     description=Description,
+                     external_links=Links }, #db_state{insert_person_statement=IP, insert_person_links_statement=PL}) ->
+    PersonId = ghostlight_db_utils:fresh_uuid(),
+    Markdowned = ghostlight_db_utils:markdown_or_null(Description),
+    LinkInserts = ghostlight_db_utils:external_links_inserts(PersonId, PL, Links),
+    AllInserts = lists:append([ [{IP, [PersonId, Name, Description, Markdowned]}],
+                                 LinkInserts]),
+    {AllInserts, PersonId}.
 
 
 %%%===================================================================
@@ -152,8 +158,11 @@ get_inserts(Person) ->
 
 
 prepare_statements(C, State) ->
-    PersonSql = "INSERT INTO people (person_id, name, photo_url, date_added) VALUES($1, $2, NULL, CURRENT_DATE)", 
-    {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text]),
+    PersonSql = "INSERT INTO people (person_id, name, description_src, description_markdown, photo_id, date_added) VALUES($1, $2, $3, $4, NULL, CURRENT_DATE)", 
+    {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text, text, text]),
+
+    PersonLinksSql = "INSERT INTO people_links (person_id, link, type) VALUES($1, $2, $3::link_type)",
+    {ok, PersonLinks} = epgsql:parse(C, "insert_person_links", PersonLinksSql, [uuid, text, text]),
 
     GetPersonNameSql = "SELECT name FROM people WHERE person_id = $1",
     {ok, GetPersonName} = epgsql:parse(C, "get_person_name", GetPersonNameSql, [uuid]),
@@ -191,6 +200,7 @@ prepare_statements(C, State) ->
 
     State#db_state{
        insert_person_statement=InsertPerson,
+       insert_person_links_statement=PersonLinks,
        get_person_listings=GetPersonListings,
        get_person_name=GetPersonName,
        get_person_authorship=GetShowsAuthored,

@@ -5,7 +5,8 @@
          null_if_unspecified/1,
          get_state/1,
          exec_batch/2,
-         external_links_sql_to_record/1]).
+         external_links_sql_to_record/1,
+         external_links_inserts/3]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -73,4 +74,53 @@ external_links_sql_to_record(Links) ->
                             end
                         end
                 end, #external_links{}, Links).
+
+
+external_links_inserts(OrgId,
+                       Stmt,
+                       #external_links{ 
+                          website=Website, 
+                          email_address=Email, 
+                          blog=Blog, 
+                          mailing_list=MailingList,
+                          facebook=Facebook, 
+                          twitter=Twitter, 
+                          instagram=Instagram,
+                          vimeo=Vimeo,
+                          youtube=YouTube,
+                          pinterest=Pinterest,
+                          tumblr=Tumblr,
+                          gplus=GPlus
+                         }) ->
+    WebsiteI = null_or_link_insert(OrgId, Website, <<"website">>, Stmt),
+    EmailI = null_or_link_insert(OrgId, Email, <<"email">>, Stmt),
+    BlogI = null_or_link_insert(OrgId, Blog, <<"blog">>, Stmt),
+    MailingListI = null_or_link_insert(OrgId, MailingList, <<"newsletter">>, Stmt),
+    FacebookI = null_or_link_insert(OrgId, Facebook, <<"facebook">>, Stmt),
+    TwitterI = null_or_link_insert(OrgId, Twitter, <<"twitter">>, Stmt),
+    InstagramI = null_or_link_insert(OrgId, Instagram, <<"instagram">>, Stmt),
+    VimeoI = null_or_link_insert(OrgId, Vimeo, <<"vimeo">>, Stmt),
+    YouTubeI = null_or_link_insert(OrgId, YouTube, <<"youtube">>, Stmt),
+    PinterestI = null_or_link_insert(OrgId, Pinterest, <<"pinterest">>, Stmt),
+    TumblrI = null_or_link_insert(OrgId, Tumblr, <<"tumblr">>, Stmt),
+    GPlusI = null_or_link_insert(OrgId, GPlus, <<"gplus">>, Stmt),
+    lists:filter(fun(X) -> X =/= null end, [WebsiteI,
+                                            EmailI,
+                                            BlogI,
+                                            MailingListI,
+                                            FacebookI,
+                                            TwitterI,
+                                            InstagramI,
+                                            VimeoI,
+                                            YouTubeI,
+                                            PinterestI,
+                                            TumblrI,
+                                            GPlusI]).
+
+null_or_link_insert(OrgId, Link, Type, Stmt) ->
+    case Link of
+        null -> null;
+        _ -> {Stmt, [OrgId, Link, Type]}
+    end.
+
 

@@ -86,7 +86,8 @@ get_inserts(#organization {
                 employees=Employees,
                 external_links=Links,
                 visibility=Visibility
-           }, State=#db_state{insert_org_statement=IO}) ->
+           }, State=#db_state{insert_org_statement=IO,
+                              insert_org_external_link=OL}) ->
     OrgId = ghostlight_db_utils:fresh_uuid(),
     ParentInsert = case Parent of
                        {id, <<"">>} -> null;
@@ -101,7 +102,7 @@ get_inserts(#organization {
     DateFoundedInsert = ghostlight_db_utils:null_if_unspecified(DateFounded),
     MemberInserts = lists:flatten( [ member_inserts(OrgId, Member, State) || Member <- Members ]),
     EmployeeInserts = lists:flatten( [ employee_inserts(OrgId, Employee, State) || Employee <- Employees]),
-    LinkInserts = external_links_inserts(OrgId, Links, State),
+    LinkInserts = ghostlight_db_utils:external_links_inserts(OrgId, OL, Links),
 
     OrgInserts = lists:append([ [{IO, [OrgId, ParentInsert, Name, 
                                        TaglineInsert, DescriptionInsert, Markdowned, 
@@ -124,43 +125,6 @@ employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=De
     [PersonInsert,
      {IE, [OrgId, PersonId, Title, Description, Markdowned, null, null]}].
     
-external_links_inserts(OrgId,
-                       #external_links{ 
-                          website=Website, 
-                          email_address=Email, 
-                          blog=Blog, 
-                          mailing_list=MailingList,
-                          facebook=Facebook, 
-                          twitter=Twitter, 
-                          instagram=Instagram,
-                          vimeo=Vimeo,
-                          youtube=YouTube
-                         }, #db_state{insert_org_external_link=IL}) ->
-    WebsiteI = null_or_link_insert(OrgId, Website, <<"website">>, IL),
-    EmailI = null_or_link_insert(OrgId, Email, <<"email">>, IL),
-    BlogI = null_or_link_insert(OrgId, Blog, <<"blog">>, IL),
-    MailingListI = null_or_link_insert(OrgId, MailingList, <<"newsletter">>, IL),
-    FacebookI = null_or_link_insert(OrgId, Facebook, <<"facebook">>, IL),
-    TwitterI = null_or_link_insert(OrgId, Twitter, <<"twitter">>, IL),
-    InstagramI = null_or_link_insert(OrgId, Instagram, <<"instagram">>, IL),
-    VimeoI = null_or_link_insert(OrgId, Vimeo, <<"vimeo">>, IL),
-    YouTubeI = null_or_link_insert(OrgId, YouTube, <<"youtube">>, IL),
-    lists:filter(fun(X) -> X =/= null end, [WebsiteI,
-                                            EmailI,
-                                            BlogI,
-                                            MailingListI,
-                                            FacebookI,
-                                            TwitterI,
-                                            InstagramI,
-                                            VimeoI,
-                                            YouTubeI]).
-
-null_or_link_insert(OrgId, Link, Type, Stmt) ->
-    case Link of
-        null -> null;
-        _ -> {Stmt, [OrgId, Link, Type]}
-    end.
-
 
 %%%===================================================================
 %%% Resource callbacks.

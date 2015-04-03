@@ -55,6 +55,8 @@ external_links_record_to_proplist(
     lists:filter(fun({_, V}) -> V =/= null end, Candidate).
  
 
+
+
 %% iso8601 is pretty great, and epgsql are pretty great, but they don't play well together.
 %% Namely, epgsql returns dates where the seconds value is a float, which iso8601 doesn't 
 %% pattern match for. We truncate it out to let them play together.

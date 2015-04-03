@@ -7,11 +7,6 @@
 -type datetime() :: {{integer(), integer(), integer()}, {integer(), integer(), float()}}.
 -type organization_parent() :: {id, binary()}.
 
--record(person, {
-    id = <<"">>   :: binary(),
-    name = <<"">> :: binary()
-}).
-
 -record(external_links, {
     website = null             :: null | binary(),
     email_address = null       :: null | binary(),
@@ -25,6 +20,13 @@
     pinterest = null           :: null | binary(),
     tumblr = null              :: null | binary(),
     gplus = null               :: null | binary()
+}).
+
+-record(person, {
+    id = <<"">>           :: binary(),
+    name = <<"">>         :: binary(),
+    external_links = null :: null | #external_links{},
+    description = null    :: null | binary()
 }).
 
 -record(org_member, {
@@ -162,6 +164,7 @@
 
                    %% People
                    insert_person_statement,
+                   insert_person_links_statement,
                    get_person_listings,
                    get_person_name,
                    get_person_authorship,

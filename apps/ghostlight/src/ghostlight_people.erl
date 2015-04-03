@@ -144,9 +144,14 @@ record_to_proplist(#person{
 json_to_record({Person}) ->
     PersonId = proplists:get_value(<<"id">>, Person, null),
     PersonName = proplists:get_value(<<"name">>, Person, null),
+    PersonDescription = proplists:get_value(<<"description">>, Person, null),
+    ExternalLinks = ghostlight_utils:external_links_json_to_record(Person),
+
     #person{
        id = PersonId,
-       name = PersonName
+       name = PersonName,
+       description = PersonDescription,
+       external_links=ExternalLinks
     }.
 
 person_to_json(Req, State) ->
@@ -181,7 +186,6 @@ record_to_json(#person_return{
                      offstage=Offstage,
                      orgs=Orgs
                }) ->
-
     ghostlight_utils:json_with_valid_values([
         {<<"id">>, PersonId},
         {<<"name">>, Name},
@@ -199,8 +203,9 @@ post_json(Req, State) ->
     PersonRecord = json_to_record(AsJson),
     case PersonRecord#person.id of
         null ->
-            _Response = ghostlight_db:insert_person(PersonRecord),
-            {true, cowboy_req:set_resp_body(<<"ok">>, Req2), State};
+            PersonId = ghostlight_db:insert_person(PersonRecord),
+            Response = jiffy:encode({[{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(PersonId)}]}),
+            {true, cowboy_req:set_resp_body(Response, Req2), State};
         _Else ->
             Body = jiffy:encode({[{<<"error">>, <<"You may not insert a person with the field 'id'.">>}]}),
             Req3 = cowboy_req:set_resp_body(Body, Req2),

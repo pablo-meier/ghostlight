@@ -107,8 +107,7 @@
 
 -record(org_return, {
     org = #organization{} :: #organization{},
-    shows_produced = []   :: list(#show{}),
-    employees = []        :: list(#org_employee{})
+    shows_produced = []   :: list(#show{})
 }).
 
 -record(work_return, {
@@ -141,6 +140,8 @@
                    get_org_show_dates,
                    get_produced_by_org,
                    get_org_employees,
+                   get_org_members,
+                   get_org_links,
 
                    %% Productions
                    insert_performance_statement,

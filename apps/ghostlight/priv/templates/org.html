@@ -9,7 +9,9 @@
   {% endif %}
 
   {% if description %}
-    {{ description }}
+    {% autoescape off %}
+      {{ description }}
+    {% endautoescape %}
   {% endif %}
  
   {% if shows %}
@@ -44,11 +46,29 @@
       <tr>
         <th>Title</th>
         <th>Employee</th>
+        <th>Description</th>
       </tr>
     {% for employee in employees %}
       <tr>
       <td>{{ employee.title }}</td>
       <td><a href="/people/{{ employee.person_id }}">{{ employee.person_name }}</a></td>
+      <td>{% autoescape off %}{{ employee.person_description }}{% endautoescape %}</td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endif %}
+
+  {% if members %}
+    <h3>Members</h3>
+    <table>
+      <tr>
+        <th>Member</th>
+        <th>Description</th>
+      </tr>
+    {% for member in members %}
+      <tr>
+      <td><a href="/people/{{ member.person_id }}">{{ member.person_name }}</a></td>
+      <td>{% autoescape off %}{{ member.person_description }}{% endautoescape %}</td>
       </tr>
     {% endfor %}
     </table>

@@ -72,10 +72,12 @@ record_to_proplist(#org_return{
                      org=#organization{
                          name=Name,
                          tagline=Tagline,
-                         description=Description
+                         description=Description,
+                         employees=Employees,
+                         members=Members,
+                         external_links=ExternalLinks
                      },
-                     shows_produced=Shows,
-                     employees=Employees}) ->
+                     shows_produced=Shows}) ->
   ShowProplist = [ [{show_id, ShowId},
                     {show_title, ShowTitle},
                     {performances, [ [{work_id, WorkId}, {work_title, WorkTitle}] 
@@ -89,19 +91,29 @@ record_to_proplist(#org_return{
                              } <- Shows ],
   EmployeesProplist = [ [{person_id, PersonId},
                          {person_name, PersonName},
+                         {person_description, ghostlight_utils:remove_null(EmpDescription)},
                          {title, Title}] || #org_employee{ title=Title,
+                                                           description=EmpDescription,
                                                            person=#person{
                                                                      id=PersonId,
                                                                      name=PersonName
                                                                     }
                                                          } <- Employees ],
-
-
+  MemberProplist = [ [{person_id, PersonId},
+                      {person_name, PersonName},
+                      {person_description, ghostlight_utils:remove_null(MemDescription)}] 
+                        || #org_member { description=MemDescription,
+                                         member=#person{
+                                             id=PersonId,
+                                             name=PersonName
+                                         }
+                                        } <- Members],
     [{name, Name},
      {tagline, Tagline},
      {description, Description},
      {shows, ShowProplist},
-     {employees, EmployeesProplist}];
+     {employees, EmployeesProplist},
+     {members, MemberProplist}];
 
 record_to_proplist(#organization{
                        id=Id,
@@ -135,13 +147,11 @@ record_to_json(#organization{
 
 record_to_json(#org_return{
                   org=Org,
-                  shows_produced=Shows,
-                  employees=Employees
+                  shows_produced=Shows
 }) ->
     ghostlight_utils:json_with_valid_values([
         {<<"org">>, record_to_json(Org)},
-        {<<"shows_produced">>, [ ghostlight_show:record_to_json(Show) || Show <- Shows ]},
-        {<<"employees">>, [ghostlight_people:record_to_json(Employee) || Employee <- Employees]}
+        {<<"shows_produced">>, [ ghostlight_show:record_to_json(Show) || Show <- Shows ]} 
     ]).
 
 

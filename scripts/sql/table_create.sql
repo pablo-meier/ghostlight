@@ -147,8 +147,8 @@ CREATE TABLE IF NOT EXISTS org_employees (
     org_id UUID REFERENCES organizations(org_id) NOT NULL,
     person_id UUID REFERENCES people(person_id) NOT NULL,
     title TEXT NOT NULL,
-    description_src TEXT NOT NULL,
-    description_markdown TEXT NOT NULL,
+    description_src TEXT,
+    description_markdown TEXT,
     date_started DATE,
     date_ended DATE,
     PRIMARY KEY(org_id, person_id)

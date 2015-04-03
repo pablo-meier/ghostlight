@@ -4,7 +4,8 @@
          fresh_uuid/0,
          null_if_unspecified/1,
          get_state/1,
-         exec_batch/2]).
+         exec_batch/2,
+         external_links_sql_to_record/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -52,4 +53,21 @@ exec_batch(Batch, #db_state{connection=C,
     Results = epgsql:execute_batch(C, AsTransaction),
     Results.
 
+external_links_sql_to_record(Links) ->
+    lists:foldl(fun({Link, Type}, Accum) ->
+                        case Link of 
+                            null -> Accum;
+                            _ -> case Type of
+                                <<"website">> -> Accum#external_links{ website=Link };
+                                <<"email">> -> Accum#external_links{ email_address=Link };
+                                <<"facebook">> -> Accum#external_links{ facebook=Link };
+                                <<"twitter">> -> Accum#external_links{ twitter=Link };
+                                <<"instagram">> -> Accum#external_links{ instagram=Link };
+                                <<"vimeo">> -> Accum#external_links{ vimeo=Link };
+                                <<"youtube">> -> Accum#external_links{ youtube=Link };
+                                <<"blog">> -> Accum#external_links{ blog=Link };
+                                <<"newsletter">> -> Accum#external_links{ mailing_list=Link }
+                            end
+                        end
+                end, #external_links{}, Links).
 

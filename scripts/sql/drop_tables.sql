@@ -8,6 +8,7 @@ DROP TABLE performances CASCADE;
 DROP TABLE authorship CASCADE;
 DROP TABLE works CASCADE;
 DROP TABLE shows CASCADE;
+DROP TABLE org_links CASCADE;
 DROP TABLE org_employees CASCADE;
 DROP TABLE org_members CASCADE;
 DROP TABLE organizations CASCADE;

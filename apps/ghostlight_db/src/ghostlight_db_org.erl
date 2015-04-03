@@ -44,14 +44,18 @@ handle_call(get_org_listings, _From, State=#db_state{connection=C, get_org_listi
     {ok, Rows} = epgsql:execute(C, GO),
     {reply, Rows, State};
 
-handle_call({get_org, OrgId}, _From, State=#db_state{get_org_meta=GOM,
-                                                  get_org_show_dates=GOD,
-                                                   get_produced_by_org=GPO,
-                                                   get_org_employees=GOE}) ->
-    Batch = [ {GOM, [OrgId]},
+handle_call({get_org, OrgId}, _From, State=#db_state{get_org_meta=GOI,
+                                                     get_org_show_dates=GOD,
+                                                     get_produced_by_org=GPO,
+                                                     get_org_employees=GOE,
+                                                     get_org_members=GOM,
+                                                     get_org_links=GOL}) ->
+    Batch = [ {GOI, [OrgId]},
               {GOD, [OrgId]},
               {GPO, [OrgId]},
-              {GOE, [OrgId]} ],
+              {GOE, [OrgId]},
+              {GOM, [OrgId]},
+              {GOL, [OrgId]} ],
     Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
@@ -152,10 +156,10 @@ external_links_inserts(OrgId,
                                             YouTubeI]).
 
 null_or_link_insert(OrgId, Link, Type, Stmt) ->
-    Link = case Link of
-               null -> null;
-               _ -> {Stmt, [OrgId, Link, Type]}
-           end.
+    case Link of
+        null -> null;
+        _ -> {Stmt, [OrgId, Link, Type]}
+    end.
 
 
 %%%===================================================================
@@ -163,8 +167,16 @@ null_or_link_insert(OrgId, Link, Type, Stmt) ->
 %%%===================================================================
 get(OrgId) ->
     Reply = gen_server:call(?MODULE, {get_org, OrgId}),
-    [{ok, []}, {ok, Meta}, {ok, Dates}, {ok, Produced}, {ok, Employees}, {ok, []}] = Reply,
-    [{Name, Tagline, Description}] = Meta,
+    [{ok, []},
+     {ok, Meta},
+     {ok, Dates},
+     {ok, Produced},
+     {ok, Employees},
+     {ok, Members},
+     {ok, Links},
+     {ok, []}] = Reply,
+
+    [{Name, Tagline, OrgDescription}] = Meta,
     DateMap = lists:foldl(fun({Id, Title, Date}, Accum) ->
                                   case maps:get({Id, Title}, Accum, undefined) of
                                       undefined -> maps:put({Id, Title}, [Date], Accum);
@@ -177,17 +189,28 @@ get(OrgId) ->
                         person=#person{
                             id=PersonId,
                             name=PersonName
-                        }
-                     } || {PersonId, PersonName, PersonTitle} <- Employees ],
+                        },
+                        description=EmpDescription
+                     } || {PersonId, PersonName, PersonTitle, EmpDescription} <- Employees ],
+    MemberList =[ #org_member{
+                        member=#person{
+                            id=PersonId,
+                            name=PersonName
+                        },
+                        description=MemDescription
+                     } || {PersonId, PersonName, MemDescription} <- Members ],
+    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(Links),
     #org_return{
       org=#organization{
              id=OrgId,
              name=Name,
              tagline=Tagline,
-             description=Description
+             members=MemberList,
+             employees=EmployeeList,
+             description=OrgDescription,
+             external_links=ExternalLinks
           },
-      shows_produced=ShowList,
-      employees=EmployeeList
+      shows_produced=ShowList
     }.
 
 condense_performances_in_show(ShowList, DateMap) ->
@@ -257,9 +280,16 @@ prepare_statements(C, State) ->
         ++ "USING (show_id) WHERE o.org_id = $1 ORDER BY d.show_date ASC",
     {ok, GetDatesOfShow} = epgsql:parse(C, "get_dates_of_shows_by_org", GetDatesOfShowSql, [uuid]),
 
-    GetOrgEmployeesSql = "SELECT p.person_id, p.name, oe.title FROM org_employees AS oe INNER JOIN people AS p USING "
+    GetOrgEmployeesSql = "SELECT p.person_id, p.name, oe.title, oe.description_markdown FROM org_employees AS oe INNER JOIN people AS p USING "
         ++ "(person_id) WHERE oe.org_id = $1",
     {ok, GetOrgEmployees} = epgsql:parse(C, "get_org_employees", GetOrgEmployeesSql, [uuid]),
+    
+    GetOrgMembersSql = "SELECT p.person_id, p.name, om.description_markdown FROM org_members AS om INNER JOIN people AS p USING "
+        ++ "(person_id) WHERE om.org_id = $1",
+    {ok, GetOrgMembers} = epgsql:parse(C, "get_org_members", GetOrgMembersSql, [uuid]),
+
+    GetOrgLinksSql = "SELECT link, type FROM org_links WHERE org_id = $1",
+    {ok, GetOrgLinks} = epgsql:parse(C, "get_org_links", GetOrgLinksSql, [uuid]),
 
     GetOrgListingsSql = "SELECT o.org_id, o.name, o.tagline, o.description_markdown FROM organizations AS o ORDER BY o.name ASC LIMIT 50",
     {ok, GetOrgListings} = epgsql:parse(C, "get_org_listings", GetOrgListingsSql, []),
@@ -272,6 +302,8 @@ prepare_statements(C, State) ->
        get_produced_by_org=GetProducedByOrg,
        get_org_show_dates=GetDatesOfShow,
        get_org_employees=GetOrgEmployees,
+       get_org_members=GetOrgMembers,
+       get_org_links=GetOrgLinks,
 
        insert_org_employee=InsertOrgEmployee,
        insert_org_member=InsertOrgMember,

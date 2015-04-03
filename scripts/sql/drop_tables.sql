@@ -9,7 +9,7 @@ DROP TABLE authorship CASCADE;
 DROP TABLE works CASCADE;
 DROP TABLE shows CASCADE;
 DROP TABLE org_employees CASCADE;
-DROP TABLE org_memberships CASCADE;
+DROP TABLE org_members CASCADE;
 DROP TABLE organizations CASCADE;
 DROP TABLE people CASCADE;
 DROP TABLE users CASCADE;

@@ -134,12 +134,12 @@ CREATE TABLE IF NOT EXISTS show_dates (
 
 CREATE TABLE IF NOT EXISTS org_members (
     org_id UUID REFERENCES organizations(org_id) NOT NULL,
-    user_id UUID REFERENCES users(user_id) NOT NULL,
+    person_id UUID REFERENCES people(person_id) NOT NULL,
     description_src TEXT,
     description_markdown TEXT,
     date_started DATE,
     date_ended DATE,
-    PRIMARY KEY(org_id, user_id)
+    PRIMARY KEY(org_id, person_id)
 );
 
 
@@ -169,6 +169,6 @@ CREATE TABLE IF NOT EXISTS org_links (
    org_id UUID REFERENCES organizations(org_id) NOT NULL,
    link TEXT NOT NULL,
    type link_type NOT NULL,
-   PRIMARY KEY(show_id, show_date)
+   PRIMARY KEY(org_id, type)
 ); 
 

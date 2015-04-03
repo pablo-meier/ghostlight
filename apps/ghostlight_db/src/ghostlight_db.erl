@@ -165,7 +165,7 @@ prepare_statements(C) ->
     PplDeDupes = [Parsed1, Parsed2, Parsed3, Parsed4, Parsed5, Parsed6, Parsed7],
 
     {ok, OrgParsed1} = epgsql:parse(C, "consolidate_a", "UPDATE org_employees SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
-    {ok, OrgParsed2} = epgsql:parse(C, "consolidate_b", "UPDATE org_memberships SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
+    {ok, OrgParsed2} = epgsql:parse(C, "consolidate_b", "UPDATE org_members SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
     {ok, OrgParsed3} = epgsql:parse(C, "consolidate_c", "UPDATE shows SET producing_org_id = $1 WHERE producing_org_id = $2", [uuid, uuid]),
     {ok, OrgParsed4} = epgsql:parse(C, "consolidate_d", "DELETE FROM organizations WHERE org_id = $2", [uuid, uuid]),
     OrgDeDupes = [OrgParsed1, OrgParsed2, OrgParsed3, OrgParsed4],

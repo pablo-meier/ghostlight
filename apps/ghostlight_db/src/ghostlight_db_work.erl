@@ -161,12 +161,7 @@ get_inserts(#work{title=Title,
                               _ -> ghostlight_db_org:get_inserts(Org)
                           end,
 
-    Markdowned = case Description of 
-                     null -> null;
-                     _ ->
-                         Parsed = ghostlight_markdown:parse_markdown(Description),
-                         ghostlight_sanitizer:sanitize(Parsed)
-                 end,
+    Markdowned = ghostlight_db_utils:markdown_or_null(Description),
 
     WorkInserts = lists:append([ OrgInserts,
                                  [{IW, [WorkUUID, Title, Description, Markdowned, OrgId, MinutesLong, <<"public">>]}],

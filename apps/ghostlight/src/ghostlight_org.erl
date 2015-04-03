@@ -150,12 +150,41 @@ json_to_record({Organization}) ->
     OrgName = proplists:get_value(<<"name">>, Organization, null),
     OrgDescription = proplists:get_value(<<"description">>, Organization, null),
     OrgTagline = proplists:get_value(<<"tagline">>, Organization, null),
+
+    Members = proplists:get_value(<<"members">>, Organization, []),
+    DecodedMembers = [ decode_member(Member) || Member <- Members ],
+
+    Employees = proplists:get_value(<<"employees">>, Organization, []),
+    DecodedEmployees = [ decode_employee(Emp) || Emp <- Employees ],
+    ExternalLinks = ghostlight_utils:external_links_json_to_record(Organization),
+
     #organization{
        id=OrgId,
        name=OrgName,
        tagline=OrgTagline,
-       description=OrgDescription
+       description=OrgDescription,
+       members=DecodedMembers,
+       employees=DecodedEmployees,
+       external_links=ExternalLinks
     }.
+
+decode_member({Member}) ->
+    Description = proplists:get_value(<<"description">>, Member, null),
+    Person = ghostlight_people:json_to_record(proplists:get_value(<<"person">>, Member)),
+    #org_member{
+       member=Person,
+       description=Description
+    }.
+decode_employee({Emp}) ->
+    Description = proplists:get_value(<<"description">>, Emp, null),
+    Title = proplists:get_value(<<"title">>, Emp, null),
+    Person = ghostlight_people:json_to_record(proplists:get_value(<<"person">>, Emp)),
+    #org_employee{
+       person=Person,
+       title=Title,
+       description=Description
+    }.
+
 
 
 org_to_json(Req, State) ->

@@ -1,5 +1,6 @@
 -module(ghostlight_db_utils).
 -export([connect_to_postgres/0,
+         markdown_or_null/1,
          fresh_uuid/0,
          null_if_unspecified/1,
          get_state/1,
@@ -16,9 +17,14 @@ fresh_uuid() ->
     uuid:to_string(uuid:uuid4()).
 
 null_if_unspecified({}) -> null;
+null_if_unspecified(null) -> null;
 null_if_unspecified(<<"">>) -> null;
 null_if_unspecified(Else) -> Else.
 
+markdown_or_null(null) -> null;
+markdown_or_null(Body) when is_binary(Body) ->
+    Parsed = ghostlight_markdown:parse_markdown(Body),
+    ghostlight_sanitizer:sanitize(Parsed).
 
 get_state(Connection) ->
     Specifics = lists:foldl(fun (Fun, Accum) ->

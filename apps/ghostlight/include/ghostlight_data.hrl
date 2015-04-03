@@ -25,12 +25,12 @@
 }).
 
 -record(org_member, {
-    member = null      :: null | #person{},
+    member             :: #person{},
     description = null :: null | binary()
 }).
 
 -record(org_employee, {
-    person = null      :: null | #person{},
+    person             :: #person{},
     title = null       :: null | binary(),
     description = null :: null | binary()
 }).
@@ -43,7 +43,7 @@
     parent = {id, <<"">>}      :: organization_parent(),
     vanity_name = <<"">>       :: binary(),
     date_founded = {}          :: datetime(),
-    social_media_links = null  :: null | #external_links{},
+    external_links = null      :: null | #external_links{},
     members = null             :: null | list(#org_member{}),
     employees = null           :: null | list(#org_employee{}),
     visibility = <<"public">>  :: binary()
@@ -133,6 +133,9 @@
 
                    %% Orgs
                    insert_org_statement,
+                   insert_org_employee,
+                   insert_org_member,
+                   insert_org_external_link,
                    get_org_listings,
                    get_org_meta,
                    get_org_show_dates,

@@ -78,20 +78,84 @@ get_inserts(#organization {
                 parent=Parent,
                 vanity_name=VanityName,
                 date_founded=DateFounded,
+                members=Members,
+                employees=Employees,
+                external_links=Links,
                 visibility=Visibility
-           }, #db_state{insert_org_statement=IO}) ->
+           }, State=#db_state{insert_org_statement=IO}) ->
     OrgId = ghostlight_db_utils:fresh_uuid(),
     ParentInsert = case Parent of
                        {id, <<"">>} -> null;
                        {id, Valid} -> Valid
                    end,
+
     DescriptionInsert = ghostlight_db_utils:null_if_unspecified(Description),
+    Markdowned = ghostlight_db_utils:markdown_or_null(Description),
+    
     VanityNameInsert = ghostlight_db_utils:null_if_unspecified(VanityName),
     TaglineInsert = ghostlight_db_utils:null_if_unspecified(Tagline),
     DateFoundedInsert = ghostlight_db_utils:null_if_unspecified(DateFounded),
+    MemberInserts = lists:flatten( [ member_inserts(OrgId, Member, State) || Member <- Members ]),
+    EmployeeInserts = lists:flatten( [ employee_inserts(OrgId, Employee, State) || Employee <- Employees]),
+    LinkInserts = external_links_inserts(OrgId, Links, State),
 
-    OrgInserts = [{IO, [OrgId, ParentInsert, Name, TaglineInsert, DescriptionInsert, VanityNameInsert, DateFoundedInsert, Visibility]}],
+    OrgInserts = lists:append([ [{IO, [OrgId, ParentInsert, Name, 
+                                       TaglineInsert, DescriptionInsert, Markdowned, 
+                                       VanityNameInsert, DateFoundedInsert, Visibility]}],
+                                EmployeeInserts,
+                                MemberInserts,
+                                LinkInserts
+                              ]),
     {OrgInserts, OrgId}.
+
+member_inserts(OrgId, #org_member{member=Person, description=Description}, #db_state{insert_org_member=IM}) ->
+    {PersonInsert, PersonId} = ghostlight_db_person:get_inserts(Person),
+    Markdowned = ghostlight_db_utils:markdown_or_null(Description),
+    [PersonInsert,
+     {IM, [OrgId, PersonId, Description, Markdowned, null, null]}].
+
+employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=Description}, #db_state{insert_org_employee=IE}) ->
+    {PersonInsert, PersonId} = ghostlight_db_person:get_inserts(Person),
+    Markdowned = ghostlight_db_utils:markdown_or_null(Description),
+    [PersonInsert,
+     {IE, [OrgId, PersonId, Title, Description, Markdowned, null, null]}].
+    
+external_links_inserts(OrgId,
+                       #external_links{ 
+                          website=Website, 
+                          email_address=Email, 
+                          blog=Blog, 
+                          mailing_list=MailingList,
+                          facebook=Facebook, 
+                          twitter=Twitter, 
+                          instagram=Instagram,
+                          vimeo=Vimeo,
+                          youtube=YouTube
+                         }, #db_state{insert_org_external_link=IL}) ->
+    WebsiteI = null_or_link_insert(OrgId, Website, <<"website">>, IL),
+    EmailI = null_or_link_insert(OrgId, Email, <<"email">>, IL),
+    BlogI = null_or_link_insert(OrgId, Blog, <<"blog">>, IL),
+    MailingListI = null_or_link_insert(OrgId, MailingList, <<"newsletter">>, IL),
+    FacebookI = null_or_link_insert(OrgId, Facebook, <<"facebook">>, IL),
+    TwitterI = null_or_link_insert(OrgId, Twitter, <<"twitter">>, IL),
+    InstagramI = null_or_link_insert(OrgId, Instagram, <<"instagram">>, IL),
+    VimeoI = null_or_link_insert(OrgId, Vimeo, <<"vimeo">>, IL),
+    YouTubeI = null_or_link_insert(OrgId, YouTube, <<"youtube">>, IL),
+    lists:filter(fun(X) -> X =/= null end, [WebsiteI,
+                                            EmailI,
+                                            BlogI,
+                                            MailingListI,
+                                            FacebookI,
+                                            TwitterI,
+                                            InstagramI,
+                                            VimeoI,
+                                            YouTubeI]).
+
+null_or_link_insert(OrgId, Link, Type, Stmt) ->
+    Link = case Link of
+               null -> null;
+               _ -> {Stmt, [OrgId, Link, Type]}
+           end.
 
 
 %%%===================================================================
@@ -162,12 +226,25 @@ get_inserts(Org) ->
 
 
 prepare_statements(C, State) ->
-    OrgsSql = "INSERT INTO organizations (org_id, parent_org, name, tagline, description, vanity_name, date_founded, visibility)"
-        ++ " VALUES($1, $2, $3, $4, $5, $6, $7::date, $8)",
+    OrgsSql = "INSERT INTO organizations "
+        ++ "(org_id, parent_org, name, tagline, description_src, description_markdown, vanity_name, date_founded, visibility)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6, $7, $8::date, $9)",
     {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, uuid, text, text, text, text, date, text]),
 
+    OrgEmployeeSql = "INSERT INTO org_employees "
+        ++ "(org_id, person_id, title, description_src, description_markdown, date_started, date_ended)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6::date, $7::date)",
+    {ok, InsertOrgEmployee} = epgsql:parse(C, "insert_org_employee", OrgEmployeeSql, [uuid, uuid, text, text, text, date, date]),
 
-    GetOrgMetaSql = "SELECT o.name, o.tagline, o.description FROM organizations AS o WHERE o.org_id = $1",
+    OrgMemberSql = "INSERT INTO org_members"
+        ++ "(org_id, person_id, description_src, description_markdown, date_started, date_ended)"
+        ++ " VALUES($1, $2, $3, $4, $5::date, $6::date)",
+    {ok, InsertOrgMember} = epgsql:parse(C, "insert_org_member", OrgMemberSql, [uuid, uuid, text, text, date, date]),
+
+    OrgExternalLinkSql = "INSERT INTO org_links (org_id, link, type) VALUES ($1, $2, $3::link_type)",
+    {ok, OrgExternalLink} = epgsql:parse(C, "insert_org_external", OrgExternalLinkSql, [uuid, text, anyenum]),
+
+    GetOrgMetaSql = "SELECT o.name, o.tagline, o.description_markdown FROM organizations AS o WHERE o.org_id = $1",
     {ok, GetOrgMeta} = epgsql:parse(C, "get_org_meta", GetOrgMetaSql, [uuid]),
 
     GetProducedByOrgSql = "SELECT s.show_id, s.title, w.work_id, w.title FROM shows AS s "
@@ -184,7 +261,7 @@ prepare_statements(C, State) ->
         ++ "(person_id) WHERE oe.org_id = $1",
     {ok, GetOrgEmployees} = epgsql:parse(C, "get_org_employees", GetOrgEmployeesSql, [uuid]),
 
-    GetOrgListingsSql = "SELECT o.org_id, o.name, o.tagline, o.description FROM organizations AS o ORDER BY o.name ASC LIMIT 50",
+    GetOrgListingsSql = "SELECT o.org_id, o.name, o.tagline, o.description_markdown FROM organizations AS o ORDER BY o.name ASC LIMIT 50",
     {ok, GetOrgListings} = epgsql:parse(C, "get_org_listings", GetOrgListingsSql, []),
 
  
@@ -194,6 +271,10 @@ prepare_statements(C, State) ->
        get_org_meta=GetOrgMeta,
        get_produced_by_org=GetProducedByOrg,
        get_org_show_dates=GetDatesOfShow,
-       get_org_employees=GetOrgEmployees
+       get_org_employees=GetOrgEmployees,
+
+       insert_org_employee=InsertOrgEmployee,
+       insert_org_member=InsertOrgMember,
+       insert_org_external_link=OrgExternalLink
     }.
 

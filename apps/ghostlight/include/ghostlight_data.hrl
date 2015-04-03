@@ -39,7 +39,7 @@
     id = <<"">>                :: binary(),
     name = <<"">>              :: binary(),
     tagline = <<"">>           :: binary(),
-    description = <<"">>       :: binary(),
+    description = null         :: null | binary(),
     parent = {id, <<"">>}      :: organization_parent(),
     vanity_name = <<"">>       :: binary(),
     date_founded = {}          :: datetime(),

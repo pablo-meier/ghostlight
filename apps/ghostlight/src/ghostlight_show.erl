@@ -186,7 +186,7 @@ show_json_to_record(JsonInput) ->
     Title = proplists:get_value(<<"title">>, Decoded),
     SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),
     Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded)),
-    Org = organization_json_to_record(proplists:get_value(<<"org">>, Decoded)),
+    Org = ghostlight_org:json_to_record(proplists:get_value(<<"org">>, Decoded)),
     Performances = lists:map(fun performance_json_to_record/1, proplists:get_value(<<"performances">>, Decoded)),
 
     #show{
@@ -208,17 +208,6 @@ performance_json_to_record({Proplist}) ->
        directors = Directors,
        onstage = Onstage,
        offstage = Offstage
-    }.
-
-
-organization_json_to_record({Org}) ->
-    Name = proplists:get_value(<<"name">>, Org),
-    Tagline = proplists:get_value(<<"tagline">>, Org),
-    Description = proplists:get_value(<<"description">>, Org),
-    #organization{
-       name = Name,
-       tagline = Tagline,
-       description = Description
     }.
 
 

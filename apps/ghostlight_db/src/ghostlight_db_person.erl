@@ -164,8 +164,8 @@ prepare_statements(C, State) ->
         ++ "WHERE w.acl = 'public' AND p.person_id = $1",
     {ok, GetShowsAuthored} = epgsql:parse(C, "get_authorships", GetShowsAuthoredSql, [uuid]),
 
-    GetPersonOrgsSql = "SELECT o.org_id, o.name, oe.title FROM organizations AS o, org_employees AS oe "
-        ++ "WHERE oe.person_id = $1 AND o.visibility = 'public'",
+    GetPersonOrgsSql = "SELECT o.org_id, o.name, oe.title FROM organizations AS o INNER JOIN org_employees AS oe "
+        ++ "USING (org_id) WHERE oe.person_id = $1 AND o.visibility = 'public'",
     {ok, GetPersonOrgs} = epgsql:parse(C, "get_person_orgs", GetPersonOrgsSql, [uuid]),
 
     GetPersonOnstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.role FROM shows AS s " ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "

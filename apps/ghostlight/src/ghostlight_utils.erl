@@ -4,7 +4,8 @@
          json_with_valid_values/1,
          proplist_with_valid_values/1,
          remove_null/1,
-         external_links_json_to_record/1]).
+         external_links_json_to_record/1,
+         external_links_record_to_proplist/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -20,6 +21,29 @@ external_links_json_to_record(Json) ->
         vimeo = proplists:get_value(<<"vimeo">>, Json, null),
         youtube = proplists:get_value(<<"youtube">>, Json, null)
     }.
+
+external_links_record_to_proplist(
+    #external_links{
+        website=Website,
+        email_address=Email,
+        blog=Blog,
+        mailing_list=Newsletter,
+        facebook=Facebook,
+        twitter=Twitter,
+        instagram=Instagram,
+        vimeo=Vimeo,
+        youtube=YouTube
+    }) ->
+    Candidate = [{website, Website},
+                 {email, Email},
+                 {blog, Blog},
+                 {newsletter, Newsletter},
+                 {facebook, Facebook},
+                 {twitter, Twitter},
+                 {instagram, Instagram},
+                 {vimeo, Vimeo},
+                 {youtube, YouTube}],
+    lists:filter(fun({_, V}) -> V =/= null end, Candidate).
  
 
 %% iso8601 is pretty great, and epgsql are pretty great, but they don't play well together.

@@ -113,7 +113,8 @@ record_to_proplist(#org_return{
      {description, Description},
      {shows, ShowProplist},
      {employees, EmployeesProplist},
-     {members, MemberProplist}];
+     {members, MemberProplist},
+     {links, ghostlight_utils:external_links_record_to_proplist(ExternalLinks)}];
 
 record_to_proplist(#organization{
                        id=Id,

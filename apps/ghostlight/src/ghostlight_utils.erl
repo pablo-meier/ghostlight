@@ -19,7 +19,10 @@ external_links_json_to_record(Json) ->
         twitter = proplists:get_value(<<"twitter">>, Json, null),
         instagram = proplists:get_value(<<"instagram">>, Json, null),
         vimeo = proplists:get_value(<<"vimeo">>, Json, null),
-        youtube = proplists:get_value(<<"youtube">>, Json, null)
+        youtube = proplists:get_value(<<"youtube">>, Json, null),
+        pinterest = proplists:get_value(<<"pinterest">>, Json, null),
+        tumblr = proplists:get_value(<<"tumblr">>, Json, null),
+        gplus = proplists:get_value(<<"gplus">>, Json, null)
     }.
 
 external_links_record_to_proplist(
@@ -32,7 +35,10 @@ external_links_record_to_proplist(
         twitter=Twitter,
         instagram=Instagram,
         vimeo=Vimeo,
-        youtube=YouTube
+        youtube=YouTube,
+        pinterest=Pinterest,
+        tumblr=Tumblr,
+        gplus=GPlus
     }) ->
     Candidate = [{website, Website},
                  {email, Email},
@@ -42,7 +48,10 @@ external_links_record_to_proplist(
                  {twitter, Twitter},
                  {instagram, Instagram},
                  {vimeo, Vimeo},
-                 {youtube, YouTube}],
+                 {youtube, YouTube},
+                 {pinterest, Pinterest},
+                 {tumblr, Tumblr},
+                 {gplus, GPlus}],
     lists:filter(fun({_, V}) -> V =/= null end, Candidate).
  
 

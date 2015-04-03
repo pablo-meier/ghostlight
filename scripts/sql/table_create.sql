@@ -14,8 +14,10 @@
 CREATE TABLE IF NOT EXISTS people (
     person_id UUID PRIMARY KEY,
     name TEXT NOT NULL,
-    statement TEXT,
-    photo_url TEXT,
+    description_src TEXT,
+    description_markdown TEXT,
+    is_equity BOOLEAN,
+    photo_id UUID,
     date_added date NOT NULL
 );
 
@@ -163,7 +165,10 @@ CREATE TYPE link_type AS ENUM (
     'vimeo',
     'youtube',
     'blog',
-    'newsletter');
+    'newsletter',
+    'pinterest',
+    'tumblr',
+    'gplus');
 
 CREATE TABLE IF NOT EXISTS org_links (
    org_id UUID REFERENCES organizations(org_id) NOT NULL,
@@ -172,3 +177,9 @@ CREATE TABLE IF NOT EXISTS org_links (
    PRIMARY KEY(org_id, type)
 ); 
 
+CREATE TABLE IF NOT EXISTS people_links (
+   person_id UUID REFERENCES people(person_id) NOT NULL,
+   link TEXT NOT NULL,
+   type link_type NOT NULL,
+   PRIMARY KEY(person_id, type)
+);

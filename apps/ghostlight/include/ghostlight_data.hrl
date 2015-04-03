@@ -21,7 +21,10 @@
     twitter = null             :: null | binary(),
     instagram = null           :: null | binary(),
     vimeo = null               :: null | binary(),
-    youtube = null             :: null | binary()
+    youtube = null             :: null | binary(),
+    pinterest = null           :: null | binary(),
+    tumblr = null              :: null | binary(),
+    gplus = null               :: null | binary()
 }).
 
 -record(org_member, {

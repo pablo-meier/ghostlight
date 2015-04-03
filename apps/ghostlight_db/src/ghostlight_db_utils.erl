@@ -66,6 +66,9 @@ external_links_sql_to_record(Links) ->
                                 <<"vimeo">> -> Accum#external_links{ vimeo=Link };
                                 <<"youtube">> -> Accum#external_links{ youtube=Link };
                                 <<"blog">> -> Accum#external_links{ blog=Link };
+                                <<"pinterest">> -> Accum#external_links{ pinterest=Link };
+                                <<"tumblr">> -> Accum#external_links{ tumblr=Link };
+                                <<"gplus">> -> Accum#external_links{ gplus=Link };
                                 <<"newsletter">> -> Accum#external_links{ mailing_list=Link }
                             end
                         end

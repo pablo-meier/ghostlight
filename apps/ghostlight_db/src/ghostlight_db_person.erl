@@ -62,17 +62,21 @@ handle_call(get_person_listings, _From, State=#db_state{connection=C, get_person
 
 
 handle_call({get_person, PersonId}, _From, State=#db_state{get_person_name=GN,
-                                                        get_person_authorship=GA,
-                                                        get_person_orgs=GO,
-                                                        get_person_directorships=GD,
-                                                        get_person_onstage=POn,
-                                                        get_person_offstage=POff}) ->
+                                                           get_person_authorship=GA,
+                                                           get_person_orgs=GO,
+                                                           get_person_memberships=GOM,
+                                                           get_person_directorships=GD,
+                                                           get_person_onstage=POn,
+                                                           get_person_offstage=POff,
+                                                           get_person_links=GPL}) ->
     Batch = [ {GN, [PersonId]},
               {GA, [PersonId]},
               {GO, [PersonId]},
+              {GOM, [PersonId]},
               {GD, [PersonId]},
               {POn, [PersonId]},
-              {POff, [PersonId]} ],
+              {POff, [PersonId]},
+              {GPL, [PersonId]} ],
     Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
@@ -109,9 +113,19 @@ get_inserts(#person{ name=Name,
 
 get(PersonId) ->
     Response = gen_server:call(?MODULE, {get_person, PersonId}),
-    [{ok, _}, {ok, [{Name}]}, {ok, AuthorshipList}, {ok, OrgsList}, {ok, DirectedList}, {ok, OnstageList}, {ok, OffstageList}, {ok, _}] = Response,
+    [{ok, _},
+     {ok, [{Name, Description}]},
+     {ok, AuthorshipList},
+     {ok, OrgsList},
+     {ok, Memberships},
+     {ok, DirectedList},
+     {ok, OnstageList},
+     {ok, OffstageList},
+     {ok, Links},
+     {ok, _}] = Response,
     Authors = [ #work{id=WorkId, title=Title } || {WorkId, Title, _Author} <- AuthorshipList],
-    Orgs = [ #org_work{org_id=OrgId, org_name=OrgName, title=Job} || {OrgId, OrgName, Job} <- OrgsList],
+    OrgsAsEmployee = [ #org_work{org_id=OrgId, org_name=OrgName, title=Job} || {OrgId, OrgName, Job} <- OrgsList],
+    OrgsAsMember = [ #organization{id=OrgId, name=OrgName, description=OrgDescription} || {OrgId, OrgName, OrgDescription} <- Memberships],
     Onstage = [ #show{ title=ShowTitle,
                        id=ShowId,
                        org=#organization{id=OrgId, name=OrgName},
@@ -135,15 +149,21 @@ get(PersonId) ->
                                         work=#work{ id=WorkId, title=WorkTitle }
                                      }]
                       } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName} <- DirectedList ],
-
+    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(Links),
+ 
     #person_return{
-       id = PersonId,
-       name = Name,
+       person=#person{
+           id = PersonId,
+           name = Name,
+           description=Description,
+           external_links=ExternalLinks
+       },
        authored = Authors,
        directed = Directed,
        onstage = Onstage,
        offstage = Offstage,
-       orgs = Orgs
+       orgs_employee = OrgsAsEmployee,
+       orgs_member = OrgsAsMember
     }.
 
 listings() ->
@@ -164,7 +184,7 @@ prepare_statements(C, State) ->
     PersonLinksSql = "INSERT INTO people_links (person_id, link, type) VALUES($1, $2, $3::link_type)",
     {ok, PersonLinks} = epgsql:parse(C, "insert_person_links", PersonLinksSql, [uuid, text, text]),
 
-    GetPersonNameSql = "SELECT name FROM people WHERE person_id = $1",
+    GetPersonNameSql = "SELECT name, description_markdown FROM people WHERE person_id = $1",
     {ok, GetPersonName} = epgsql:parse(C, "get_person_name", GetPersonNameSql, [uuid]),
     
     %% Pulls the works authored by a person.
@@ -176,6 +196,10 @@ prepare_statements(C, State) ->
     GetPersonOrgsSql = "SELECT o.org_id, o.name, oe.title FROM organizations AS o INNER JOIN org_employees AS oe "
         ++ "USING (org_id) WHERE oe.person_id = $1 AND o.visibility = 'public'",
     {ok, GetPersonOrgs} = epgsql:parse(C, "get_person_orgs", GetPersonOrgsSql, [uuid]),
+
+    GetOrgMembershipsSql = "SELECT o.org_id, o.name, o.description_markdown FROM organizations AS o INNER JOIN "
+        ++ "org_members AS om USING (org_id) WHERE om.person_id = $1 AND o.visibility = 'public'",
+    {ok, GetOrgMemberships} = epgsql:parse(C, "get_person_org_memberships", GetOrgMembershipsSql, [uuid]),
 
     GetPersonOnstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.role FROM shows AS s " ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
         ++ "INNER JOIN performance_onstage AS po USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
@@ -194,9 +218,11 @@ prepare_statements(C, State) ->
         ++ "WHERE pd.director_id = $1",
     {ok, GetPersonDirected} = epgsql:parse(C, "get_person_directed", GetPersonDirectedSql, [uuid]),
 
+    GetPersonLinksSql = "SELECT link, type FROM people_links WHERE person_id = $1",
+    {ok, GetPersonLinks} = epgsql:parse(C, "get_people_links", GetPersonLinksSql, [uuid]),
+
     GetPersonListingsSql = "SELECT p.person_id, p.name FROM people AS p ORDER BY p.name ASC",
     {ok, GetPersonListings} = epgsql:parse(C, "get_person_listings", GetPersonListingsSql, []),
-
 
     State#db_state{
        insert_person_statement=InsertPerson,
@@ -207,7 +233,9 @@ prepare_statements(C, State) ->
        get_person_orgs=GetPersonOrgs,
        get_person_onstage=GetPersonOnstage,
        get_person_offstage=GetPersonOffstage,
-       get_person_directorships=GetPersonDirected
+       get_person_directorships=GetPersonDirected,
+       get_person_links=GetPersonLinks,
+       get_person_memberships=GetOrgMemberships
     }.
 
 

@@ -71,12 +71,16 @@ person_to_html(Req, State) ->
 %% Makes the Record returned from the DB into a proplist we can feed the template.
 %% Aw hell yeah Pattern Matching.
 record_to_proplist(#person_return{
-                     name=Name,
+                     person=#person{
+                        name=Name,
+                        description=Description,
+                        external_links=ExternalLinks
+                     },
                      authored=Authored,
                      directed=Directed,
                      onstage=Onstage,
                      offstage=Offstage,
-                     orgs=Orgs}) ->
+                     orgs_employee=Orgs}) ->
 
     OnstageProplist = [ [{show_id, ShowId},
                          {show_title, ShowTitle},
@@ -127,11 +131,13 @@ record_to_proplist(#person_return{
 
       
     [{name, Name},
+     {description, Description},
      {onstage_list, OnstageProplist},
      {offstage_list, OffstageProplist},
      {authorship, AuthorshipProplist},
      {director, DirectorProplist},
-     {organizations, OrgProplist}];
+     {organizations, OrgProplist},
+     {links, ghostlight_utils:external_links_record_to_proplist(ExternalLinks)}];
 
 record_to_proplist(#person{
                       id=PersonId,
@@ -178,13 +184,15 @@ record_to_json(#person{
         {<<"name">>, PersonName}
     ]);
 record_to_json(#person_return{
-                     id=PersonId,
-                     name=Name,
+                     person=#person{
+                         id=PersonId,
+                         name=Name
+                     },
                      authored=Authored,
                      directed=Directed,
                      onstage=Onstage,
                      offstage=Offstage,
-                     orgs=Orgs
+                     orgs_employee=Orgs
                }) ->
     ghostlight_utils:json_with_valid_values([
         {<<"id">>, PersonId},

@@ -8,22 +8,7 @@
     <h2 class="subheader">{{ tagline }}</h2>
   {% endif %}
 
-  {% if links %}
-    <ul>
-        {% if links.website %}<li><a href="{{ links.website }}">Website</a></li>{% endif %}
-        {% if links.email %}<li><a href="{{ links.email }}">Email</a></li>{% endif %}
-        {% if links.blog %}<li><a href="{{ links.blog }}">Blog</a></li>{% endif %}
-        {% if links.newsletter %}<li><a href="{{ links.newsletter }}">Newsletter</a></li>{% endif %}
-        {% if links.facebook %}<li><a href="{{ links.facebook }}">Facebook</a></li>{% endif %}
-        {% if links.twitter %}<li><a href="{{ links.twitter }}">Twitter</a></li>{% endif %}
-        {% if links.instagram %}<li><a href="{{ links.instagram }}">Instagram</a></li>{% endif %}
-        {% if links.tumblr%}<li><a href="{{ links.tumblr }}">Tumblr</a></li>{% endif %}
-        {% if links.vimeo %}<li><a href="{{ links.vimeo }}">Vimeo</a></li>{% endif %}
-        {% if links.youtube %}<li><a href="{{ links.youtube }}">YouTube</a></li>{% endif %}
-        {% if links.pinterest %}<li><a href="{{ links.pinterest }}">Pinterest</a></li>{% endif %}
-        {% if links.gplus %}<li><a href="{{ links.gplus }}">G+</a></li>{% endif %}
-    </ul>
-  {% endif %}
+  {% include "social_media.html" %}
 
   {% if description %}
     {% autoescape off %}

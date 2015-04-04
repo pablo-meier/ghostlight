@@ -101,13 +101,13 @@
 %% touch so many things.
 
 -record(person_return, {
-    id = <<"">>    :: binary(),
-    name = <<"">>  :: binary(),
-    authored = []  :: list(#work{}),
-    directed = []  :: list(#show{}),
-    onstage = []   :: list(#show{}),
-    offstage = []  :: list(#show{}),
-    orgs = []      :: list(#organization{})
+    person=#person{}      :: #person{},
+    authored = []         :: list(#work{}),
+    directed = []         :: list(#show{}),
+    onstage = []          :: list(#show{}),
+    offstage = []         :: list(#show{}),
+    orgs_employee = []    :: list(#org_work{}),
+    orgs_member = []      :: list(#organization{})
 }).
 
 -record(org_return, {
@@ -171,6 +171,7 @@
                    get_person_orgs,
                    get_person_onstage,
                    get_person_offstage,
-                   get_person_directorships
+                   get_person_directorships,
+                   get_person_links,
+                   get_person_memberships
 }).
-

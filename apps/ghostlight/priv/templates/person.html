@@ -5,6 +5,14 @@
 {% block content %}
   <h1>{{ name }}</h1>
 
+  {% include "social_media.html" %}
+
+  {% if description %}
+    {% autoescape off %}
+      {{ description }}
+    {% endautoescape %}
+  {% endif %}
+
   {% if onstage_list %}
     <h3>Performances!</h3>
     <table>

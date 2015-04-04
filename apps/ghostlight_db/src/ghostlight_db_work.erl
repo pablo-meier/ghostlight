@@ -154,7 +154,8 @@ get_inserts(#work{title=Title,
             #db_state{insert_work_statement=IW,
                       insert_authorship_statement=IA}) ->
     WorkUUID = ghostlight_db_utils:fresh_uuid(),
-    {PersonInserts, Ids} = lists:unzip([ ghostlight_db_person:get_inserts(Author) || Author <- Authors ]),
+    {PersonInsertsNested, Ids} = lists:unzip([ ghostlight_db_person:get_inserts(Author) || Author <- Authors ]),
+    PersonInserts = lists:flatten(PersonInsertsNested),
     AuthorshipInserts = [ {IA, [WorkUUID, AuthorUUID]} || AuthorUUID <- Ids ],
     {OrgInserts, OrgId} = case Org of 
                               null -> {[], null};

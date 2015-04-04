@@ -14,4 +14,3 @@ execute(Req, Env) ->
             ok
     end,
     {ok, Req, Env}.
-

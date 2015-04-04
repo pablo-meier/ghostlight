@@ -2,6 +2,7 @@
 -export([init/2,
          content_types_provided/2,
          content_types_accepted/2,
+         charsets_provided/2,
          allowed_methods/2]).
 -export([work_to_html/2,
          work_to_json/2,
@@ -34,6 +35,8 @@ init(Req, Opts) ->
 allowed_methods(Req, State) ->
     {[<<"GET">>, <<"POST">>, <<"DELETE">>],
      Req, State}.
+charsets_provided(Req, State) ->
+    {[<<"utf-8">>], Req, State}.
 content_types_provided(Req, State) ->
     {[
       {<<"text/html">>, work_to_html},

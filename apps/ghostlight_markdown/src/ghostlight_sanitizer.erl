@@ -11,7 +11,7 @@ sanitize(Body) when is_list(Body) ->
     {owasp_java_server, ?OWASP_JAVA_NODE} ! {self(), Ref, Body},
     receive
         {_Node, Ref, Sanitized} ->
-            Sanitized
+            list_to_binary(Sanitized)
     after 5000 ->
           {error, timeout}
     end.

@@ -22,7 +22,9 @@ external_links_json_to_record(Json) ->
         youtube = proplists:get_value(<<"youtube">>, Json, null),
         pinterest = proplists:get_value(<<"pinterest">>, Json, null),
         tumblr = proplists:get_value(<<"tumblr">>, Json, null),
-        gplus = proplists:get_value(<<"gplus">>, Json, null)
+        gplus = proplists:get_value(<<"gplus">>, Json, null),
+        patreon = proplists:get_value(<<"patreon">>, Json, null),
+        newplayx = proplists:get_value(<<"newplayx">>, Json, null)
     }.
 
 external_links_record_to_proplist(
@@ -38,7 +40,9 @@ external_links_record_to_proplist(
         youtube=YouTube,
         pinterest=Pinterest,
         tumblr=Tumblr,
-        gplus=GPlus
+        gplus=GPlus,
+        patreon=Patreon,
+        newplayx=NewPlayX
     }) ->
     Candidate = [{website, Website},
                  {email, Email},
@@ -51,7 +55,9 @@ external_links_record_to_proplist(
                  {youtube, YouTube},
                  {pinterest, Pinterest},
                  {tumblr, Tumblr},
-                 {gplus, GPlus}],
+                 {gplus, GPlus},
+                 {patreon, Patreon},
+                 {newplayx, NewPlayX}],
     lists:filter(fun({_, V}) -> V =/= null end, Candidate).
  
 

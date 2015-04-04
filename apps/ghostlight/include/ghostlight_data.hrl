@@ -19,7 +19,9 @@
     youtube = null             :: null | binary(),
     pinterest = null           :: null | binary(),
     tumblr = null              :: null | binary(),
-    gplus = null               :: null | binary()
+    gplus = null               :: null | binary(),
+    patreon = null             :: null | binary(),
+    newplayx = null            :: null | binary()
 }).
 
 -record(press_link, {

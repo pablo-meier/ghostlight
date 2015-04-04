@@ -171,7 +171,9 @@ CREATE TYPE link_type AS ENUM (
     'newsletter',
     'pinterest',
     'tumblr',
-    'gplus');
+    'gplus',
+    'patreon',
+    'newplayx');
 
 CREATE TABLE IF NOT EXISTS org_links (
    org_id UUID REFERENCES organizations(org_id) NOT NULL,

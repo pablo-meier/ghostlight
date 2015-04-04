@@ -70,7 +70,9 @@ external_links_sql_to_record(Links) ->
                                 <<"pinterest">> -> Accum#external_links{ pinterest=Link };
                                 <<"tumblr">> -> Accum#external_links{ tumblr=Link };
                                 <<"gplus">> -> Accum#external_links{ gplus=Link };
-                                <<"newsletter">> -> Accum#external_links{ mailing_list=Link }
+                                <<"newsletter">> -> Accum#external_links{ mailing_list=Link };
+                                <<"patreon">> -> Accum#external_links{ patreon=Link };
+                                <<"newplayx">> -> Accum#external_links{ newplayx=Link }
                             end
                         end
                 end, #external_links{}, Links).
@@ -90,7 +92,9 @@ external_links_inserts(OrgId,
                           youtube=YouTube,
                           pinterest=Pinterest,
                           tumblr=Tumblr,
-                          gplus=GPlus
+                          gplus=GPlus,
+                          patreon=Patreon,
+                          newplayx=NewPlayX
                          }) ->
     WebsiteI = null_or_link_insert(OrgId, Website, <<"website">>, Stmt),
     EmailI = null_or_link_insert(OrgId, Email, <<"email">>, Stmt),
@@ -104,6 +108,8 @@ external_links_inserts(OrgId,
     PinterestI = null_or_link_insert(OrgId, Pinterest, <<"pinterest">>, Stmt),
     TumblrI = null_or_link_insert(OrgId, Tumblr, <<"tumblr">>, Stmt),
     GPlusI = null_or_link_insert(OrgId, GPlus, <<"gplus">>, Stmt),
+    PatreonI = null_or_link_insert(OrgId, Patreon, <<"patreon">>, Stmt),
+    NewPlayXI = null_or_link_insert(OrgId, NewPlayX, <<"newplayx">>, Stmt),
     lists:filter(fun(X) -> X =/= null end, [WebsiteI,
                                             EmailI,
                                             BlogI,
@@ -115,7 +121,10 @@ external_links_inserts(OrgId,
                                             YouTubeI,
                                             PinterestI,
                                             TumblrI,
-                                            GPlusI]).
+                                            GPlusI,
+                                            PatreonI,
+                                            NewPlayXI
+                                           ]).
 
 null_or_link_insert(OrgId, Link, Type, Stmt) ->
     case Link of

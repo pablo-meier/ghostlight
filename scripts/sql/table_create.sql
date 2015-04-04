@@ -62,7 +62,8 @@ CREATE TABLE IF NOT EXISTS shows (
     title text NOT NULL,
     producing_org_id UUID REFERENCES organizations(org_id) NOT NULL,
     festival_id UUID REFERENCES festivals(festival_id),
-    description TEXT,
+    description_src TEXT,
+    description_markdown TEXT,
     special_thanks TEXT,
     date_created TIMESTAMP WITH TIME ZONE NOT NULL
 );
@@ -87,6 +88,8 @@ CREATE TABLE IF NOT EXISTS performances (
     performance_id UUID PRIMARY KEY,
     work_id UUID REFERENCES works(work_id) NOT NULL,
     show_id UUID REFERENCES shows(show_id) NOT NULL, 
+    directors_note_src TEXT,
+    directors_note_markdown TEXT,
     performance_order INTEGER
 );
 
@@ -182,4 +185,24 @@ CREATE TABLE IF NOT EXISTS people_links (
    link TEXT NOT NULL,
    type link_type NOT NULL,
    PRIMARY KEY(person_id, type)
+);
+
+CREATE TABLE IF NOT EXISTS show_links (
+   show_id UUID REFERENCES shows(show_id) NOT NULL,
+   link TEXT NOT NULL,
+   type link_type NOT NULL,
+   PRIMARY KEY(show_id, type)
+);
+
+CREATE TABLE IF NOT EXISTS press_links (
+   show_id UUID REFERENCES shows(show_id) NOT NULL,
+   link TEXT NOT NULL,
+   description TEXT NOT NULL,
+   PRIMARY KEY(show_id, link)
+);
+
+CREATE TABLE IF NOT EXISTS show_hosts (
+    show_id UUID REFERENCES shows(show_id) NOT NULL,
+    person_id UUID REFERENCES people(person_id) NOT NULL,
+    PRIMARY KEY(show_id, person_id)
 );

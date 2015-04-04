@@ -22,6 +22,11 @@
     gplus = null               :: null | binary()
 }).
 
+-record(press_link, {
+    url = null         :: null | binary(),
+    description = null :: null | binary()
+}).
+
 -record(person, {
     id = <<"">>           :: binary(),
     name = <<"">>         :: binary(),
@@ -74,10 +79,11 @@
 }).
 
 -record(performance, {
-    work = #work{} :: #work{},
-    onstage = []   :: list(#onstage{}),
-    offstage = []  :: list(#offstage{}),
-    directors = [] :: list(#person{})
+    work = #work{}          :: #work{},
+    onstage = []            :: list(#onstage{}),
+    offstage = []           :: list(#offstage{}),
+    directors = []          :: list(#person{}),
+    directors_note = null   :: null | binary()
 }).
 
 -record(show, {
@@ -85,7 +91,11 @@
     title = <<"">>          :: binary(),
     org = #organization{}   :: #organization{},
     performances = []       :: list(#performance{}),
-    special_thanks = <<"">> :: binary(),
+    special_thanks = null   :: null | binary(),
+    description = null      :: null | binary(),
+    hosts = []              :: list(#person{}),
+    press_links = []        :: list(#press_link{}),
+    external_links = null   :: null | #external_links{},
     dates = []              :: list(datetime())
 }).
 

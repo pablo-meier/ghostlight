@@ -25,7 +25,7 @@
 }).
 
 -record(press_link, {
-    url = null         :: null | binary(),
+    link = null         :: null | binary(),
     description = null :: null | binary()
 }).
 
@@ -85,7 +85,8 @@
     onstage = []            :: list(#onstage{}),
     offstage = []           :: list(#offstage{}),
     directors = []          :: list(#person{}),
-    directors_note = null   :: null | binary()
+    directors_note = null   :: null | binary(),
+    description = null   :: null | binary()
 }).
 
 -record(show, {
@@ -167,6 +168,10 @@
                    insert_offstage_statement,
                    insert_show_statement,
                    insert_dates_statement,
+                   insert_hosts_statement,
+                   insert_links_statement,
+                   insert_presslinks_statement,
+
                    get_show_listings,
                    get_show_meta,
                    get_show_onstage,

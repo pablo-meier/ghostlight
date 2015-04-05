@@ -1,0 +1,107 @@
+{
+  "title" : "Hand To God",
+  "special_thanks" : "The Harold & Mimi Steinberg Trust for the their support of Youngblood and new play productions at EST.",
+  "dates" : ["2015-04-02T20:00:00.000Z"],
+  "org" : {
+    "name": "Ensemble Studio Theatre"
+  },
+  "press": [
+    {
+      "link": "http://www.nytimes.com/2014/03/11/theater/in-hand-to-god-steven-boyers-puppet-is-unfiltered.html",
+      "description": "NYT Review."
+    },
+    {
+      "link": "http://www.nytimes.com/2015/04/05/theater/robert-askins-brings-hand-to-god-to-broadway.html",
+      "description": "NYT: background on the piece, author, and production."
+    }
+  ],
+
+  "social": {
+    "facebook": "https://www.facebook.com/HandToGodBroadway",
+    "twitter": "https://twitter.com/handtogodbway",
+    "youtube": "https://www.youtube.com/user/HandtoGodBroadway"
+  },
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Hand To God",
+        "authors": [{"name": "Robert Askins"}]
+      },
+      "directors": [{"name": "Moritz von Stuelpnagel"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Steven Boyer"},
+          "role" : "Jason/Tyrone",
+          "understudy" : {"name" : "Alex Mandell" }
+        },
+        {
+          "performer" : {"name": "Geneva Carr"},
+          "role" : "Margery",
+          "understudy" : {"name": "Pamela Bob"}
+        },
+        {
+          "performer" : {"name": "Marc Kudisch"},
+          "role" : "Pastor Greg",
+          "understudy" : {"name": "Beau Baxter" }
+        },
+        {
+          "performer" : {"name": "Michael Oberholtzer"},
+          "role" : "Timothy",
+          "understudy" : {"name" : "Alex Mandell" }
+        },
+        {
+          "performer" : {"name": "Sarah Stiles"},
+          "role" : "Jessica",
+          "understudy" : {"name": "Pamela Bob"}
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"name" : "Beowulf Boritt" },
+          "job" : "Scenic Designer"
+        },
+        {
+          "contributor" : {"name" : "Sydney Maresca" },
+          "job" : "Costume Designer"
+        },
+        {
+          "contributor" : {"name" : "Jason Lyons" },
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"name" : "Jill BC Du Boff" },
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"name" : "Marte Johanne Ekhougen" },
+          "job" : "Puppet Design"
+        },
+        {
+          "contributor" : {"name" : "Robert Westley" },
+          "job" : "Fight Director"
+        },
+        {
+          "contributor" : {"name" : "James Fitzsimmons" },
+          "job" : "Production Stage Manager"
+        },
+        {
+          "contributor" : {"name" : "Jenn McNeil" },
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"name" : "John Corker" },
+          "job" : "General Manager"
+        },
+        {
+          "contributor" : {"name" : "Brig Berney" },
+          "job" : "Company Manager"
+        },
+        {
+          "contributor" : {"name" : "Taylor Haven Holt" },
+          "job" : "Assistant Director"
+        }
+      ]
+    }
+  ]
+}

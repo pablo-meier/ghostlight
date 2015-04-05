@@ -1,10 +1,3 @@
-%% Here's the expectation from the DB on getting a show:
-%%
-%% * What is it? Work, org, dates.  TODO: Venue.
-%% * Who was in it and who worked on it? Actors, directors, stage hands, etc.
-%%
-%% Later maybe we could do things like who went/who's going, or sorting by
-%% shows that haven't closed yet.
 -module(ghostlight_db_show).
 -behaviour(gen_server).
 
@@ -80,10 +73,15 @@ get_inserts(#show{title=Title,
                   org=Org,
                   performances=Performances,
                   special_thanks=SpecialThanks,
-                  dates=Dates
+                  dates=Dates,
+                  hosts=Hosts,
+                  press_links=PressLinks,
+                  external_links=ExternalLinks
             },
             State=#db_state{insert_show_statement=IS,
-                            insert_dates_statement=ID}) ->
+                            insert_dates_statement=ID,
+                            insert_links_statement=IL,
+                            insert_presslinks_statement=IP}) ->
     Works = extract_works(Performances),
     {AllWorkInserts, WorksWithId} = fold_over_works(Works),
     {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org),
@@ -93,12 +91,20 @@ get_inserts(#show{title=Title,
                                 {ID, [ShowId, Date]}
                             end, Dates),
     AllPerformanceInserts = fold_over_performances(Performances, ShowId, WorksWithId, State),
+
+    HostInserts = get_host_inserts(ShowId, Hosts, State),
+    PressInserts = [ {IP, [ShowId, Link, Description]} || #press_link{link=Link, description=Description} <- PressLinks],
+    LinkInserts = ghostlight_db_utils:external_links_inserts(ShowId, IL, ExternalLinks),
+
     Batch = lists:append([
                           AllWorkInserts,
                           OrgInserts,
                           ShowInserts,
                           DateInserts,
-                          AllPerformanceInserts
+                          AllPerformanceInserts,
+                          HostInserts,
+                          LinkInserts,
+                          PressInserts
                          ]),
     {Batch, ShowId}.
 
@@ -112,11 +118,18 @@ get_performance_inserts(WorksWithIds,
                            work=Work,
                            onstage=Onstage,
                            offstage=Offstage,
-                           directors=Directors },
+                           directors=Directors,
+                           directors_note=DirectorNote,
+                           description=Description
+                        },
                         State=#db_state{insert_performance_statement=IP}) ->
     PerformanceId = ghostlight_db_utils:fresh_uuid(),
     WorkId = proplists:get_value(Work, WorksWithIds),
-    PerformanceInserts = [{IP, [PerformanceId, WorkId, ShowId, PerformanceOrder]}],
+
+    DescMarkdown = ghostlight_db_utils:markdown_or_null(Description),
+    DirNoteMarkdown = ghostlight_db_utils:markdown_or_null(DirectorNote),
+    PerformanceInserts = [{IP, [PerformanceId, WorkId, ShowId, DirectorNote, DirNoteMarkdown, Description, DescMarkdown, PerformanceOrder]}],
+
     DirectorInserts = get_director_inserts(PerformanceId, Directors, State),
     OnstageInserts = get_onstage_inserts(PerformanceId, Onstage, State),
     OffstageInserts = get_offstage_inserts(PerformanceId, Offstage, State),
@@ -127,6 +140,14 @@ get_performance_inserts(WorksWithIds,
                             OffstageInserts]),
     {Inserts, PerformanceId}.
 
+
+get_host_inserts(ShowId, Hosts, #db_state{insert_hosts_statement=IH}) ->
+    ListOfLists = lists:map(fun (Person) ->
+                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
+                                DirectorInsert = {IH, [ShowId, PersonId]},
+                                [PersonInserts, DirectorInsert]
+                            end, Hosts),
+    lists:flatten(ListOfLists).
 
 get_director_inserts(PerformanceId, Directors, #db_state{insert_director_statement=ID}) ->
     ListOfLists = lists:map(fun (Person) ->
@@ -273,9 +294,10 @@ get_inserts(Show) ->
 
 
 prepare_statements(C, State) ->
-    PerformanceSql = "INSERT INTO performances (performance_id, work_id, show_id, performance_order)"
-        ++ " VALUES($1, $2, $3, $4)",
-    {ok, InsertPerformance} = epgsql:parse(C, "insert_performance", PerformanceSql, [uuid, uuid, uuid, int4]),
+    PerformanceSql = "INSERT INTO performances "
+        ++ "(performance_id, work_id, show_id, directors_note_src, directors_note_markdown, description_src, description_markdown, performance_order)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6, $7, $8)",
+    {ok, InsertPerformance} = epgsql:parse(C, "insert_performance", PerformanceSql, [uuid, uuid, uuid, text, text, text, text, int4]),
 
     DirectorSql = "INSERT INTO performance_directors (performance_id, director_id) VALUES($1, $2)",
     {ok, InsertDirector} = epgsql:parse(C, "insert_performance_director", DirectorSql, [uuid, uuid]),
@@ -294,6 +316,15 @@ prepare_statements(C, State) ->
 
     DatesSql = "INSERT INTO show_dates (show_id, show_date) VALUES($1, $2)",
     {ok, InsertDates} = epgsql:parse(C, "insert_show_dates", DatesSql, [uuid, timestamptz]),
+
+    HostsSql = "INSERT INTO show_hosts (show_id, person_id) VALUES($1, $2)",
+    {ok, InsertHost} = epgsql:parse(C, "insert_show_host", HostsSql, [uuid, uuid]),
+
+    InsertLinkSql = "INSERT INTO show_links (show_id, link, type) VALUES($1, $2, $3::link_type)",
+    {ok, InsertLink} = epgsql:parse(C, "insert_show_link", InsertLinkSql, [uuid, text, text]),
+
+    InsertPressSql = "INSERT INTO press_links (show_id, link, description) VALUES($1, $2, $3)",
+    {ok, InsertPress} = epgsql:parse(C, "insert_show_press", InsertPressSql, [uuid, text, text]),
 
     %% SELECT Statements
     %% This will get the show's metadata
@@ -349,6 +380,9 @@ prepare_statements(C, State) ->
        insert_offstage_statement=InsertOffstage,
        insert_show_statement=InsertShow,
        insert_dates_statement=InsertDates,
+       insert_hosts_statement=InsertHost,
+       insert_links_statement=InsertLink,
+       insert_presslinks_statement=InsertPress,
        
        get_show_listings=GetShowListings,
        get_show_meta=GetShow,
@@ -356,5 +390,5 @@ prepare_statements(C, State) ->
        get_show_offstage=GetOffstage,
        get_show_authorship=GetAuthors,
        get_show_directors=GetDirectors
-    }.
+     }.
 

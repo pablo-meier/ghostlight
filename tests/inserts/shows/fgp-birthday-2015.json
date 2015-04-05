@@ -2,6 +2,11 @@
   "title" : "fgp birthday 2015",
   "special_thanks" : "Micah Bucey and Judson Church, Zach Moseley, Bob Wuss, Ben Mann, Jerrit Pruyn, Barrett Law, Kris Opperman, Cassidy Graves, Rachel Marder, Amy Virginia Buchanan, Elinor Vanderburg, Charly Simpson, Sixpoint Craft Ales, Insomnia Cookies, and Chris WIlliams.",
   "dates" : ["2015-02-20T20:00:00.000Z"],
+  "hosts": [
+    { "name": "Ryann Weir" },
+    { "name": "Nicole Spiezio" },
+    { "name": "Dana Clinkman" }
+  ],
   "org" : {
     "name": "Fresh Ground Pepper",
     "tagline" : "**Provokes** the artists to make artist and \n\n**Prompts** the generation of new works, new methodologies, and new mediums.",
@@ -73,29 +78,29 @@
         {
           "performer" : {"name": "Wil Petre"},
           "role" : "Tom Ford"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor": {"name" : "Kaz PS"},
+          "job" : "Principal Photography"
         },
-        "offstage" : [
-          {
-            "contributor": {"name" : "Kaz PS"},
-            "job" : "Principal Photography"
-          },
-          {
-            "contributor": {"name" : "Charles Lindsay"},
-            "job" : "Sound & Lights"
-          },
-          {
-            "contributor": {"name" : "Anton Sanko"},
-            "job" : "Composer"
-          },
-          {
-            "contributor": {"name" : "Kaz PS"},
-            "job" : "Editor"
-          },
-          {
-            "contributor": {"name" : "Dan Safer"},
-            "job" : "Editor"
-          }
-        ]
+        {
+          "contributor": {"name" : "Charles Lindsay"},
+          "job" : "Sound & Lights"
+        },
+        {
+          "contributor": {"name" : "Anton Sanko"},
+          "job" : "Composer"
+        },
+        {
+          "contributor": {"name" : "Kaz PS"},
+          "job" : "Editor"
+        },
+        {
+          "contributor": {"name" : "Dan Safer"},
+          "job" : "Editor"
+        }
       ]
     },
     {
@@ -128,7 +133,7 @@
       ],
       "offstage" : [
         {
-          "contributor": [{"name": "Catherine Brookman"}],
+          "contributor": {"name": "Catherine Brookman"},
           "job": "Composer"
         }
       ]

@@ -13,6 +13,7 @@
                     {"name": "Jaki Bradley"},
                     {"name": "Zoe Sophia Garcia"},
                     {"name": "Marianna McClellan"},
+                    {"name": "Rachel Karp"},
                     {"name": "Maggie Raymond"},
                     {"name": "Gabby Sherpa"}]
       },
@@ -28,9 +29,6 @@
           "performer" : {"name": "Zoe Sophia Garcia"}
         },
         {
-          "performer" : {"name": "Rachel Karp"}
-        },
-        {
           "performer" : {"name": "Marianna McClellan"}
         },
         {
@@ -39,7 +37,9 @@
         {
           "performer" : {"name": "Gabby Sherpa"}
         }
-      ]
+      ],
+      "description": "Six women make a female-oriented and empowering porn. When they put it online, however, it is subjected and influenced by the very forces it was meant to overcome.",
+      "directors_note": "Lillian Meredith is a director and theater artist born, bred, and currently based in NYC. Recent credits include Soho Rep, Theater for a New Audience, Culture Project, Dixon Place, Actors Theatre of Louisville, O'Neill Theater Center, UglyRhino, Galapagos Art Space, and the Fury Factory Festival of Ensemble Theater. Other credits: The Motor Company (co-founder, Artistic Director); FullStop Collective (co-founder, member); foolsFURY Theater (associated artist); LCT Directors Lab; and Soho Rep Writer/Director Lab. Proud alumna: Vassar College, National Theater institute. lillianmeredith.com"
     },
     {
       "work" : {
@@ -57,7 +57,9 @@
         {
           "performer" : {"name": "Brian Burns"}
         }
-      ]
+      ],
+      "description": "_who we let in_ looks at why we run away, the people we run away to, and why we let people in at all",
+      "directors_note": "Illana Stein is a NYC-based director. Credits: _A Midsummer Night's Dream_ (Queens Players), _Stop Kiss_ (Sanguine Theatre), _or what she will_ (FringeNYC'12, Directing Award), INTAR: American Nightcap, Fresh Produce'd, UglyRhino, NY Madness directing company, and 3 years directing fro Writopia Lab. Most recently Associate Director on Tamburlaine the Great at Theatre for a New Audience. Upcoming: directing a reading of _The Lady Revealed_ at New Dramatists. Member of 2012 Lincoln Center Theater Directors Lab and SDC Associate Member. www.illanastein.com"
     },
     {
       "work" : {

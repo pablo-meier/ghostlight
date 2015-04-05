@@ -90,6 +90,8 @@ CREATE TABLE IF NOT EXISTS performances (
     show_id UUID REFERENCES shows(show_id) NOT NULL, 
     directors_note_src TEXT,
     directors_note_markdown TEXT,
+    description_src TEXT,
+    description_markdown TEXT,
     performance_order INTEGER
 );
 

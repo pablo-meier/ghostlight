@@ -189,12 +189,23 @@ show_json_to_record(JsonInput) ->
     Org = ghostlight_org:json_to_record(proplists:get_value(<<"org">>, Decoded)),
     Performances = lists:map(fun performance_json_to_record/1, proplists:get_value(<<"performances">>, Decoded)),
 
+    {LinksObj} = proplists:get_value(<<"social">>, Decoded, {[]}),
+    ExternalLinks = ghostlight_utils:external_links_json_to_record(LinksObj),
+    Hosts = [ ghostlight_people:json_to_record(Host) || Host <- proplists:get_value(<<"hosts">>, Decoded, []) ],
+
+    Press = proplists:get_value(<<"press">>, Decoded, []),
+    PressLinks = [ #press_link{link=proplists:get_value(<<"link">>, Link, null),
+                               description=proplists:get_value(<<"description">>, Link, null)} || {Link} <- Press],
+
     #show{
         title = Title,
         special_thanks = SpecialThanks,
         dates = Dates,
         org = Org,
-        performances = Performances
+        hosts = Hosts,
+        performances = Performances,
+        external_links=ExternalLinks,
+        press_links=PressLinks
     }.
 
 
@@ -202,12 +213,16 @@ performance_json_to_record({Proplist}) ->
     Work = ghostlight_work:json_to_record(proplists:get_value(<<"work">>, Proplist)),
     Onstage = lists:map(fun onstage_json_to_record/1, proplists:get_value(<<"onstage">>, Proplist, [])),
     Offstage = lists:map(fun offstage_json_to_record/1, proplists:get_value(<<"offstage">>, Proplist, [])),
-    Directors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"directors">>, Proplist)),
+    Directors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"directors">>, Proplist, [])),
+    DirectorNote = proplists:get_value(<<"directors_note">>, Proplist, null),
+    Description = proplists:get_value(<<"description">>, Proplist, null),
     #performance {
        work = Work,
        directors = Directors,
        onstage = Onstage,
-       offstage = Offstage
+       offstage = Offstage,
+       directors_note = DirectorNote,
+       description = Description
     }.
 
 

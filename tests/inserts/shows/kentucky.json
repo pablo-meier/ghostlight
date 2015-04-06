@@ -88,44 +88,44 @@
       ],
       "offstage" : [
         {
-            "contributor" : {"name" : "Jason Simms" },
-            "job" : "Scenic Designer"
+          "contributor" : {"name" : "Jason Simms" },
+          "job" : "Scenic Designer"
         },
         {
-            "contributor" : {"name" : "Mark van Hare" },
-            "job" : "Sound Designer"
+          "contributor" : {"name" : "Mark van Hare" },
+          "job" : "Sound Designer"
         },
         {
-            "contributor" : {"name" : "Joe Lankheet" },
-            "job" : "Production Manager"
+          "contributor" : {"name" : "Joe Lankheet" },
+          "job" : "Production Manager"
         },
         {
-            "contributor" : {"name" : "Greg MacPherson" },
-            "job" : "Lighting Plot Designer"
+          "contributor" : {"name" : "Greg MacPherson" },
+          "job" : "Lighting Plot Designer"
         },
         {
-            "contributor" : {"name" : "Audrey Nauman" },
-            "job" : "Costume Designer"
+          "contributor" : {"name" : "Audrey Nauman" },
+          "job" : "Costume Designer"
         },
         {
-            "contributor" : {"name" : "Nicholas Ward" },
-            "job" : "General Manager"
+          "contributor" : {"name" : "Nicholas Ward" },
+          "job" : "General Manager"
         },
         {
-            "contributor" : {"name" : "Chelsie McPhilimy" },
-            "job" : "Lighting Designer"
+          "contributor" : {"name" : "Chelsie McPhilimy" },
+          "job" : "Lighting Designer"
         },
         {
-            "contributor" : {"name" : "Jessica Jalal" },
-            "job" : "Props Master"
+          "contributor" : {"name" : "Jessica Jalal" },
+          "job" : "Props Master"
         },
         {
-            "contributor" : {"name" : "Eileen Lalley" },
-            "job" : "Production Stage Manager"
+          "contributor" : {"name" : "Eileen Lalley" },
+          "job" : "Production Stage Manager"
         },
         {
-            "contributor" : {"name" : "Alex Grubbs" },
-            "job" : "Composer, Music Arranger"
+          "contributor" : {"name" : "Alex Grubbs" },
+          "job" : "Composer, Music Arranger"
         }
       ]
     }

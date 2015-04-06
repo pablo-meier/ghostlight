@@ -7,11 +7,32 @@
    <!-- If only one performance, author(s) here -->
    <h2>Presented by <a href="/organizations/{{ org.org_id }}">{{ org.org_name }}</a></h2>
 
+  {% include "social_media.html" %}
+
    <ul>
        {% for date in dates %}
        <li><strong>{{ date|date:"l, N jS, Y, h:iA" }} </strong></li>
        {% endfor %}
    </ul>
+
+   {% if hosts %}
+     <p>Hosted by  {% for host in hosts %}
+     <a href="{{ host.host_id }}">{{ host.host_name }}</a>&nbsp;
+     {% endfor %}</p>
+   {% endif %}
+
+   {% if description %}
+     {% autoescape off %} {{ description }} {% endautoescape %}
+   {% endif %}
+
+   {% if press %}
+     <h3>Coverage</h3>
+     <ul>
+       {% for press_link in press %}
+       <li><a href="{{ press_link.link }}">{{ press_link.description }}</a></li>
+       {% endfor %}
+     </ul>
+   {% endif %}
 
    {% for performance in performances %}
    <hr />
@@ -23,6 +44,10 @@
        {% for director in performance.directors %}
            <a href="/people/{{ director.person_id }}">{{ director.name }}</a>
        {% endfor %}</h4>
+
+       {% if performance.description %}
+         {% autoescape off %} {{ performance.description }} {% endautoescape %}
+       {% endif %}
 
        <h5>Starring</h5>
        <table>
@@ -54,6 +79,13 @@
        </table>
        {% endif %}
 
+       {% if performance.directors_note %}
+         {% autoescape off %} {{ performance.directors_note }} {% endautoescape %}
+       {% endif %}
+
    {% endfor %}
-   <p class="text-center"><small>Special thanks to {{ special_thanks }}</small></p>
+
+   {% if special_thanks %}
+     <p class="text-center"><small>Special thanks to {{ special_thanks }}</small></p>
+   {% endif %}
 {% endblock %}

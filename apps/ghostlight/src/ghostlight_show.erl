@@ -88,6 +88,10 @@ record_to_proplist(#show{
                             name=OrgName
                          },
                      special_thanks=SpecialThanks,
+                     description=Description,
+                     hosts=Hosts,
+                     press_links=PressLinks,
+                     external_links=ExternalLinks,
                      performances=Performances,
                      dates=Dates}) ->
     [{show_id, ShowId},
@@ -95,6 +99,10 @@ record_to_proplist(#show{
      {org, [{org_id, OrgId}, {org_name, OrgName}]},
      {special_thanks, SpecialThanks},
      {dates, Dates},
+     {hosts, [ [{<<"host_id">>, HostId}, {<<"host_name">>, HostName}] || #person{id=HostId, name=HostName} <- Hosts]},
+     {press, [ [{<<"link">>, Url}, {<<"description">>, LinkDesc}] || #press_link{link=Url, description=LinkDesc} <- PressLinks]},
+     {description, ghostlight_utils:remove_null(Description)},
+     {links, ghostlight_utils:external_links_record_to_proplist(ExternalLinks)},
      {performances, [ performance_to_proplists(Performance) || Performance <- Performances ] }
     ].
 
@@ -107,10 +115,14 @@ performance_to_proplists(#performance{
                              },
                              onstage=Onstage,
                              offstage=Offstage,
-                             directors=Directors}) ->
+                             directors=Directors,
+                             directors_note=DirectorsNote,
+                             description=Description}) ->
     [{work, [{title, WorkTitle},
              {work_id, WorkId},
              {authors, personlist_as_proplist(WorkAuthors)}]},
+     {directors_note, ghostlight_utils:remove_null(DirectorsNote)},
+     {description, ghostlight_utils:remove_null(Description)},
      {directors, personlist_as_proplist(Directors)},
      {onstage, onstage_as_proplists(Onstage)},
      {offstage, offstage_as_proplists(Offstage)}].

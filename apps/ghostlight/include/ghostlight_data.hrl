@@ -178,6 +178,9 @@
                    get_show_offstage,
                    get_show_authorship,
                    get_show_directors,
+                   get_show_links,
+                   get_show_press,
+                   get_show_hosts,
 
                    %% People
                    insert_person_statement,

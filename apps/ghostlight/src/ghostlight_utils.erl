@@ -27,6 +27,7 @@ external_links_json_to_record(Json) when is_list(Json) ->
         newplayx = proplists:get_value(<<"newplayx">>, Json, null)
     }.
 
+external_links_record_to_proplist(null) -> [];
 external_links_record_to_proplist(
     #external_links{
         website=Website,

@@ -2,6 +2,57 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Schema defining a show.",
   "description": "Also known as a production, a show is a collection of performances that are presented on a planned series of dates. \"If it's got a program, it's a show.\"",
+
+  "definitions": {
+    "person": {
+      "title": "Person schema",
+      "description": "The bread and butter of Ghostlight, a person is also one of our trickiest.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id" : {
+          "type": "string"
+        }
+      }
+    },
+
+    "work": {
+      "title": "Schema defining a work",
+        "description": "Any piece that is performed is known as a work. \"If it has a script, it's a work.\"",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "authors":{
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "!/definitions/person"
+            }
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minutes_long": {
+            "type": "integer",
+            "minimum": 1,
+            "exclusiveMinimum": false
+          },
+          "collaborating_org":{
+            "type": "object"
+          }
+        }
+    }
+  },
+
   "type": "object",
   "required": ["title", "dates", "producers", "performances"],
   "additionalProperties": false,
@@ -26,19 +77,7 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "title": "Person schema",
-        "description": "The bread and butter of Ghostlight, a person is also one of our trickiest.",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string",
-            "minLength": 1
-          },
-          "id" : {
-            "type": "string"
-          }
-        }
+        "$ref": "#/definitions/person"
       }
     },
 
@@ -46,7 +85,15 @@
       "type": "array",
       "minItems": 1,
       "items": {
+        "type": "object",
+        "patternProperties": {
+          "org":{
 
+          },
+          "person":{
+            "$ref": "#/definitions/person"
+          }
+        }
       }
     },
 
@@ -60,35 +107,7 @@
 
         "properties": {
           "work": {
-            "title": "Schema defining a work",
-            "description": "Any piece that is performed is known as a work. \"If it has a script, it's a work.\"",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "title": {
-                "type": "string",
-                "minLength": 1
-              },
-              "authors":{
-                "type": "array",
-                "minItems": 1,
-                "items": {
-
-                }
-              },
-              "description": {
-                "type": "string",
-                "minLength": 1
-              },
-              "minutes_long": {
-                "type": "integer",
-                "minimum": 1,
-                "exclusiveMinimum": false
-              },
-              "collaborating_org":{
-                "type": "object"
-              }
-            }
+            "$ref": "#/definitions/work"
           },
 
           "onstage": {
@@ -101,7 +120,10 @@
           },
           "directors": {
             "type": "array",
-            "minItems": 1
+            "minItems": 1,
+            "items": {
+              "$ref": "#/definitions/person"
+            }
           },
           "directors_note": {
             "type": "string",
@@ -131,10 +153,12 @@
         "additionalProperties": false,
         "properties": {
           "link": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         }
       }

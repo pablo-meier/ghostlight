@@ -235,12 +235,13 @@ prepare_statements(C, State) ->
     {ok, GetOrgMeta} = epgsql:parse(C, "get_org_meta", GetOrgMetaSql, [uuid]),
 
     GetProducedByOrgSql = "SELECT s.show_id, s.title, w.work_id, w.title FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN producers AS prod USING (show_id) "
+        ++ "INNER JOIN organizations AS o USING (org_id) "
         ++ "INNER JOIN works AS w ON (p.work_id = w.work_id) WHERE o.org_id = $1",
     {ok, GetProducedByOrg} = epgsql:parse(C, "get_produced_by_org", GetProducedByOrgSql, [uuid]),
 
     GetDatesOfShowSql = "SELECT s.show_id, s.title, d.show_date FROM shows AS s INNER JOIN "
-        ++ "organizations AS o ON (o.org_id = s.producing_org_id) INNER JOIN show_dates AS d "
+        ++ "producers AS p USING (show_id) INNER JOIN organizations AS o USING (org_id) INNER JOIN show_dates AS d "
         ++ "USING (show_id) WHERE o.org_id = $1 ORDER BY d.show_date ASC",
     {ok, GetDatesOfShow} = epgsql:parse(C, "get_dates_of_shows_by_org", GetDatesOfShowSql, [uuid]),
 

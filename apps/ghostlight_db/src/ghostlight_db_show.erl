@@ -50,6 +50,7 @@ handle_call(get_show_listings, _From, State=#db_state{connection=C, get_show_lis
 
 
 handle_call({get_show, ShowId}, _From, State=#db_state{get_show_meta=SM,
+                                                       get_show_producers=SProd,
                                                     get_show_onstage=SO,
                                                     get_show_offstage=SOff,
                                                     get_show_authorship=SA,
@@ -58,6 +59,7 @@ handle_call({get_show, ShowId}, _From, State=#db_state{get_show_meta=SM,
                                                     get_show_press=SP,
                                                     get_show_hosts=SH }) ->
     Batch = [ {SM, [ShowId]},
+              {SProd, [ShowId]},
               {SO, [ShowId]},
               {SOff, [ShowId]},
               {SA, [ShowId]},
@@ -76,7 +78,7 @@ handle_call(_Request, _From, State) ->
     {reply, Reply, State}.
 
 get_inserts(#show{title=Title,
-                  org=Org,
+                  producers=Producers,
                   performances=Performances,
                   special_thanks=SpecialThanks,
                   dates=Dates,
@@ -90,9 +92,14 @@ get_inserts(#show{title=Title,
                             insert_presslinks_statement=IP}) ->
     Works = extract_works(Performances),
     {AllWorkInserts, WorksWithId} = fold_over_works(Works),
-    {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org),
+
     ShowId = ghostlight_db_utils:fresh_uuid(),
-    ShowInserts = [{IS, [ShowId, Title, OrgId, SpecialThanks]}],
+
+    {ProducerInsertsRaw, _ProducerIds} = lists:unzip([ get_producer_inserts(ShowId, Producer, Num, State) 
+                                                       || {Producer, Num} <- lists:zip(Producers, lists:seq(1, length(Producers))) ]),
+    ProducerInserts = lists:flatten(ProducerInsertsRaw),
+
+    ShowInserts = [{IS, [ShowId, Title, SpecialThanks]}],
     DateInserts = lists:map(fun (Date) ->
                                 {ID, [ShowId, Date]}
                             end, Dates),
@@ -104,8 +111,8 @@ get_inserts(#show{title=Title,
 
     Batch = lists:append([
                           AllWorkInserts,
-                          OrgInserts,
                           ShowInserts,
+                          ProducerInserts,
                           DateInserts,
                           AllPerformanceInserts,
                           HostInserts,
@@ -113,6 +120,19 @@ get_inserts(#show{title=Title,
                           PressInserts
                          ]),
     {Batch, ShowId}.
+
+
+get_producer_inserts(ShowId, Person=#person{}, Order, #db_state{insert_producer_statement=IP}) ->
+    {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
+    WithProduction = lists:append([ PersonInserts,
+                                    [{IP, [ShowId, null, PersonId, Order]}] ]),
+    {WithProduction, PersonId};
+get_producer_inserts(ShowId, Org=#organization{}, Order, #db_state{insert_producer_statement=IP}) ->
+    {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org),
+    WithProduction = lists:append([ OrgInserts,
+                                    [{IP, [ShowId, OrgId, null, Order]}] ]),
+    {WithProduction, OrgId}.
+
 
 extract_works(Performances) ->
     lists:map(fun (#performance{work = Work}) -> Work end, Performances).
@@ -207,6 +227,7 @@ get(ShowId) ->
     %% handle if this call fails.
     [_,
      {ok, Meta},
+     {ok, Producers},
      {ok, Onstage},
      {ok, Offstage},
      {ok, Authorship},
@@ -215,7 +236,7 @@ get(ShowId) ->
      {ok, External},
      {ok, Hosts},
      _] = Response,
-    [{Title, OrgName, OrgId, Description, SpecialThanks, _}|_] = Meta,
+    [{Title, Description, SpecialThanks, _}|_] = Meta,
     Dates = [ Date || {_, _, _, _, Date} <- Meta ],
 
     Authors = authors_to_map(Authorship),
@@ -229,14 +250,16 @@ get(ShowId) ->
         dates = Dates,
         description = Description,
         hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- Hosts],
-        org = #organization{
-                   id = OrgId,
-                   name = OrgName
-                },
+        producers=[ parse_producer_row(Producer) || Producer <- Producers ],
         performances = make_performance_record_list(Onstage, Offstage, Authors, DirectorMap),
         external_links=ExternalLinks,
         press_links=PressLinks
       }.
+
+parse_producer_row({null, null, PersonId, PersonName}) ->
+    #person{ id=PersonId, name=PersonName };
+parse_producer_row({OrgId, OrgName, null, null}) ->
+    #organization{ id=OrgId, name=OrgName }.
 
 make_performance_record_list(Onstage, Offstage, AuthorMap, DirectorMap) ->
     PerformancesMap = lists:foldl(fun ({WorkId, Title, PerformerName, PerformerId, Role}, Accum) ->
@@ -332,12 +355,12 @@ listings() ->
     Response = gen_server:call(?MODULE, get_show_listings),
     [ #show{
          id=ShowId,
-         title=ShowName,
-         org=#organization{
-                id=OrgId,
-                name=OrgName
-               }
-        } || {ShowId, ShowName, OrgId, OrgName} <- Response ].
+         title=ShowName
+%%         org=#organization{
+%%                id=OrgId,
+%%                name=OrgName
+%%               }
+        } || {ShowId, ShowName, _OrgId, _OrgName} <- Response ].
 
 insert(Show) ->
     gen_server:call(?MODULE, {insert_show, Show}).
@@ -363,9 +386,12 @@ prepare_statements(C, State) ->
         ++ " VALUES($1, $2, $3, $4, $5)",
     {ok, InsertOffstage} = epgsql:parse(C, "insert_performance_offstage", OffstageSql, [uuid, uuid, text, date, date]),
 
-    ShowSql = "INSERT INTO shows (show_id, title, producing_org_id, special_thanks, date_created) "
-        ++ " VALUES($1, $2, $3, $4, CURRENT_DATE)",
-    {ok, InsertShow} = epgsql:parse(C, "insert_show", ShowSql, [uuid, text, uuid, text]),
+    ProducersSql = "INSERT INTO producers (show_id, org_id, person_id, listed_order) VALUES($1, $2, $3, $4)",
+    {ok, InsertProducer} = epgsql:parse(C, "insert_producer", ProducersSql, [uuid, uuid, uuid, int4]),
+
+    ShowSql = "INSERT INTO shows (show_id, title, special_thanks, date_created) "
+        ++ " VALUES($1, $2, $3, CURRENT_DATE)",
+    {ok, InsertShow} = epgsql:parse(C, "insert_show", ShowSql, [uuid, text, text]),
 
     DatesSql = "INSERT INTO show_dates (show_id, show_date) VALUES($1, $2)",
     {ok, InsertDates} = epgsql:parse(C, "insert_show_dates", DatesSql, [uuid, timestamptz]),
@@ -381,10 +407,15 @@ prepare_statements(C, State) ->
 
     %% SELECT Statements
     %% This will get the show's metadata
-    GetShowSql = "SELECT s.title, o.name, o.org_id, s.description_markdown, s.special_thanks, d.show_date "
-        ++ "FROM shows AS s INNER JOIN organizations AS o ON (s.producing_org_id = o.org_id) "
-        ++ "INNER JOIN show_dates AS d USING (show_id) WHERE s.show_id = $1",
+    GetShowSql = "SELECT s.title, s.description_markdown, s.special_thanks, d.show_date "
+        ++ "FROM shows AS s INNER JOIN show_dates AS d USING (show_id) WHERE s.show_id = $1",
     {ok, GetShow} = epgsql:parse(C, "get_show_meta", GetShowSql, [uuid]),
+
+    GetProducersSql = "SELECT o.org_id, o.name, p.person_id, p.name FROM producers AS prod "
+        ++ "LEFT OUTER JOIN organizations AS o USING (org_id) "
+        ++ "LEFT OUTER JOIN people AS p USING (person_id) "
+        ++ "WHERE prod.show_id = $1 ORDER BY prod.listed_order ASC",
+    {ok, GetProducers} = epgsql:parse(C, "get_producers", GetProducersSql, [uuid]),
 
     %% This monstrosity will get all the performers in a show, even if spanning
     %% Many performances.
@@ -432,9 +463,7 @@ prepare_statements(C, State) ->
     {ok, GetHosts} = epgsql:parse(C, "get_show_hosts", GetHostsSql, [uuid]),
   
     %% For show listings -- much like the meta of a single one.
-    GetShowListingsSql = "SELECT s.show_id, s.title, o.org_id, o.name "
-        ++ "FROM shows AS s INNER JOIN organizations AS o ON (s.producing_org_id = o.org_id) "
-        ++ "LIMIT 30",
+    GetShowListingsSql = "SELECT s.show_id, s.title FROM shows AS s LIMIT 30",
     {ok, GetShowListings} = epgsql:parse(C, "show_listings_meta", GetShowListingsSql, []),
 
 
@@ -449,9 +478,11 @@ prepare_statements(C, State) ->
        insert_hosts_statement=InsertHost,
        insert_links_statement=InsertLink,
        insert_presslinks_statement=InsertPress,
+       insert_producer_statement=InsertProducer,
        
        get_show_listings=GetShowListings,
        get_show_meta=GetShow,
+       get_show_producers=GetProducers,
        get_show_onstage=GetOnstage,
        get_show_offstage=GetOffstage,
        get_show_authorship=GetAuthors,

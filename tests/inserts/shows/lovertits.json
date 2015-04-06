@@ -4,9 +4,15 @@
   "dates" : ["2015-03-24T20:00:00.000Z",
              "2015-03-25T20:00:00.000Z",
              "2015-03-26T20:00:00.000Z"],
-  "org" : {
-    "name": "Annie Wilson"
-  },
+
+  "producers": [
+    {
+      "person": {
+        "name": "Annie Wilson"
+      }
+    }
+  ],
+
   "performances": [
     {
       "work" : {

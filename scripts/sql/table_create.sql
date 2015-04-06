@@ -60,12 +60,20 @@ CREATE TABLE IF NOT EXISTS festivals (
 CREATE TABLE IF NOT EXISTS shows (
     show_id UUID PRIMARY KEY,
     title text NOT NULL,
-    producing_org_id UUID REFERENCES organizations(org_id) NOT NULL,
     festival_id UUID REFERENCES festivals(festival_id),
     description_src TEXT,
     description_markdown TEXT,
     special_thanks TEXT,
     date_created TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS producers (
+    show_id UUID NOT NULL REFERENCES shows(show_id),
+    org_id UUID REFERENCES organizations(org_id),
+    person_id UUID REFERENCES people(person_id),
+    listed_order INTEGER NOT NULL,
+
+    CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL)
 );
 
 -- Works, per above. If you can get a script, it's a work.
@@ -92,7 +100,7 @@ CREATE TABLE IF NOT EXISTS performances (
     directors_note_markdown TEXT,
     description_src TEXT,
     description_markdown TEXT,
-    performance_order INTEGER
+    performance_order INTEGER NOT NULL
 );
 
 -- Since performances can have many directors, give them a 1-many table.

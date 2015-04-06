@@ -16,6 +16,7 @@ DROP TABLE festivals CASCADE;
 DROP TABLE org_links CASCADE;
 DROP TABLE org_employees CASCADE;
 DROP TABLE org_members CASCADE;
+DROP TABLE producers CASCADE;
 DROP TABLE organizations CASCADE;
 DROP TABLE people_links CASCADE;
 DROP TABLE users CASCADE;

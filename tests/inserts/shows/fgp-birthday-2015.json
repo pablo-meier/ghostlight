@@ -2,16 +2,23 @@
   "title" : "fgp birthday 2015",
   "special_thanks" : "Micah Bucey and Judson Church, Zach Moseley, Bob Wuss, Ben Mann, Jerrit Pruyn, Barrett Law, Kris Opperman, Cassidy Graves, Rachel Marder, Amy Virginia Buchanan, Elinor Vanderburg, Charly Simpson, Sixpoint Craft Ales, Insomnia Cookies, and Chris Williams.",
   "dates" : ["2015-02-20T20:00:00.000Z"],
+
   "hosts": [
     { "name": "Ryann Weir" },
     { "name": "Nicole Spiezio" },
     { "name": "Dana Clinkman" }
   ],
-  "org" : {
-    "name": "Fresh Ground Pepper",
-    "tagline" : "**Provokes** the artists to make artist and \n\n**Prompts** the generation of new works, new methodologies, and new mediums.",
-    "description": "For the past 6 years, FGP has nurtured hundreds of artists and developing projects. We look forward to continue to offer our community a deadline, a guideline, and a space. Fresh Ground Pepper exists because making art is not easy.\n\nWe exist because artists cannot create and edit at the same time.\nWe exist because ideas beget ideas.\nWe exist because art is worthy of celebration."
-  },
+
+  "producers" : [
+    {
+      "org": {
+        "name": "Fresh Ground Pepper",
+        "tagline" : "**Provokes** the artists to make artist and \n\n**Prompts** the generation of new works, new methodologies, and new mediums.",
+        "description": "For the past 6 years, FGP has nurtured hundreds of artists and developing projects. We look forward to continue to offer our community a deadline, a guideline, and a space. Fresh Ground Pepper exists because making art is not easy.\n\nWe exist because artists cannot create and edit at the same time.\nWe exist because ideas beget ideas.\nWe exist because art is worthy of celebration."
+      }
+    }
+  ],
+
   "performances": [
     {
       "work" : {

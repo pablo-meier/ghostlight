@@ -79,15 +79,9 @@ record_to_proplist(#work_return{
   AuthorsProplist = [ [{author_id, AuthorId},
                        {author_name, AuthorName}] || #person{id=AuthorId, name=AuthorName} <- Authors ],
   ShowsProplist = [ [{show_id, ShowId},
-                     {show_title, ShowTitle},
-                     {org_id, OrgId},
-                     {org_name, OrgName}] || #show{
+                     {show_title, ShowTitle} ] || #show{
                                                 id=ShowId,
-                                                title=ShowTitle,
-                                                org=#organization{
-                                                       id=OrgId,
-                                                       name=OrgName
-                                                      }
+                                                title=ShowTitle
                                                } <- Shows ],
   CollabOrgProplist = case CollabOrg of
                           null ->

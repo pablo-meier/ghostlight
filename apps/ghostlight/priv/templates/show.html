@@ -5,7 +5,14 @@
 {% block content %}
   <h1>{{ title }}</h1>
    <!-- If only one performance, author(s) here -->
-   <h2>Presented by <a href="/organizations/{{ org.org_id }}">{{ org.org_name }}</a></h2>
+   <h2>Presented by 
+       {% for producer in producers %}
+         {% if producer.is_org %}
+           <a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>
+         {% else %}
+           <a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>
+         {% endif %}
+       {% endfor %}</h2>
 
   {% include "social_media.html" %}
 

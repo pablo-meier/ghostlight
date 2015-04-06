@@ -93,12 +93,12 @@ get(WorkId) ->
     AuthorList = [ #person{ id = AuthorId, name = AuthorName } || {_, AuthorId, AuthorName, _, _, _, _} <- Authors ],
     ShowList = [ #show{
                      id=ShowId,
-                     title=ShowTitle,
-                     org=#organization{
-                            id=OrgId,
-                            name=OrgName
-                         }
-                 } || {ShowId, ShowTitle, OrgId, OrgName} <- Shows],
+                     title=ShowTitle
+                     %org=#organization{
+                     %       id=OrgId,
+                     %       name=OrgName
+                     %    }
+                 } || {ShowId, ShowTitle, _OrgId, _OrgName} <- Shows],
 
     CollabOrg = case CollabOrgId of
                     null ->
@@ -184,8 +184,11 @@ prepare_statements(C, State) ->
         ++ "WHERE a.work_id = $1",
     {ok, GetWorkTitleAndAuthors} = epgsql:parse(C, "get_work_meta", GetWorkTitleAndAuthorsSql, [uuid]),
 
-    GetWorkShowsSql = "SELECT s.show_id, s.title, o.org_id, o.name AS org_name FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+    GetWorkShowsSql = "SELECT s.show_id, s.title, o.org_id, o.name AS org_name "
+        ++ "FROM shows AS s "
+        ++ "INNER JOIN producers AS prod USING (show_id) "
+        ++ "INNER JOIN performances AS p USING (show_id) "
+        ++ "INNER JOIN organizations AS o USING (org_id) "
         ++ "INNER JOIN works AS w ON (p.work_id = w.work_id) WHERE w.work_id = $1",
     {ok, GetWorkShows} = epgsql:parse(C, "get_work_shows", GetWorkShowsSql, [uuid]),
         

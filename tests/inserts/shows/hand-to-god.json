@@ -2,9 +2,25 @@
   "title" : "Hand To God",
   "special_thanks" : "The Harold & Mimi Steinberg Trust for the their support of Youngblood and new play productions at EST.",
   "dates" : ["2015-04-02T20:00:00.000Z"],
-  "org" : {
-    "name": "Ensemble Studio Theatre"
-  },
+
+  "producers": [
+    { "person": {"name": "Kevin McCollum" } },
+    { "org": {"name": "Broadway Global Ventures" } },
+    { "org": {"name": "CMC" } },
+    { "person": {"name": "Morriss Berchard" } },
+    { "person": {"name": "Mariano V. Tolentino Jr." } },
+    { "person": {"name": "Stephanie Kramer" } },
+    { "org": {"name": "LAMS Productions" } },
+    { "org": {"name": "DeSimone/Winkler" } },
+    { "org": {"name": "Joan Raff & Jhett Tolentino" } },
+    { "person": {"name": "Timothy Laczynski" } },
+    { "person": {"name": "Lily Fan" } },
+    { "person": {"name": "Ayal Miodovnik" } },
+    { "org": {"name": "JAM Theatricals" } },
+    { "org": {"name": "Ensemble Studio Theatre" } },
+    { "org": {"name": "MCC Theater" } }
+  ],
+
   "press": [
     {
       "link": "http://www.nytimes.com/2014/03/11/theater/in-hand-to-god-steven-boyers-puppet-is-unfiltered.html",

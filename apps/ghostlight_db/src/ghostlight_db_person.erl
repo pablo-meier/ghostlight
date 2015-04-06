@@ -128,27 +128,27 @@ get(PersonId) ->
     OrgsAsMember = [ #organization{id=OrgId, name=OrgName, description=OrgDescription} || {OrgId, OrgName, OrgDescription} <- Memberships],
     Onstage = [ #show{ title=ShowTitle,
                        id=ShowId,
-                       org=#organization{id=OrgId, name=OrgName},
+%                       org=#organization{id=OrgId, name=OrgName},
                        performances=[#performance{
                                        work=#work{ id=WorkId, title=WorkTitle },
                                        onstage=#onstage{ role=Role }
                                     }]
-                     } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName, Role} <- OnstageList ],
+                     } || {ShowId, ShowTitle, WorkId, WorkTitle, _OrgId, _OrgName, Role} <- OnstageList ],
     Offstage = [ #show{ title=ShowTitle,
                        id=ShowId,
-                       org=#organization{id=OrgId, name=OrgName},
+%                       org=#organization{id=OrgId, name=OrgName},
                        performances=[#performance{
                                        work=#work{ id=WorkId, title=WorkTitle },
                                        offstage=#offstage{ job=Job }
                                     }]
-                     } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName, Job} <- OffstageList ],
+                     } || {ShowId, ShowTitle, WorkId, WorkTitle, _OrgId, _OrgName, Job} <- OffstageList ],
     Directed = [ #show{ title=ShowTitle,
                         id=ShowId,
-                        org=#organization{id=OrgId, name=OrgName},
+%                        org=#organization{id=OrgId, name=OrgName},
                         performances=[#performance{
                                         work=#work{ id=WorkId, title=WorkTitle }
                                      }]
-                      } || {ShowId, ShowTitle, WorkId, WorkTitle, OrgId, OrgName} <- DirectedList ],
+                      } || {ShowId, ShowTitle, WorkId, WorkTitle, _OrgId, _OrgName} <- DirectedList ],
     ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(Links),
  
     #person_return{
@@ -201,19 +201,23 @@ prepare_statements(C, State) ->
         ++ "org_members AS om USING (org_id) WHERE om.person_id = $1 AND o.visibility = 'public'",
     {ok, GetOrgMemberships} = epgsql:parse(C, "get_person_org_memberships", GetOrgMembershipsSql, [uuid]),
 
-    GetPersonOnstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.role FROM shows AS s " ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+    GetPersonOnstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.role FROM shows AS s "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN producers AS prod USING (show_id) "
+        ++ "INNER JOIN organizations AS o USING (org_id) "
         ++ "INNER JOIN performance_onstage AS po USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
         ++ "WHERE po.performer_id = $1",
     {ok, GetPersonOnstage} = epgsql:parse(C, "get_person_onstage", GetPersonOnstageSql, [uuid]),
 
     GetPersonOffstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.job FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN producers AS prod USING (show_id) "
+        ++ "INNER JOIN organizations AS o USING (org_id) "
         ++ "INNER JOIN performance_offstage AS po USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
         ++ "WHERE po.person_id = $1",
     {ok, GetPersonOffstage} = epgsql:parse(C, "get_person_offstage", GetPersonOffstageSql, [uuid]),
 
     GetPersonDirectedSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN organizations AS o ON (o.org_id = s.producing_org_id) "
+        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN producers AS prod USING (show_id) "
+        ++ "INNER JOIN organizations AS o USING (org_id) "
         ++ "INNER JOIN performance_directors AS pd USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
         ++ "WHERE pd.director_id = $1",
     {ok, GetPersonDirected} = epgsql:parse(C, "get_person_directed", GetPersonDirectedSql, [uuid]),

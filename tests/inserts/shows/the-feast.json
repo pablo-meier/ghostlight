@@ -26,10 +26,16 @@
              "2015-04-03T21:00:00.000Z",
              "2015-04-04T21:00:00.000Z",
              "2015-04-05T19:00:00.000Z"],
-  "org" : {
-    "name": "The Flea Theater",
-    "description" : "The Flea is an award-winning producing organization, founded in 1996, that offers more than 250 cutting-edge theatrical and multi-disciplinary performances each year and gives voice to some of the most exciting and innovative writers of our time. Founded from the purely artistic impulse to create \"joyful hell in a small space,\" our body of work has earned us accolades from around the globe including two Obie Awards for Best Production, an Otto for Courageous Political Theater, and a Drama Desk Award Special Award for our commitment to adventurous theater."
-  },
+
+  "producers": [
+    {
+      "org" : {
+        "name": "The Flea Theater",
+        "description" : "The Flea is an award-winning producing organization, founded in 1996, that offers more than 250 cutting-edge theatrical and multi-disciplinary performances each year and gives voice to some of the most exciting and innovative writers of our time. Founded from the purely artistic impulse to create \"joyful hell in a small space,\" our body of work has earned us accolades from around the globe including two Obie Awards for Best Production, an Otto for Courageous Political Theater, and a Drama Desk Award Special Award for our commitment to adventurous theater."
+      }
+    }
+  ],
+
   "performances": [
     {
       "work" : {

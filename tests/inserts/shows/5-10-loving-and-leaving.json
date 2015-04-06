@@ -1,10 +1,14 @@
 {
   "title" : "5-10: Loving and Leaving",
   "dates" : ["2014-11-17T20:00:00.000Z"],
-  "org" : {
-    "name": "plumage.",
-    "tagline" : "A Co-Lab between blackbird delight and Marrow's Edge"
-  },
+  "producers": [
+    {
+      "org" : {
+        "name": "plumage.",
+        "tagline" : "A Co-Lab between blackbird delight and Marrow's Edge"
+      }
+    }
+  ],
   "performances": [
     {
       "work" : {

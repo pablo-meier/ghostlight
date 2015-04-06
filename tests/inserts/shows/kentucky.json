@@ -9,10 +9,15 @@
              "2015-03-26T19:00:00.000Z",
              "2015-03-27T19:00:00.000Z",
              "2015-03-28T19:00:00.000Z"],
-  "org" : {
-    "name": "EST Youngblood",
-    "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
-  },
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood",
+        "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
+      }
+    }
+  ],
+
   "performances": [
     {
       "work" : {

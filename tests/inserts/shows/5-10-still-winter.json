@@ -2,10 +2,15 @@
   "title" : "5-10: Still Winter",
   "special_thanks" : "The Alchemical, Ria T. DiLullo, Milica Bogetic & Paul Meier",
   "dates" : ["2015-03-09T20:00:00.000Z"],
-  "org" : {
-    "name": "plumage.",
-    "tagline" : "A Co-Lab between blackbird delight and Marrow's Edge"
-  },
+  "producers": [
+    {
+      "org" : {
+        "name": "plumage.",
+        "tagline" : "A Co-Lab between blackbird delight and Marrow's Edge"
+      }
+    }
+  ],
+
   "performances": [
     {
       "work" : {

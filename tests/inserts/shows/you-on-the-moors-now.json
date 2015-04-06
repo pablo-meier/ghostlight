@@ -19,10 +19,15 @@
              "2015-02-27T20:30:00.000Z",
              "2015-02-28T16:00:00.000Z",
              "2015-02-28T20:30:00.000Z"],
-  "org" : {
-    "name": "Theater Reconstruction Ensemble",
-    "description" : "Theater Reconstruction Ensemble is a New York based collective of theater artists striving to reconstruct both classical and canonical forms of theatricality through the playful development of works over time. Committed to a collaborative approach to theater making, TRE functionas as an ensemble of actors, playwrights, designers, and directors working together to thoroughly exampine each element of a theatrical text or tradition and build productions that reflect the ensemble's personal connection to the works being explored."
-  },
+  "producers": [
+    {
+      "org" : {
+        "name": "Theater Reconstruction Ensemble",
+        "description" : "Theater Reconstruction Ensemble is a New York based collective of theater artists striving to reconstruct both classical and canonical forms of theatricality through the playful development of works over time. Committed to a collaborative approach to theater making, TRE functionas as an ensemble of actors, playwrights, designers, and directors working together to thoroughly exampine each element of a theatrical text or tradition and build productions that reflect the ensemble's personal connection to the works being explored."
+      }
+    }
+  ],
+
   "performances": [
     {
       "work" : {

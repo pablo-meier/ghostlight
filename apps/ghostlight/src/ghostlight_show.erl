@@ -139,7 +139,7 @@ onstage_as_proplists(OnstageList) ->
 offstage_as_proplists(OnstageList) ->
     [ [{name, Name},
        {job, Job},
-       {person_id, PersonId}] || #offstage{ person=#person{id = PersonId, name = Name}, job = Job} <- OnstageList].
+       {person_id, PersonId}] || #offstage{ contributor=#person{id = PersonId, name = Name}, job = Job} <- OnstageList].
 personlist_as_proplist(DirectorList) ->
     [ [{name, Name},
        {person_id, PersonId}] || #person{id = PersonId, name = Name} <- DirectorList].
@@ -179,11 +179,11 @@ onstage_as_json(#onstage{
     ]).
 offstage_as_json(#offstage{
                    job=Job,
-                   person=Person
+                   contributor=Person
                 }) ->
     ghostlight_utils:json_with_valid_values([
         {<<"job">>, Job},
-        {<<"person">>, ghostlight_people:record_to_json(Person)}
+        {<<"contributor">>, ghostlight_people:record_to_json(Person)}
     ]).
 
 
@@ -228,7 +228,7 @@ show_json_to_record(JsonInput) ->
 performance_json_to_record({Proplist}) ->
     Work = ghostlight_work:json_to_record(proplists:get_value(<<"work">>, Proplist)),
     Onstage = lists:map(fun onstage_json_to_record/1, proplists:get_value(<<"onstage">>, Proplist, [])),
-    Offstage = lists:map(fun offstage_json_to_record/1, proplists:get_value(<<"offstage">>, Proplist, [])),
+    Offstage = [ offstage_json_to_record(Offstage) || Offstage <- proplists:get_value(<<"offstage">>, Proplist, []) ],
     Directors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"directors">>, Proplist, [])),
     DirectorNote = proplists:get_value(<<"directors_note">>, Proplist, null),
     Description = proplists:get_value(<<"description">>, Proplist, null),
@@ -251,10 +251,10 @@ onstage_json_to_record({Onstage}) ->
     }.
 
 offstage_json_to_record({Offstage}) ->
-    Contributor = ghostlight_people:json_to_record(proplists:get_value(<<"contributor">>, Offstage)),
+    Contributor = ghostlight_utils:person_or_org_json_to_record(proplists:get_value(<<"contributor">>, Offstage)),
     Job = proplists:get_value(<<"job">>, Offstage),
     #offstage{
-      person = Contributor,
+      contributor = Contributor,
       job = Job 
     }.
 

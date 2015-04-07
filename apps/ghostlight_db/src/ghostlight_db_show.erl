@@ -195,10 +195,17 @@ get_onstage_inserts(PerformanceId, OnstageList, #db_state{insert_onstage_stateme
 
 get_offstage_inserts(PerformanceId, OffstageList, #db_state{insert_offstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#offstage{ job=Job,
-                                            person=Person }) ->
-                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
-                                OffstageInsert = {IO, [PerformanceId, PersonId, Job, null, null]},
-                                [PersonInserts, OffstageInsert]
+                                            contributor=Contrib}) ->
+                                case Contrib of
+                                    #person{} ->
+                                        {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Contrib),
+                                        OffstageInsert = {IO, [PerformanceId, PersonId, null, Job, null, null]},
+                                        [PersonInserts, OffstageInsert];
+                                    #organization{} ->
+                                        {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Contrib),
+                                        OffstageInsert = {IO, [PerformanceId, null, OrgId, Job, null, null]},
+                                        [OrgInserts, OffstageInsert]
+                                end
                             end, OffstageList),
     lists:flatten(ListOfLists).
 
@@ -281,10 +288,10 @@ make_performance_record_list(Onstage, Offstage, AuthorMap, DirectorMap) ->
     OffstageMap = lists:foldl(fun ({WorkId, Title, Job, PersonId, PersonName}, Accum) ->
                                   PersonRecord = #offstage{
                                                     job = Job,
-                                                    person = #person{
-                                                                id = PersonId,
-                                                                name = PersonName 
-                                                             }
+                                                    contributor = #person{
+                                                                     id = PersonId,
+                                                                     name = PersonName
+                                                                  }
                                                  },
                                   case maps:get({WorkId, Title}, Accum, none) of
                                       none ->
@@ -378,9 +385,9 @@ prepare_statements(C, State) ->
         ++ " VALUES($1, $2, $3, $4, $5, $6)",
     {ok, InsertOnstage} = epgsql:parse(C, "insert_performance_onstage", OnstageSql, [uuid, uuid, text, uuid, date, date]),
 
-    OffstageSql = "INSERT INTO performance_offstage (performance_id, person_id, job, date_started, date_ended)"
-        ++ " VALUES($1, $2, $3, $4, $5)",
-    {ok, InsertOffstage} = epgsql:parse(C, "insert_performance_offstage", OffstageSql, [uuid, uuid, text, date, date]),
+    OffstageSql = "INSERT INTO performance_offstage (performance_id, person_id, org_id, job, date_started, date_ended)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6)",
+    {ok, InsertOffstage} = epgsql:parse(C, "insert_performance_offstage", OffstageSql, [uuid, uuid, uuid, text, date, date]),
 
     ProducersSql = "INSERT INTO producers (show_id, org_id, person_id, listed_order) VALUES($1, $2, $3, $4)",
     {ok, InsertProducer} = epgsql:parse(C, "insert_producer", ProducersSql, [uuid, uuid, uuid, int4]),

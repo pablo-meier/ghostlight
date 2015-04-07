@@ -125,11 +125,12 @@ CREATE TABLE IF NOT EXISTS performance_onstage (
 -- One-to-Many for people offstage during a performance.
 CREATE TABLE IF NOT EXISTS performance_offstage (
     performance_id UUID REFERENCES performances(performance_id) NOT NULL,
-    person_id UUID REFERENCES people(person_id) NOT NULL,
+    person_id UUID REFERENCES people(person_id),
+    org_id UUID REFERENCES organizations(org_id),
     job TEXT,
     date_started DATE,
     date_ended DATE,
-    PRIMARY KEY(performance_id, person_id)
+    CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL)
 );
 
 CREATE TABLE IF NOT EXISTS authorship (

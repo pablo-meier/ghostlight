@@ -1,13 +1,17 @@
 {
   "name": "Theater Reconstruction Ensemble",
   "description": "**Theater Reconstruction Ensemble** is a New York based collective of theater artists striving to reconstruct both classical and canonical forms of theatricality through the playful development of works over time. Committed to a collaborative approach to theater making, **TRE** functions as an ensemble of actors, playwrights, designers, and directors working together to thoroughly examine each element of a theatrical text or tradition and build productions that reflect the ensemble’s personal connection to the works being explored.\n\nFounded in **2010** by John Kurzynowski and Kate Marvin, **Theater Reconstruction Ensemble** has since developed and produced six mainstage productions and brought together dozens of artists from across the downtown theater community.\n\nBased on methods explored through previous collaborations with such companies and institutions as **Target Margin Theater** and NYU's **Experimental Theatre Wing**, the founding members of **TRE** created a process of development and the creation of new material through a series of workshops dedicated to the deconstruction of a classical text or canonical theatrical practice and the eventual reconstruction of the material in play based on the ensemble's findings and discoveries. This process has paved the way for each season's ensemble to develop and create ground-breaking and unique new productions of both original and well-established works.",
-  "website_link": "http://www.reconstructionensemble.org/",
-  "email": "reconstructionensemble@gmail.com",
-  "facebook": "https://www.facebook.com/reconstructionensemble",
-  "twitter": "https://twitter.com/TREnsemble",
-  "vimeo": "https://vimeo.com/reconstructionensemble",
-  "instagram": "http://instagram.com/trensemble",
-  "newsletter": "http://reconstructionensemble.us2.list-manage.com/subscribe?u=6b8c506153ad22cc2392f9745&id=8046d77e87",
+
+  "social": {
+    "website": "http://www.reconstructionensemble.org/",
+    "email": "reconstructionensemble@gmail.com",
+    "facebook": "https://www.facebook.com/reconstructionensemble",
+    "twitter": "https://twitter.com/TREnsemble",
+    "vimeo": "https://vimeo.com/reconstructionensemble",
+    "instagram": "http://instagram.com/trensemble",
+    "newsletter": "http://reconstructionensemble.us2.list-manage.com/subscribe?u=6b8c506153ad22cc2392f9745&id=8046d77e87"
+  },
+
   "employees": [
     {
       "person": {

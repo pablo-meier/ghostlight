@@ -16,40 +16,135 @@
         },
         "id" : {
           "type": "string"
+        },
+        "social": {
+          "$ref": "#/definitions/socialBlock"
         }
       }
     },
 
     "work": {
       "title": "Schema defining a work",
-        "description": "Any piece that is performed is known as a work. \"If it has a script, it's a work.\"",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "title": {
-            "type": "string",
-            "minLength": 1
-          },
-          "authors":{
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "$ref": "!/definitions/person"
+      "description": "Any piece that is performed is known as a work. \"If it has a script, it's a work.\"",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authors":{
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "!/definitions/person_or_org"
+          }
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "minutes_long": {
+          "type": "integer",
+          "minimum": 1,
+          "exclusiveMinimum": false
+        },
+        "collaborating_org":{
+          "$ref": "#/definitions/org"
+        }
+      }
+    },
+
+    "org": {
+      "title": "Schema defining an organization",
+      "description": "Any collection of people who work together to produce shows. Can have employees (who have titles, are generally considered Leadership) and members (who don't).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tagline": {
+          "type": "string",
+          "minLength": 1
+        },
+        "social": {
+          "$ref": "#/definitions/socialBlock"
+        },
+        "employees": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["person"],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "person": {
+                "$ref": "#/definitions/person"
+              }
             }
-          },
-          "description": {
-            "type": "string",
-            "minLength": 1
-          },
-          "minutes_long": {
-            "type": "integer",
-            "minimum": 1,
-            "exclusiveMinimum": false
-          },
-          "collaborating_org":{
-            "type": "object"
+          }
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["person"],
+            "properties": {
+              "person": {
+                "$ref": "#/definitions/person"
+              }
+            }
           }
         }
+      }
+    },
+
+    "person_or_org": {
+      "type": "object",
+      "patternProperties": {
+        "org":{
+          "$ref": "#/definitions/org"
+        },
+        "person":{
+          "$ref": "#/definitions/person"
+        }
+      }
+    },
+
+    "socialBlock": {
+      "title": "A block of links that points to various outside sources, by category, i.e. Website, newsletter, Facebook, etc.",
+      "description": "Since virtually all theatre entities currently manage their online spaces with these providers, we just have an easy way to link into them.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "website": { "type": "string", "minLength": 1 },
+        "email": { "type": "string", "minLength": 1 },
+        "blog": { "type": "string", "minLength": 1 },
+        "newsletter": { "type": "string", "minLength": 1 },
+        "facebook": { "type": "string", "minLength": 1 },
+        "twitter": { "type": "string", "minLength": 1 },
+        "instagram": { "type": "string", "minLength": 1 },
+        "vimeo": { "type": "string", "minLength": 1 },
+        "youtube": { "type": "string", "minLength": 1 },
+        "pinterest": { "type": "string", "minLength": 1 },
+        "tumblr": { "type": "string", "minLength": 1 },
+        "gplus": { "type": "string", "minLength": 1 },
+        "patreon": { "type": "string", "minLength": 1 },
+        "newplayx": { "type": "string", "minLength": 1 }
+      }
     }
   },
 
@@ -69,7 +164,7 @@
       "minItems": 1,
       "items" : {
         "type": "string",
-        "pattern": "(^ongoing$|\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\.\\d{3}Z"
+        "pattern": "(^ongoing$|\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z)"
       }
     },
 
@@ -85,15 +180,7 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "type": "object",
-        "patternProperties": {
-          "org":{
-
-          },
-          "person":{
-            "$ref": "#/definitions/person"
-          }
-        }
+        "$ref": "#/definitions/person_or_org"
       }
     },
 
@@ -112,11 +199,43 @@
 
           "onstage": {
             "type": "array",
-            "minItems": 1
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["performer"],
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "performer": {
+                  "$ref": "#/definitions/person"
+                }
+              }
+            }
           },
           "offstage": {
             "type": "array",
-            "minItems": 1
+            "minItems": 1,
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["contributor", "job"],
+                "properties": {
+                  "job": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "contributor": {
+                    "$ref": "#/definitions/person_or_org"
+                  }
+                }
+              }
+            }
           },
           "directors": {
             "type": "array",
@@ -165,24 +284,7 @@
     },
 
     "social": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "website": { "type": "string" },
-        "email": { "type": "string" },
-        "blog": { "type": "string" },
-        "newsletter": { "type": "string" },
-        "facebook": { "type": "string" },
-        "twitter": { "type": "string" },
-        "instagram": { "type": "string" },
-        "vimeo": { "type": "string" },
-        "youtube": { "type": "string" },
-        "tumblr": { "type": "string" },
-        "pinterest": { "type": "string" },
-        "gplus": { "type": "string" },
-        "patreon": { "type": "string" },
-        "newplayx": { "type": "string" }
-      }
+      "$ref": "#/definitions/socialBlock"
     }
   }
 }

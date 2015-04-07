@@ -12,7 +12,7 @@
 
 external_links_json_to_record(Json) when is_list(Json) ->
     #external_links{
-        website = proplists:get_value(<<"website_link">>, Json, null),
+        website = proplists:get_value(<<"website">>, Json, null),
         email_address = proplists:get_value(<<"email">>, Json, null),
         blog = proplists:get_value(<<"blog">>, Json, null),
         mailing_list = proplists:get_value(<<"newsletter">>, Json, null),

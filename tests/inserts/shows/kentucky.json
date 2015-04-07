@@ -93,43 +93,43 @@
       ],
       "offstage" : [
         {
-          "contributor" : {"name" : "Jason Simms" },
+          "contributor" : {"person": {"name" : "Jason Simms" }},
           "job" : "Scenic Designer"
         },
         {
-          "contributor" : {"name" : "Mark van Hare" },
+          "contributor" : {"person": {"name" : "Mark van Hare" }},
           "job" : "Sound Designer"
         },
         {
-          "contributor" : {"name" : "Joe Lankheet" },
+          "contributor" : {"person": {"name" : "Joe Lankheet" }},
           "job" : "Production Manager"
         },
         {
-          "contributor" : {"name" : "Greg MacPherson" },
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
           "job" : "Lighting Plot Designer"
         },
         {
-          "contributor" : {"name" : "Audrey Nauman" },
+          "contributor" : {"person": {"name" : "Audrey Nauman" }},
           "job" : "Costume Designer"
         },
         {
-          "contributor" : {"name" : "Nicholas Ward" },
+          "contributor" : {"person": {"name" : "Nicholas Ward" }},
           "job" : "General Manager"
         },
         {
-          "contributor" : {"name" : "Chelsie McPhilimy" },
+          "contributor" : {"person": {"name" : "Chelsie McPhilimy" }},
           "job" : "Lighting Designer"
         },
         {
-          "contributor" : {"name" : "Jessica Jalal" },
+          "contributor" : {"person": {"name" : "Jessica Jalal" }},
           "job" : "Props Master"
         },
         {
-          "contributor" : {"name" : "Eileen Lalley" },
+          "contributor" : {"person": {"name" : "Eileen Lalley" }},
           "job" : "Production Stage Manager"
         },
         {
-          "contributor" : {"name" : "Alex Grubbs" },
+          "contributor" : {"person": {"name" : "Alex Grubbs" }},
           "job" : "Composer, Music Arranger"
         }
       ]

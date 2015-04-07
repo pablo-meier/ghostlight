@@ -77,27 +77,27 @@
       ],
       "offstage" : [
         {
-            "contributor" : {"name" : "Trent Anderson" },
+            "contributor" : {"person": {"name" : "Trent Anderson" }},
             "job" : "Associate Director"
         },
         {
-            "contributor" : {"name" : "Kacey Anisa Stamats" },
+            "contributor" : {"person": {"name" : "Kacey Anisa Stamats" }},
             "job" : "Stage Manager"
         },
         {
-            "contributor" : {"name" : "Orli Nativ" },
+            "contributor" : {"person": {"name" : "Orli Nativ" }},
             "job" : "Costume Designer"
         },
         {
-            "contributor" : {"name" : "Eliza Orleans" },
+            "contributor" : {"person": {"name" : "Eliza Orleans" }},
             "job" : "Production Assistant"
         },
         {
-            "contributor" : {"name" : "Daniel John Kelley" },
+            "contributor" : {"person": {"name" : "Daniel John Kelley" }},
             "job" : "Associate Producer"
         },
         {
-            "contributor" : {"name" : "Sarah Matteucci" },
+            "contributor" : {"person": {"name" : "Sarah Matteucci" }},
             "job" : "Associate Producer"
         }
       ]

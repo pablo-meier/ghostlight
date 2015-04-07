@@ -74,47 +74,47 @@
       ],
       "offstage" : [
         {
-          "contributor" : {"name" : "Beowulf Boritt" },
+          "contributor" : {"person": {"name" : "Beowulf Boritt" }},
           "job" : "Scenic Designer"
         },
         {
-          "contributor" : {"name" : "Sydney Maresca" },
+          "contributor" : {"person": {"name" : "Sydney Maresca" }},
           "job" : "Costume Designer"
         },
         {
-          "contributor" : {"name" : "Jason Lyons" },
+          "contributor" : {"person": {"name" : "Jason Lyons" }},
           "job" : "Lighting Designer"
         },
         {
-          "contributor" : {"name" : "Jill BC Du Boff" },
+          "contributor" : {"person": {"name" : "Jill BC Du Boff" }},
           "job" : "Sound Designer"
         },
         {
-          "contributor" : {"name" : "Marte Johanne Ekhougen" },
+          "contributor" : {"person": {"name" : "Marte Johanne Ekhougen" }},
           "job" : "Puppet Design"
         },
         {
-          "contributor" : {"name" : "Robert Westley" },
+          "contributor" : {"person": {"name" : "Robert Westley" }},
           "job" : "Fight Director"
         },
         {
-          "contributor" : {"name" : "James Fitzsimmons" },
+          "contributor" : {"person": {"name" : "James Fitzsimmons" }},
           "job" : "Production Stage Manager"
         },
         {
-          "contributor" : {"name" : "Jenn McNeil" },
+          "contributor" : {"person": {"name" : "Jenn McNeil" }},
           "job" : "Assistant Stage Manager"
         },
         {
-          "contributor" : {"name" : "John Corker" },
+          "contributor" : {"person": {"name" : "John Corker" }},
           "job" : "General Manager"
         },
         {
-          "contributor" : {"name" : "Brig Berney" },
+          "contributor" : {"person": {"name" : "Brig Berney" }},
           "job" : "Company Manager"
         },
         {
-          "contributor" : {"name" : "Taylor Haven Holt" },
+          "contributor" : {"person": {"name" : "Taylor Haven Holt" }},
           "job" : "Assistant Director"
         }
       ]

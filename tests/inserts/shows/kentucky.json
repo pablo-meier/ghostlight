@@ -22,7 +22,7 @@
     {
       "work" : {
         "title" : "Kentucky",
-        "authors": [{"name": "Leah Nanako Winkler"}]
+        "authors": [{"person": {"name": "Leah Nanako Winkler"}}]
       },
       "directors": [{"name": "Morgan Gould"}],
       "onstage": [

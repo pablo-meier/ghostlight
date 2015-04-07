@@ -356,11 +356,7 @@ listings() ->
     [ #show{
          id=ShowId,
          title=ShowName
-%%         org=#organization{
-%%                id=OrgId,
-%%                name=OrgName
-%%               }
-        } || {ShowId, ShowName, _OrgId, _OrgName} <- Response ].
+      } || {ShowId, ShowName} <- Response ].
 
 insert(Show) ->
     gen_server:call(?MODULE, {insert_show, Show}).
@@ -465,7 +461,6 @@ prepare_statements(C, State) ->
     %% For show listings -- much like the meta of a single one.
     GetShowListingsSql = "SELECT s.show_id, s.title FROM shows AS s LIMIT 30",
     {ok, GetShowListings} = epgsql:parse(C, "show_listings_meta", GetShowListingsSql, []),
-
 
  
     State#db_state{

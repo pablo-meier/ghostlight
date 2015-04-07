@@ -34,7 +34,7 @@
     {
       "work" : {
         "title" : "Mrs. Mayfield's Fifth-Grade Class of '93 20-Year Reunion",
-        "authors": [{"name": "Mariah MacCarthy"}]
+        "authors": [{"person": {"name": "Mariah MacCarthy"}}]
       },
       "directors": [{"name": "Leta Tremblay"}],
       "onstage": [

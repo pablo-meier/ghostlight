@@ -42,7 +42,7 @@
     {
       "work" : {
         "title" : "Hand To God",
-        "authors": [{"name": "Robert Askins"}]
+        "authors": [{"person": {"name": "Robert Askins"}}]
       },
       "directors": [{"name": "Moritz von Stuelpnagel"}],
       "onstage": [

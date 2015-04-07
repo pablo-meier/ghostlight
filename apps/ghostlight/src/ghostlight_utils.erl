@@ -3,6 +3,7 @@
 -export([erl_date_to_iso8601/1,
          json_with_valid_values/1,
          proplist_with_valid_values/1,
+         person_or_org_json_to_record/1,
          remove_null/1,
          external_links_json_to_record/1,
          external_links_record_to_proplist/1]).
@@ -62,6 +63,14 @@ external_links_record_to_proplist(
     lists:filter(fun({_, V}) -> V =/= null end, Candidate).
  
 
+person_or_org_json_to_record({Object}) ->
+    case proplists:get_value(<<"person">>, Object, null) of
+        null ->
+            Org = proplists:get_value(<<"org">>, Object, null),
+            ghostlight_org:json_to_record(Org);
+        Person ->
+            ghostlight_people:json_to_record(Person)
+    end.
 
 
 %% iso8601 is pretty great, and epgsql are pretty great, but they don't play well together.

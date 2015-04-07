@@ -64,9 +64,9 @@ handle_call(fix_dups, _From, State=#state{connection=C,
         ++ "WHERE p1.name = p2.name AND p1.person_id != p2.person_id ORDER BY p1.name) AS tmp WHERE row_num < 2"),
 
     lists:foreach(fun ({GoodId, BadId, Name}) ->
-                     lager:info("Swapping out ~p for ~p for user ~p", [BadId, GoodId, Name]),
                      Statements = [ {Parsed, [GoodId, BadId]} || Parsed <- PplDeDupes ],
-                     epgsql:execute_batch(C, lists:append([ [{BEGIN, []}], Statements, [{COMMIT, []}] ]))
+                     epgsql:execute_batch(C, lists:append([ [{BEGIN, []}], Statements, [{COMMIT, []}] ])),
+                     lager:info("Swapped out ~p for ~p for user ~p", [BadId, GoodId, Name])
                   end, PeopleRows),
 
     {ok, _Columns, OrgRows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT o1.org_id AS id1, o2.org_id AS id2, "
@@ -160,15 +160,20 @@ prepare_statements(C) ->
     {ok, Parsed3} = epgsql:parse(C, "consolidate_3", "UPDATE performance_offstage SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
     {ok, Parsed4} = epgsql:parse(C, "consolidate_4", "UPDATE performance_directors SET director_id = $1 WHERE director_id = $2", [uuid, uuid]),
     {ok, Parsed5} = epgsql:parse(C, "consolidate_5", "UPDATE performance_onstage SET performer_id = $1 WHERE performer_id = $2", [uuid, uuid]),
-    {ok, Parsed6} = epgsql:parse(C, "consolidate_7", "UPDATE users SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
-    {ok, Parsed7} = epgsql:parse(C, "consolidate_8", "DELETE FROM people WHERE person_id = $2", [uuid, uuid]),
-    PplDeDupes = [Parsed1, Parsed2, Parsed3, Parsed4, Parsed5, Parsed6, Parsed7],
+    {ok, Parsed6} = epgsql:parse(C, "consolidate_6", "UPDATE people_links SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed7} = epgsql:parse(C, "consolidate_7", "UPDATE users SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed8} = epgsql:parse(C, "consolidate_8", "UPDATE producers SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed9} = epgsql:parse(C, "consolidate_9", "UPDATE show_hosts SET person_id = $1 WHERE person_id = $2", [uuid, uuid]),
+    {ok, Parsed10} = epgsql:parse(C, "consolidate_10", "DELETE FROM people WHERE person_id = $2", [uuid, uuid]),
+    PplDeDupes = [Parsed1, Parsed2, Parsed3, Parsed4, Parsed5, Parsed6, Parsed7, Parsed8, Parsed9, Parsed10],
 
     {ok, OrgParsed1} = epgsql:parse(C, "consolidate_a", "UPDATE org_employees SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
     {ok, OrgParsed2} = epgsql:parse(C, "consolidate_b", "UPDATE org_members SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
     {ok, OrgParsed3} = epgsql:parse(C, "consolidate_c", "UPDATE producers SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
-    {ok, OrgParsed4} = epgsql:parse(C, "consolidate_d", "DELETE FROM organizations WHERE org_id = $2", [uuid, uuid]),
-    OrgDeDupes = [OrgParsed1, OrgParsed2, OrgParsed3, OrgParsed4],
+    {ok, OrgParsed4} = epgsql:parse(C, "consolidate_d", "UPDATE works SET collaborating_org_id = $1 WHERE collaborating_org_id = $2", [uuid, uuid]),
+    {ok, OrgParsed5} = epgsql:parse(C, "consolidate_e", "UPDATE org_links SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
+    {ok, OrgParsed6} = epgsql:parse(C, "consolidate_f", "DELETE FROM organizations WHERE org_id = $2", [uuid, uuid]),
+    OrgDeDupes = [OrgParsed1, OrgParsed2, OrgParsed3, OrgParsed4, OrgParsed5, OrgParsed6],
  
     State = #state{connection=C,
                    begin_statement=BeginStmt,

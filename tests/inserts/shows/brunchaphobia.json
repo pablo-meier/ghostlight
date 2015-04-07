@@ -15,7 +15,7 @@
     {
       "work" : {
         "title" : "Performance Review",
-        "authors": [{"name": "Christopher Sullivan"}]
+        "authors": [{"person": {"name": "Christopher Sullivan"}}]
       },
       "directors": [{"name": "Abigail Zealy Bess"}],
       "onstage": [
@@ -40,7 +40,7 @@
     {
       "work" : {
         "title" : "Into the Deep",
-        "authors": [{"name": "Charly Evon Simpson"}]
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
       },
       "directors": [{"name": "Colette Robert"}],
       "onstage": [
@@ -61,7 +61,7 @@
     {
       "work" : {
         "title" : "Sensitive Young Men",
-        "authors": [{"name": "Kim Davies"}]
+        "authors": [{"person": {"name": "Kim Davies"}}]
       },
       "directors": [{"name": "Kel Haney"}],
       "onstage": [
@@ -90,7 +90,7 @@
     {
       "work" : {
         "title" : "A Real Problem",
-        "authors": [{"name": "Brendan Hill"}]
+        "authors": [{"person": {"name": "Brendan Hill"}}]
       },
       "directors": [{"name": "Jeremy Bloom"}],
       "onstage": [
@@ -119,7 +119,7 @@
     {
       "work" : {
         "title" : "Halo",
-        "authors": [{"name": "Ana Noguiera"}]
+        "authors": [{"person": {"name": "Ana Noguiera"}}]
       },
       "directors": [{"name": "RJ Tolan"}],
       "onstage": [

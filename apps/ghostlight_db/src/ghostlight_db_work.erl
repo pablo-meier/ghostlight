@@ -154,9 +154,7 @@ get_inserts(#work{title=Title,
             #db_state{insert_work_statement=IW,
                       insert_authorship_statement=IA}) ->
     WorkUUID = ghostlight_db_utils:fresh_uuid(),
-    {PersonInsertsNested, Ids} = lists:unzip([ ghostlight_db_person:get_inserts(Author) || Author <- Authors ]),
-    PersonInserts = lists:flatten(PersonInsertsNested),
-    AuthorshipInserts = [ {IA, [WorkUUID, AuthorUUID]} || AuthorUUID <- Ids ],
+    AuthorshipInserts = lists:flatten([ get_author_inserts(WorkUUID, Author, IA) || Author <- Authors ]),
     {OrgInserts, OrgId} = case Org of 
                               null -> {[], null};
                               _ -> ghostlight_db_org:get_inserts(Org)
@@ -166,16 +164,25 @@ get_inserts(#work{title=Title,
 
     WorkInserts = lists:append([ OrgInserts,
                                  [{IW, [WorkUUID, Title, Description, Markdowned, OrgId, MinutesLong, <<"public">>]}],
-                                 PersonInserts,
                                  AuthorshipInserts]),
     {WorkInserts, WorkUUID}.
+
+get_author_inserts(WorkId, Person=#person{}, Stmt) ->
+    {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
+    lists:append([ PersonInserts,
+                   [{Stmt, [WorkId, PersonId, null]}] ]);
+get_author_inserts(WorkId, Org=#organization{}, Stmt) ->
+    {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org),
+    lists:append([ OrgInserts,
+                   [{Stmt, [WorkId, null, OrgId]}] ]).
+
 
 prepare_statements(C, State) ->
     WorksSql = "INSERT INTO works (work_id, title, description_src, description_markdown, collaborating_org_id, minutes_long, acl) VALUES($1, $2, $3, $4, $5, $6, $7)", 
     {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, text, uuid, int8, text]),
 
-    AuthorshipSql = "INSERT INTO authorship (work_id, person_id) VALUES($1, $2)",
-    {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid]),
+    AuthorshipSql = "INSERT INTO authorship (work_id, person_id, org_id) VALUES($1, $2, $3)",
+    {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid, uuid]),
 
     GetWorkTitleAndAuthorsSql = "SELECT w.title, p.person_id, p.name, w.description_markdown, w.minutes_long, o.org_id, o.name "
         ++ "FROM works AS w INNER JOIN authorship AS a USING (work_id) "

@@ -17,8 +17,8 @@
     {
       "work" : {
         "title" : "Christmas In Queens",
-        "authors": [{"name": "Patrick Link"},
-                    {"name": "Eric March"}]
+        "authors": [{"person": {"name": "Patrick Link"}},
+                    {"person": {"name": "Eric March"}}]
       },
       "directors": [{"name": "RJ Tolan"}],
       "onstage": [

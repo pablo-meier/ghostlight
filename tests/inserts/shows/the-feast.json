@@ -40,7 +40,7 @@
     {
       "work" : {
         "title" : "The Feast",
-        "authors" : [{"name": "Cory Finley"}]
+        "authors" : [{"person": {"name": "Cory Finley"}}]
       },
       "directors": [{"name": "Courtney Ulrich"}],
       "onstage": [

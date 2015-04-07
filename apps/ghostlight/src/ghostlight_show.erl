@@ -202,7 +202,8 @@ show_json_to_record(JsonInput) ->
     Title = proplists:get_value(<<"title">>, Decoded),
     SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),
     Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded)),
-    Producers = [ parse_producer(Producer) || Producer <- proplists:get_value(<<"producers">>, Decoded)],
+    Producers = [ ghostlight_utils:person_or_org_json_to_record(Producer)
+                  || Producer <- proplists:get_value(<<"producers">>, Decoded)],
     Performances = lists:map(fun performance_json_to_record/1, proplists:get_value(<<"performances">>, Decoded)),
 
     {LinksObj} = proplists:get_value(<<"social">>, Decoded, {[]}),
@@ -223,15 +224,6 @@ show_json_to_record(JsonInput) ->
         external_links=ExternalLinks,
         press_links=PressLinks
     }.
-
-parse_producer({Producer}) ->
-    case proplists:get_value(<<"person">>, Producer, null) of
-        null ->
-            Org = proplists:get_value(<<"org">>, Producer, null),
-            ghostlight_org:json_to_record(Org);
-        Person ->
-            ghostlight_people:json_to_record(Person)
-    end.
 
 performance_json_to_record({Proplist}) ->
     Work = ghostlight_work:json_to_record(proplists:get_value(<<"work">>, Proplist)),

@@ -23,7 +23,7 @@
     {
       "work" : {
         "title" : "FGP Runway Preview.",
-        "authors": [{"name": "Salty Brine"}]
+        "authors": [ {"person": {"name": "Salty Brine"}} ]
       },
       "onstage": [
         {
@@ -40,16 +40,16 @@
     {
       "work" : {
         "title" : "Preview of Blood Prom",
-        "authors": [{"name": "T. Adamson"},
-                    {"name": "Cat Crowley"}]
+        "authors": [{"person": {"name": "T. Adamson"}},
+                    {"person": {"name": "Cat Crowley"}}]
       },
       "directors": [{"name": "Annie Tippe"}]
     },
     {
       "work" : {
         "title" : "'mothertongue'",
-        "authors": [{"name": "Stevo Arnoczy"},
-                    {"name": "Trevor F. Salter"}]
+        "authors": [{"person": {"name": "Stevo Arnoczy"}},
+                    {"person": {"name": "Trevor F. Salter"}}]
       },
       "directors": [{"name": "Stevo Arnoczy"},
                     {"name": "Trevor F. Salter"}],
@@ -77,7 +77,7 @@
     {
       "work" : {
         "title" : "Tom Ford in 24 Hours",
-        "authors": [{"name": "Witness Relocation"}]
+        "authors": [{"org": {"name": "Witness Relocation"}}]
       },
       "directors": [{"name": "Dan Safer"},
                     {"name": "Kaz PS"}],
@@ -113,7 +113,7 @@
     {
       "work" : {
         "title" : "FGP Aerobic Preview titled Once More, with Feeling (or, How I Learned to Stop Worrying and Become Who I Really Are",
-        "authors": [{"name": "Chris Tyler"}]
+        "authors": [{"person": {"name": "Chris Tyler"}}]
       },
       "directors": [{"name": "Chris Tyler"}],
       "onstage": [
@@ -125,7 +125,7 @@
     {
       "work" : {
         "title" : "Selections from The Upper Room",
-        "authors": [{"name": "RADY&BLOOM"}]
+        "authors": [{"org":{"name": "RADY&BLOOM"}}]
       },
       "onstage": [
         { "performer" : {"name": "Andrew Butler"} },
@@ -148,9 +148,9 @@
     {
       "work" : {
         "title" : "FGP Decades Preview: 1950's",
-        "authors": [{"name": "Kristine Haruna Lee"},
-                    {"name": "Joe Cantalupo"},
-                    {"name": "Andrew Scoville"}]
+        "authors": [{"person": {"name": "Kristine Haruna Lee"}},
+                    {"person": {"name": "Joe Cantalupo"}},
+                    {"person": {"name": "Andrew Scoville"}}]
       },
       "onstage": [
         { "performer" : {"name": "Kristine Haruna Lee"} },
@@ -162,10 +162,10 @@
       "work" : {
         "title" : "You'll Still Call Me By My Name",
         "authors": [
-          {"name": "Shaun McClain Bengson"},
-          {"name": "Abigail Nessen Bengson"},
-          {"name": "Sonya Tayeh"},
-          {"name": "Jo Lampert"}
+          {"person": {"name": "Shaun McClain Bengson"}},
+          {"person": {"name": "Abigail Nessen Bengson"}},
+          {"person": {"name": "Sonya Tayeh"}},
+          {"person": {"name": "Jo Lampert"}}
         ]
       },
       "directors": [

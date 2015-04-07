@@ -168,7 +168,8 @@ json_to_record({Proplist}) ->
                 end,
     #work {
        title = proplists:get_value(<<"title">>, Proplist),
-       authors = lists:map(fun ghostlight_people:json_to_record/1, proplists:get_value(<<"authors">>, Proplist)),
+       authors = [ ghostlight_utils:person_or_org_json_to_record(Author)
+                   || Author <- proplists:get_value(<<"authors">>, Proplist) ],
        description = proplists:get_value(<<"description">>, Proplist, null),
        minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null),
        collaborating_org = CollabOrg

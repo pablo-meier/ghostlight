@@ -17,7 +17,7 @@
     {
       "work" : {
         "title" : "Lovertits",
-        "authors" : [{"name": "Annie Wilson"}]
+        "authors" : [{"person": {"name": "Annie Wilson"}}]
       },
       "directors": [{"name": "Annie Wilson"}],
       "onstage": [

@@ -13,7 +13,7 @@
     {
       "work" : {
         "title" : "The Match",
-        "authors": [{"name": "Robert Kuang"}]
+        "authors": [{"person": {"name": "Robert Kuang"}}]
       },
       "directors": [{"name": "Iyvon Edebiri"}],
       "onstage": [
@@ -30,7 +30,7 @@
     {
       "work" : {
         "title" : "Nothing Pleases Aphrodite",
-        "authors": [{"name": "Elijah Guo"}]
+        "authors": [{"person":{"name": "Elijah Guo"}}]
       },
       "directors": [{"name": "Philip Gates"}],
       "onstage": [
@@ -47,7 +47,7 @@
     {
       "work" : {
         "title" : "The Surprise",
-        "authors": [{"name": "Charly Evon Simpson"}]
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
       },
       "directors": [{"name": "Adam Scott Mazer"}],
       "onstage": [
@@ -64,7 +64,7 @@
     {
       "work" : {
         "title" : "Boldly Go",
-        "authors": [{"name": "Matt Barbot"}]
+        "authors": [{"person": {"name": "Matt Barbot"}}]
       },
       "directors": [{"name": "Ria T. DiLullo"}],
       "onstage": [
@@ -81,7 +81,7 @@
     {
       "work" : {
         "title" : "After You",
-        "authors": [{"name": "Daria Miyeko Marinelli"}]
+        "authors": [{"person": {"name": "Daria Miyeko Marinelli"}}]
       },
       "directors": [{"name": "Karen Eilbacher"}],
       "onstage": [

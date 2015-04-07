@@ -15,7 +15,7 @@
     {
       "work" : {
         "title" : "Swan Song",
-        "authors": [{"name": "Clare Barron"}]
+        "authors": [{"person": {"name": "Clare Barron"}}]
       },
       "directors": [{"name": "Clare Barron"}],
       "onstage": [
@@ -26,7 +26,7 @@
     {
       "work" : {
         "title" : "Wedding",
-        "authors": [{"name": "Alexander Borinsky"}]
+        "authors": [{"person": {"name": "Alexander Borinsky"}}]
       },
       "directors": [{"name": "Colleen Sullivan"}],
       "onstage": [
@@ -49,7 +49,7 @@
     {
       "work" : {
         "title" : "Eat Fresh",
-        "authors": [{"name": "Cory Finley"}]
+        "authors": [{"person": {"name": "Cory Finley"}}]
       },
       "directors": [{"name": "Liz Carlson"}],
       "onstage": [
@@ -61,7 +61,7 @@
     {
       "work" : {
         "title" : "Happy Anniversary",
-        "authors": [{"name": "Charly Evon Simpson"}]
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
       },
       "directors": [{"name": "Nicole Ricciardi"}],
       "onstage": [
@@ -72,7 +72,7 @@
     {
       "work" : {
         "title" : "My Name is ______ And I Belong To You",
-        "authors": [{"name": "Lucy Gillespie"}]
+        "authors": [{"person": {"name": "Lucy Gillespie"}}]
       },
       "directors": [{"name": "Nick Leavens"}],
       "onstage": [

@@ -13,13 +13,13 @@
     {
       "work" : {
         "title" : "#liberated",
-        "authors": [{"name": "Lillian Meredith"},
-                    {"name": "Jaki Bradley"},
-                    {"name": "Zoe Sophia Garcia"},
-                    {"name": "Marianna McClellan"},
-                    {"name": "Rachel Karp"},
-                    {"name": "Maggie Raymond"},
-                    {"name": "Gabby Sherpa"}]
+        "authors": [{"person": {"name": "Lillian Meredith"}},
+                    {"person": {"name": "Jaki Bradley"}},
+                    {"person": {"name": "Zoe Sophia Garcia"}},
+                    {"person": {"name": "Marianna McClellan"}},
+                    {"person": {"name": "Rachel Karp"}},
+                    {"person": {"name": "Maggie Raymond"}},
+                    {"person": {"name": "Gabby Sherpa"}}]
       },
       "directors": [{"name": "Lillian Meredith"}],
       "onstage": [
@@ -48,7 +48,7 @@
     {
       "work" : {
         "title" : "who we let in",
-        "authors": [{"name": "Charly Evon Simpson"}]
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
       },
       "directors": [{"name": "Illana Stein"}],
       "onstage": [
@@ -68,7 +68,7 @@
     {
       "work" : {
         "title" : "Love, lost and found",
-        "authors": [{"name": "Sabrina Rodriguez"}]
+        "authors": [{"person": {"name": "Sabrina Rodriguez"}}]
       },
       "directors": [{"name": "Daniela Thome"}],
       "onstage": [
@@ -96,13 +96,13 @@
       "work" : {
         "title" : "Leaf Storm",
         "authors": [
-            {"name": "Shana Solomon"},
-            {"name": "Kaitlyn Cantoni"},
-            {"name": "Catherine Gasta"},
-            {"name": "Elijah Laurant"},
-            {"name": "Adam Pagdon"},
-            {"name": "Vanessa Guinto"},
-            {"name": "Ashley Zimmermann"}
+          {"person": {"name": "Shana Solomon"}},
+          {"person":  {"name": "Kaitlyn Cantoni"}},
+          {"person":  {"name": "Catherine Gasta"}},
+          {"person":  {"name": "Elijah Laurant"}},
+          {"person":  {"name": "Adam Pagdon"}},
+          {"person":  {"name": "Vanessa Guinto"}},
+          {"person":  {"name": "Ashley Zimmermann"}}
         ]
       },
       "directors": [{"name": "Shana Solomon"}],
@@ -131,7 +131,7 @@
     {
       "work" : {
         "title" : "Here Lies Henry",
-        "authors": [{"name": "Daniel MacIvor"}]
+        "authors": [{"person": {"name": "Daniel MacIvor"}}]
       },
       "directors": [{"name": "Emerie Snyder"}],
       "onstage": [
@@ -145,12 +145,12 @@
       "work" : {
         "title" : "everything's whispered (for now)",
         "authors": [
-          {"name": "Michael Grew"},
-          {"name": "Amanda Marikar"},
-          {"name": "Lillian Meredith"},
-          {"name": "Lucinda Rogers"},
-          {"name": "Tracy Willet"},
-          {"name": "Dina Vovsi"}
+          {"person": {"name": "Michael Grew"}},
+          {"person": {"name": "Amanda Marikar"}},
+          {"person": {"name": "Lillian Meredith"}},
+          {"person": {"name": "Lucinda Rogers"}},
+          {"person": {"name": "Tracy Willet"}},
+          {"person": {"name": "Dina Vovsi"}}
         ]
       },
       "directors": [{"name": "Dina Vovsi"}],

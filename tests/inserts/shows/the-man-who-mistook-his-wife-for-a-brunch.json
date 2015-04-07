@@ -15,7 +15,7 @@
     {
       "work" : {
         "title" : "Battle Cry",
-        "authors": [{"name": "Eric Dufault"}]
+        "authors": [{"person": {"name": "Eric Dufault"}}]
       },
       "directors": [{"name": "Larissa Lury"}],
       "onstage": [
@@ -36,7 +36,7 @@
     {
       "work" : {
         "title" : "The Kerry Washington of Tech",
-        "authors": [{"name": "Charly Evon Simpson"}]
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
       },
       "directors": [{"name": "Colette Robert"}],
       "onstage": [
@@ -53,7 +53,7 @@
     {
       "work" : {
         "title" : "Dr. Kessler",
-        "authors": [{"name": "Ana Noguiera"}]
+        "authors": [{"person": {"name": "Ana Noguiera"}}]
       },
       "directors": [{"name": "Claudia Weill"}],
       "onstage": [
@@ -74,7 +74,7 @@
     {
       "work" : {
         "title" : "Jolene, Jolene",
-        "authors": [{"name": "Abby Rosebrock"}]
+        "authors": [{"person": {"name": "Abby Rosebrock"}}]
       },
       "directors": [{"name": "Morgan Gould"}],
       "onstage": [
@@ -103,7 +103,7 @@
     {
       "work" : {
         "title" : "Music Therapy",
-        "authors": [{"name": "Martyna Majok"}]
+        "authors": [{"person": {"name": "Martyna Majok"}}]
       },
       "directors": [{"name": "RJ Tolan"}],
       "onstage": [

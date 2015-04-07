@@ -51,7 +51,6 @@ CREATE TABLE IF NOT EXISTS organizations (
 CREATE TABLE IF NOT EXISTS festivals (
     festival_id UUID PRIMARY KEY,
     title text NOT NULL,
-    producing_org_id UUID REFERENCES organizations(org_id) NOT NULL,
     description TEXT,
     date_founded DATE
 );
@@ -135,8 +134,9 @@ CREATE TABLE IF NOT EXISTS performance_offstage (
 
 CREATE TABLE IF NOT EXISTS authorship (
     work_id UUID REFERENCES works(work_id) NOT NULL,
-    person_id UUID REFERENCES people(person_id) NOT NULL,
-    PRIMARY KEY(work_id, person_id)
+    person_id UUID REFERENCES people(person_id),
+    org_id UUID REFERENCES organizations(org_id),
+    CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL)
 );
 
 

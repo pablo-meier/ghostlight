@@ -15,7 +15,7 @@
     {
       "work" : {
         "title" : "Literally Stupid",
-        "authors": [{"name": "Adin Lenahan"}]
+        "authors": [{"person": {"name": "Adin Lenahan"}}]
       },
       "directors": [{"name": "Karen Eilbacher"}],
       "onstage": [
@@ -36,7 +36,7 @@
     {
       "work" : {
         "title" : "Tights",
-        "authors": [{"name": "Lily Padilla"}]
+        "authors": [{"person": {"name": "Lily Padilla"}}]
       },
       "directors": [{"name": "Avriel Hillman"}],
       "onstage": [
@@ -53,7 +53,7 @@
     {
       "work" : {
         "title" : "Let The Cat Out of the Bag",
-        "authors": [{"name": "Joy Tomasko"}]
+        "authors": [{"person": {"name": "Joy Tomasko"}}]
       },
       "directors": [{"name": "Osh Ghanimah"}],
       "onstage": [
@@ -70,7 +70,7 @@
     {
       "work" : {
         "title" : "The Moment After the Meerkat",
-        "authors": [{"name": "Charly Evon Simpson"}]
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
       },
       "directors": [{"name": "Michael Raine"}],
       "onstage": [
@@ -87,7 +87,7 @@
     {
       "work" : {
         "title" : "The Louboutin",
-        "authors": [{"name": "Daria Miyeko Marinelli"}]
+        "authors": [{"person": {"name": "Daria Miyeko Marinelli"}}]
       },
       "directors": [{"name": "Eric Powell Holm"}],
       "onstage": [
@@ -104,7 +104,7 @@
     {
       "work" : {
         "title" : "Meditations in an Avalanche",
-        "authors": [{"name": "Elijah Guo"}]
+        "authors": [{"person": {"name": "Elijah Guo"}}]
       },
       "directors": [{"name": "Lilleth Glimcher"}],
       "onstage": [

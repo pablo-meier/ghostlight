@@ -64,7 +64,7 @@
 -record(work, {
     id = <<"">>                :: binary(),
     title = <<"">>             :: binary(),
-    authors = []               :: list(#person{}),
+    authors = []               :: list(#person{}) | list(#organization{}),
     description = null         :: null | binary(),
     collaborating_org = null   :: null | #organization{},
     minutes_long = null        :: null | integer()

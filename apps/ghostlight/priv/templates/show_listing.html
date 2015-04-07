@@ -8,13 +8,11 @@
   <table>
       <tr>
           <th>Production</th>
-          <th>Presented By</th>
       </tr>
 
       {% for show in shows %}
       <tr>
           <td><a href="/shows/{{ show.show_id }}">{{ show.title }}</a></td>
-          <td><a href="/organizations/{{ show.org.org_id }}">{{ show.org.org_name }}</a></td>
       </tr>
       {% endfor %}
   </table>

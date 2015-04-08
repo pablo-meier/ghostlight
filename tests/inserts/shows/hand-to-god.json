@@ -98,6 +98,18 @@
           "job" : "Fight Director"
         },
         {
+          "contributor" : {"person": {"name" : "Bryan Lynch" }},
+          "job" : "Production Supervisor"
+        },
+        {
+          "contributor": {"org": {"name": "Telsey + Company"}},
+          "job": "Casting"
+        },
+        {
+          "contributor": {"org": {"name": "AKA"}},
+          "job": "Advertising"
+        },
+        {
           "contributor" : {"person": {"name" : "James Fitzsimmons" }},
           "job" : "Production Stage Manager"
         },
@@ -112,6 +124,10 @@
         {
           "contributor" : {"person": {"name" : "Brig Berney" }},
           "job" : "Company Manager"
+        },
+        {
+          "contributor": {"org": {"name": "Lucas McMahon"}},
+          "job": "Associate Producer"
         },
         {
           "contributor" : {"person": {"name" : "Taylor Haven Holt" }},

@@ -93,19 +93,19 @@
           "job" : "Principal Photography"
         },
         {
-          "contributor": {"name" : "Charles Lindsay"},
+          "contributor": {"person": {"name" : "Charles Lindsay"}},
           "job" : "Sound & Lights"
         },
         {
-          "contributor": {"name" : "Anton Sanko"},
+          "contributor": {"person": {"name" : "Anton Sanko"}},
           "job" : "Composer"
         },
         {
-          "contributor": {"name" : "Kaz PS"},
+          "contributor": {"person": {"name" : "Kaz PS"}},
           "job" : "Editor"
         },
         {
-          "contributor": {"name" : "Dan Safer"},
+          "contributor": {"person": {"name" : "Dan Safer"}},
           "job" : "Editor"
         }
       ]

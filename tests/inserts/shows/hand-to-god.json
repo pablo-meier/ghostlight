@@ -126,7 +126,7 @@
           "job" : "Company Manager"
         },
         {
-          "contributor": {"org": {"name": "Lucas McMahon"}},
+          "contributor": {"person": {"name": "Lucas McMahon"}},
           "job": "Associate Producer"
         },
         {

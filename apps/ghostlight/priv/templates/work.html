@@ -28,7 +28,14 @@
   <h3>Production History:</h3>
   <ul>
     {% for show in shows %}
-    <li><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a>, produced by <a href="/organizations/{{ show.org_id }}">{{ show.org_name }}</a></li>
+    <li><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a>, produced by 
+        {% for producer in show.producers %}
+          {% if producer.type == "org" %}
+            <a href="/organizations/{{ producer.id }}">{{ producer.name }}</a> 
+          {% else %}
+            <a href="/people/{{ producer.id }}">{{ producer.name }}</a> 
+          {% endif %}
+        {% endfor %}</li>
     {% endfor %}
   </ul>
   {% endif %}

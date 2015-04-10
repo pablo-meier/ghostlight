@@ -240,7 +240,8 @@ get(ShowId) ->
         dates = [ iso8601:parse(Date) || Date <- jiffy:decode(Dates) ],
         description = Description,
         hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- jiffy:decode(Hosts) ],
-        producers=[ parse_person_or_org(Producer) || Producer <- jiffy:decode(Producers) ],
+        producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
+                    || Producer <- jiffy:decode(Producers) ],
         performances = [ parse_performance(Performance) || Performance <- jiffy:decode(Performances) ]
 %        external_links=ExternalLinks,
 %        press_links=PressLinks
@@ -251,7 +252,8 @@ parse_performance({Proplist}) ->
        work = #work{
                  id = proplists:get_value(<<"work_id">>, Proplist),
                  title = proplists:get_value(<<"work_title">>, Proplist),
-                 authors = [ parse_person_or_org(Author) || Author <- proplists:get_value(<<"authors">>, Proplist) ]
+                 authors = [ ghostlight_db_utils:parse_person_or_org(Author) 
+                             || Author <- proplists:get_value(<<"authors">>, Proplist) ]
               },
        directors = [ parse_person(Director) || Director <- proplists:get_value(<<"authors">>, Proplist, []) ],
        onstage = [ parse_onstage(Onstage) || Onstage <- proplists:get_value(<<"onstage">>, Proplist, []) ],
@@ -266,7 +268,7 @@ parse_onstage({Onstage}) ->
     #onstage{ role=Role, person=Person }.
  
 parse_offstage({Offstage}) ->
-    Entity = parse_person_or_org(proplists:get_value(<<"entity">>, Offstage)),
+    Entity = ghostlight_db_utils:parse_person_or_org(proplists:get_value(<<"entity">>, Offstage)),
     Job = proplists:get_value(<<"job">>, Offstage),
     #offstage{ contributor=Entity, job=Job}.
 
@@ -276,15 +278,6 @@ parse_person({Person}) ->
        name = proplists:get_value(<<"name">>, Person)
     }.
 
-parse_person_or_org({Producer}) ->
-    Id = proplists:get_value(<<"id">>, Producer, null),
-    Name = proplists:get_value(<<"name">>, Producer, null),
-    case proplists:get_value(<<"type">>, Producer, null) of
-        <<"org">> ->
-            #organization { id = Id, name = Name };
-        <<"person">> ->
-            #person{ id = Id, name = Name }
-    end.
 
 listings() ->
     Response = gen_server:call(?MODULE, get_show_listings),

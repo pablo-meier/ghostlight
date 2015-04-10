@@ -57,11 +57,8 @@ handle_call(get_work_listings, _From, State=#db_state{connection=C, get_work_lis
     {ok, Rows} = epgsql:execute(C, GW),
     {reply, Rows, State};
 
-handle_call({get_work, WorkId}, _From, State=#db_state{get_work_meta=GWM,
-                                                       get_work_shows=GWS}) ->
-    Batch = [ {GWM, [WorkId]},
-              {GWS, [WorkId]} ],
-
+handle_call({get_work, WorkId}, _From, State=#db_state{get_work_statement=GW}) ->
+    Batch = [ {GW, [WorkId]} ],
     Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
@@ -87,37 +84,42 @@ handle_call(_Request, _From, State) ->
 
 get(WorkId) ->
     Response = gen_server:call(?MODULE, {get_work, WorkId}),
-    [{ok, []}, {ok, Authors}, {ok, Shows}, {ok, []}] = Response,
-    lager:info("Authors is ~p~n", [Authors]),
-    [{WorkTitle, _, _, Description, MinutesLong, CollabOrgId, CollabOrgName}|_] = Authors,
-    AuthorList = [ #person{ id = AuthorId, name = AuthorName } || {_, AuthorId, AuthorName, _, _, _, _} <- Authors ],
-    ShowList = [ #show{
-                     id=ShowId,
-                     title=ShowTitle
-                     %org=#organization{
-                     %       id=OrgId,
-                     %       name=OrgName
-                     %    }
-                 } || {ShowId, ShowTitle, _OrgId, _OrgName} <- Shows],
-
-    CollabOrg = case CollabOrgId of
-                    null ->
-                        null;
-                    _Else -> #organization{
-                                    id=CollabOrgId,
-                                    name=CollabOrgName }
-                end,
+    [{ok, []},
+     {ok, [{
+        WorkId,
+        Title,
+        CollaboratingOrgs,
+        Authors,
+        Description,
+        MinutesLong,
+        Productions
+       }]},
+     {ok, []}] = Response,
 
     #work_return{
        work=#work{
                id=WorkId,
-               title=WorkTitle,
-               authors=AuthorList,
+               title=Title,
+               authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jiffy:decode(Authors) ],
                description=Description,
                minutes_long=MinutesLong,
-               collaborating_org=CollabOrg
+               collaborating_org=[ parse_org(Org) || Org <- jiffy:decode(CollaboratingOrgs) ]
             },
-       shows=ShowList
+       shows=[ parse_show(Show) || Show <- jiffy:decode(Productions) ]
+    }.
+
+parse_org({Org}) ->
+    #organization{
+       id = proplists:get_value(<<"org_id">>, Org),
+       name = proplists:get_value(<<"name">>, Org)
+    }.
+
+parse_show({Show}) ->
+    #show{
+       id = proplists:get_value(<<"show_id">>, Show),
+       title = proplists:get_value(<<"title">>, Show),
+       producers = [ ghostlight_db_utils:parse_person_or_org(Producer) ||
+                     Producer <- proplists:get_value(<<"producers">>, Show)]
     }.
 
 listings() ->
@@ -180,25 +182,44 @@ get_author_inserts(WorkId, Org=#organization{}, Stmt) ->
 prepare_statements(C, State) ->
     WorksSql = "INSERT INTO works (work_id, title, description_src, description_markdown, collaborating_org_id, minutes_long, acl) VALUES($1, $2, $3, $4, $5, $6, $7)", 
     {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, text, uuid, int8, text]),
-
     AuthorshipSql = "INSERT INTO authorship (work_id, person_id, org_id) VALUES($1, $2, $3)",
     {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid, uuid]),
 
-    GetWorkTitleAndAuthorsSql = "SELECT w.title, p.person_id, p.name, w.description_markdown, w.minutes_long, o.org_id, o.name "
-        ++ "FROM works AS w INNER JOIN authorship AS a USING (work_id) "
-        ++ "INNER JOIN people AS p USING (person_id) "
-        ++ "LEFT OUTER JOIN organizations AS o ON (w.collaborating_org_id = o.org_id) "
-        ++ "WHERE a.work_id = $1",
-    {ok, GetWorkTitleAndAuthors} = epgsql:parse(C, "get_work_meta", GetWorkTitleAndAuthorsSql, [uuid]),
+    GetWorkSql =
+"
+SELECT
+    w.work_id,
+    w.title,
+    array_to_json(ARRAY(SELECT (o.org_id, o.name)::org_pair 
+                        FROM organizations o
+                        WHERE o.org_id = w.collaborating_org_id)) AS collaborating_org,
+    array_to_json(ARRAY(SELECT (CASE WHEN a.person_id IS NULL
+                                   THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
+                                   ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
+                               END)
+                        FROM authorship a
+                        LEFT OUTER JOIN people p USING (person_id)
+                        LEFT OUTER JOIN organizations o USING (org_id)
+                        WHERE a.work_id = w.work_id)) AS authors,
+    w.description_markdown,
+    w.minutes_long,
+    array_to_json(ARRAY(SELECT (s.show_id,
+                                s.title,
+                                ARRAY(SELECT (CASE WHEN prod.person_id IS NULL
+                                                  THEN ('org'::person_or_org_label, prod.org_id, o.name)::person_or_org
+                                                  ELSE ('person'::person_or_org_label, prod.person_id, p.name)::person_or_org
+                                              END)
+                                       FROM producers prod
+                                       LEFT OUTER JOIN people p USING (person_id)
+                                       LEFT OUTER JOIN organizations o USING (org_id)
+                                       WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC))::production_abbrev
+                        FROM shows s 
+                        INNER JOIN performances p USING (show_id)
+                        WHERE p.work_id = w.work_id)) AS productions
+FROM works w WHERE work_id = $1;
+",
+    {ok, GetWork} = epgsql:parse(C, "get_work_statement", GetWorkSql, [uuid]),
 
-    GetWorkShowsSql = "SELECT s.show_id, s.title, o.org_id, o.name AS org_name "
-        ++ "FROM shows AS s "
-        ++ "INNER JOIN producers AS prod USING (show_id) "
-        ++ "INNER JOIN performances AS p USING (show_id) "
-        ++ "INNER JOIN organizations AS o USING (org_id) "
-        ++ "INNER JOIN works AS w ON (p.work_id = w.work_id) WHERE w.work_id = $1",
-    {ok, GetWorkShows} = epgsql:parse(C, "get_work_shows", GetWorkShowsSql, [uuid]),
-        
     %% For work listings -- much like the meta of a single one.
     GetWorkListingsSql = "SELECT w.work_id, w.title, p.person_id, p.name FROM works AS w "
         ++ "INNER JOIN authorship AS a using (work_id) INNER JOIN people AS p USING (person_id) ORDER BY w.title ASC LIMIT 50",
@@ -209,8 +230,7 @@ prepare_statements(C, State) ->
        insert_work_statement=InsertWork,
        insert_authorship_statement=InsertAuthorship,
 
-       get_work_meta=GetWorkTitleAndAuthors,
-       get_work_shows=GetWorkShows,
+       get_work_statement=GetWork,
 
        get_work_listings=GetWorkListings
     }.

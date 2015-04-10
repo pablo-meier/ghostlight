@@ -92,7 +92,7 @@
 -record(show, {
     id = <<"">>             :: binary(),
     title = <<"">>          :: binary(),
-    producers = []          :: list(#person{}) | list(#organization{}),
+    producers = []          :: list(#person{} | #organization{}),
     performances = []       :: list(#performance{}),
     special_thanks = null   :: null | binary(),
     description = null      :: null | binary(),
@@ -145,8 +145,7 @@
                    insert_work_statement,
                    insert_authorship_statement,
                    get_work_listings,
-                   get_work_meta,
-                   get_work_shows,
+                   get_work_statement,
 
                    %% Orgs
                    insert_org_statement,

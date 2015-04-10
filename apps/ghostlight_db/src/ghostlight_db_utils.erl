@@ -4,6 +4,7 @@
          fresh_uuid/0,
          null_if_unspecified/1,
          get_state/1,
+         parse_person_or_org/1,
          exec_batch/2,
          external_links_sql_to_record/1,
          external_links_inserts/3]).
@@ -53,6 +54,18 @@ exec_batch(Batch, #db_state{connection=C,
                                    [{COMMIT, []}] ]),
     Results = epgsql:execute_batch(C, AsTransaction),
     Results.
+
+
+parse_person_or_org({Entity}) ->
+    Id = proplists:get_value(<<"id">>, Entity, null),
+    Name = proplists:get_value(<<"name">>, Entity, null),
+    case proplists:get_value(<<"type">>, Entity, null) of
+        <<"org">> ->
+            #organization { id = Id, name = Name };
+        <<"person">> ->
+            #person{ id = Id, name = Name }
+    end.
+
 
 external_links_sql_to_record(Links) ->
     lists:foldl(fun({Link, Type}, Accum) ->

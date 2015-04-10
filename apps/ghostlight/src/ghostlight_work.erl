@@ -79,17 +79,22 @@ record_to_proplist(#work_return{
   AuthorsProplist = [ [{author_id, AuthorId},
                        {author_name, AuthorName}] || #person{id=AuthorId, name=AuthorName} <- Authors ],
   ShowsProplist = [ [{show_id, ShowId},
-                     {show_title, ShowTitle} ] || #show{
-                                                id=ShowId,
-                                                title=ShowTitle
-                                               } <- Shows ],
+                     {show_title, ShowTitle},
+                     {producers, [ org_or_person_to_proplist(Producer) ||
+                                   Producer <- Producers ]}
+                    ] || #show{
+                             id=ShowId,
+                             title=ShowTitle,
+                             producers=Producers
+                         } <- Shows ],
+
   CollabOrgProplist = case CollabOrg of
-                          null ->
+                          [] ->
                               undefined;
-                          #organization{
+                          [#organization{
                               id=CollabOrgId,
                               name=CollabOrgName
-                            } -> 
+                            }] -> 
                               [{org_id, CollabOrgId}, {org_name, CollabOrgName}]
                       end,
 
@@ -110,6 +115,14 @@ record_to_proplist(#work{
      {<<"title">>, WorkTitle},
      {<<"authors">>, [ ghostlight_people:record_to_proplist(Author) || Author <- Authors ]}].
 
+org_or_person_to_proplist(#organization{id=Id, name=Name}) ->
+    [{<<"type">>, <<"org">>},
+     {<<"id">>, Id},
+     {<<"name">>, Name}];
+org_or_person_to_proplist(#person{id=Id, name=Name}) ->
+    [{<<"type">>, <<"person">>},
+     {<<"id">>, Id},
+     {<<"name">>, Name}].
 
 work_to_json(Req, State) ->
     WorkId = cowboy_req:binding(work_id, Req),

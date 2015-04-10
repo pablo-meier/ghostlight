@@ -1,7 +1,5 @@
 
 
-
-
 SELECT
     w.work_id,
     w.title,

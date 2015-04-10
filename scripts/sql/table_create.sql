@@ -243,3 +243,12 @@ CREATE TYPE onstage_performance AS ( performer person_pair, role TEXT);
 CREATE TYPE person_or_org AS ( type person_or_org_label, id UUID, name TEXT);
 CREATE TYPE offstage_performance AS ( entity person_or_org, job TEXT);
 
+CREATE TYPE org_pair AS (org_id UUID, name TEXT);
+
+CREATE TYPE production_abbrev AS (
+    show_id UUID,
+    title TEXT,
+    producers person_or_org[]
+)
+
+

@@ -1,24 +1,21 @@
 
 
-CREATE TYPE org_pair AS (
-    org_id UUID,
-    name TEXT
-);
-
-CREATE TYPE production_abbrev AS (
-    show_id UUID,
-    title TEXT,
-    producers person_or_org[]
-)
-
-    array_to_json(SELECT (o.org_id, o.name)::org_pair 
-                  FROM organizations o
-                  WHERE o.org_id = w.collaborating_org_id) AS collaborating_org,
 
 
 SELECT
     w.work_id,
     w.title,
+    array_to_json(ARRAY(SELECT (o.org_id, o.name)::org_pair 
+                        FROM organizations o
+                        WHERE o.org_id = w.collaborating_org_id)) AS collaborating_org,
+    array_to_json(ARRAY(SELECT (CASE WHEN a.person_id IS NULL
+                                   THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
+                                   ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
+                               END)
+                        FROM authorship a
+                        LEFT OUTER JOIN people p USING (person_id)
+                        LEFT OUTER JOIN organizations o USING (org_id)
+                        WHERE a.work_id = w.work_id)) AS authors,
     w.description_markdown,
     w.minutes_long,
     array_to_json(ARRAY(SELECT (s.show_id,

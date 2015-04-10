@@ -49,24 +49,8 @@ handle_call(get_show_listings, _From, State=#db_state{connection=C, get_show_lis
     {reply, Rows, State};
 
 
-handle_call({get_show, ShowId}, _From, State=#db_state{get_show_meta=SM,
-                                                       get_show_producers=SProd,
-                                                    get_show_onstage=SO,
-                                                    get_show_offstage=SOff,
-                                                    get_show_authorship=SA,
-                                                    get_show_directors=SD,
-                                                    get_show_links=SL,
-                                                    get_show_press=SP,
-                                                    get_show_hosts=SH }) ->
-    Batch = [ {SM, [ShowId]},
-              {SProd, [ShowId]},
-              {SO, [ShowId]},
-              {SOff, [ShowId]},
-              {SA, [ShowId]},
-              {SD, [ShowId]},
-              {SP, [ShowId]},
-              {SL, [ShowId]},
-              {SH, [ShowId]}],
+handle_call({get_show, ShowId}, _From, State=#db_state{get_show_statement=GS}) ->
+    Batch = [ {GS, [ShowId]} ],
     Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
@@ -233,130 +217,74 @@ get(ShowId) ->
     Response = gen_server:call(?MODULE, {get_show, ShowId}),
     %% handle if this call fails.
     [_,
-     {ok, Meta},
-     {ok, Producers},
-     {ok, Onstage},
-     {ok, Offstage},
-     {ok, Authorship},
-     {ok, Directors},
-     {ok, Press},
-     {ok, External},
-     {ok, Hosts},
+     {ok, 
+      [{ShowId,
+        Title,
+        Description,
+        SpecialThanks,
+        Producers,
+        Press,
+        External,
+        Dates,
+        Hosts,
+        Performances}]},
      _] = Response,
-    [{Title, Description, SpecialThanks, _}|_] = Meta,
-    Dates = [ Date || {_, _, _, _, Date} <- Meta ],
 
-    Authors = authors_to_map(Authorship),
-    DirectorMap = directors_to_map(Directors),
-    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(External),
-    PressLinks = [ #press_link{link=Link, description=PressDesc} || {Link, PressDesc} <- Press ],
+    lager:info("Productions is ~p~n", [jiffy:decode(Performances)]),
+    lager:info("Press is ~p~n", [jiffy:decode(Press)]),
+    lager:info("External is ~p~n", [jiffy:decode(External)]),
 
     #show{
         title = Title,
         special_thanks = SpecialThanks,
-        dates = Dates,
+        dates = [ iso8601:parse(Date) || Date <- jiffy:decode(Dates) ],
         description = Description,
-        hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- Hosts],
-        producers=[ parse_producer_row(Producer) || Producer <- Producers ],
-        performances = make_performance_record_list(Onstage, Offstage, Authors, DirectorMap),
-        external_links=ExternalLinks,
-        press_links=PressLinks
+        hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- jiffy:decode(Hosts) ],
+        producers=[ parse_person_or_org(Producer) || Producer <- jiffy:decode(Producers) ],
+        performances = [ parse_performance(Performance) || Performance <- jiffy:decode(Performances) ]
+%        external_links=ExternalLinks,
+%        press_links=PressLinks
       }.
 
-parse_producer_row({null, null, PersonId, PersonName}) ->
-    #person{ id=PersonId, name=PersonName };
-parse_producer_row({OrgId, OrgName, null, null}) ->
-    #organization{ id=OrgId, name=OrgName }.
+parse_performance({Proplist}) ->
+    #performance{
+       work = #work{
+                 id = proplists:get_value(<<"work_id">>, Proplist),
+                 title = proplists:get_value(<<"work_title">>, Proplist),
+                 authors = [ parse_person_or_org(Author) || Author <- proplists:get_value(<<"authors">>, Proplist) ]
+              },
+       directors = [ parse_person(Director) || Director <- proplists:get_value(<<"authors">>, Proplist, []) ],
+       onstage = [ parse_onstage(Onstage) || Onstage <- proplists:get_value(<<"onstage">>, Proplist, []) ],
+       offstage = [ parse_offstage(Offstage) || Offstage <- proplists:get_value(<<"offstage">>, Proplist, []) ],
+       directors_note = proplists:get_value(<<"directors_note">>, Proplist, []),
+       description = proplists:get_value(<<"description">>, Proplist, [])
+    }.
 
-make_performance_record_list(Onstage, Offstage, AuthorMap, DirectorMap) ->
-    PerformancesMap = lists:foldl(fun ({WorkId, Title, PerformerName, PerformerId, Role}, Accum) ->
-                                      PerformerRecord = #onstage{
-                                                           role = Role,
-                                                           person = #person{
-                                                                       id = PerformerId,
-                                                                       name = PerformerName
-                                                                    }
-                                                        },
-                                      case maps:get({WorkId, Title}, Accum, none) of
-                                          none ->
-                                              maps:put({WorkId, Title}, [PerformerRecord], Accum);
-                                          Performers ->
-                                              maps:put({WorkId, Title}, [PerformerRecord|Performers], Accum)
-                                      end
-                                  end, maps:new(), Onstage),
+parse_onstage({Onstage}) ->
+    Person = parse_person(proplists:get_value(<<"performer">>, Onstage)),
+    Role = proplists:get_value(<<"role">>, Onstage),
+    #onstage{ role=Role, person=Person }.
+ 
+parse_offstage({Offstage}) ->
+    Entity = parse_person_or_org(proplists:get_value(<<"entity">>, Offstage)),
+    Job = proplists:get_value(<<"job">>, Offstage),
+    #offstage{ contributor=Entity, job=Job}.
 
-    OffstageMap = lists:foldl(fun ({WorkId, Title, Job, PersonId, PersonName}, Accum) ->
-                                  PersonRecord = #offstage{
-                                                    job = Job,
-                                                    contributor = #person{
-                                                                     id = PersonId,
-                                                                     name = PersonName
-                                                                  }
-                                                 },
-                                  case maps:get({WorkId, Title}, Accum, none) of
-                                      none ->
-                                          maps:put({WorkId, Title}, [PersonRecord], Accum);
-                                      People ->
-                                          maps:put({WorkId, Title}, [PersonRecord|People], Accum)
-                                  end
-                              end, maps:new(), Offstage),
+parse_person({Person}) ->
+    #person{
+       id = proplists:get_value(<<"id">>, Person),
+       name = proplists:get_value(<<"name">>, Person)
+    }.
 
-    %% This is a monstrosity and I'm sorry
-    %% This is the final list of the elements, but they are ordered incorrectly due to how we
-    %% built them in the first place. So I'm wrapping it in a map, and using the performance
-    %% order of the OnstageList, where we ORDER BYed.
-    ByName = lists:foldl(fun ({WorkId, Title}, Accum) ->
-                             maps:put({WorkId, Title}, 
-                                       #performance{
-                                           work = #work {
-                                                      id = WorkId,
-                                                      title = Title,
-                                                      authors = maps:get(Title, AuthorMap)
-                                                  },
-                                           onstage = maps:get({WorkId, Title}, PerformancesMap, []),
-                                           offstage = maps:get({WorkId, Title}, OffstageMap, []),
-                                           directors = element(1, maps:get(Title, DirectorMap, {[], null, null})),
-                                           directors_note = element(2, maps:get(Title, DirectorMap, {[], null, null})),
-                                           description = element(3, maps:get(Title, DirectorMap, {[], null, null}))
-                                       }, Accum)
-                         end, maps:new(), maps:keys(PerformancesMap)),
-
-    %% This removes duplicate rows.
-    ReversedKeys = lists:foldl(fun({WorkId, Title, _, _, _}, Accum) ->
-                                   case Accum of 
-                                       [] -> [{WorkId, Title}];
-                                       [{WorkId,Title}|_] -> Accum;
-                                       _Else -> [{WorkId, Title}|Accum]
-                                   end
-                               end, [], Onstage),
-
-    [ maps:get({WorkId, Title}, ByName) ||  {WorkId, Title} <- lists:reverse(ReversedKeys)].
-
-
-%% Given a list of Authorship like the one we return from SQL, gives us a map where every key is the title
-%% of a work, and the value is a list of all its authors.
-authors_to_map(AuthorList) ->
-    lists:foldl(fun ({Title, AuthorId, Author}, Accum) ->
-            AuthorTuple = #person{id=AuthorId, name=Author},
-            case maps:get(Title, Accum, none) of
-                none ->
-                    maps:put(Title, [AuthorTuple], Accum);
-                Authors ->
-                    maps:put(Title, [AuthorTuple|Authors], Accum)
-            end
-        end, maps:new(), AuthorList).
-
-%% Similar to above, but with the description/director's note.
-directors_to_map(AuthorList) ->
-    lists:foldl(fun ({Title, AuthorId, Author, Description, DirectorsNote}, Accum) ->
-            AuthorTuple = #person{id=AuthorId, name=Author},
-            case maps:get(Title, Accum, none) of
-                none ->
-                    maps:put(Title, {[AuthorTuple], Description, DirectorsNote}, Accum);
-                {Authors, D, DN} ->
-                    maps:put(Title, {[AuthorTuple|Authors], D, DN}, Accum)
-            end
-        end, maps:new(), AuthorList).
+parse_person_or_org({Producer}) ->
+    Id = proplists:get_value(<<"id">>, Producer, null),
+    Name = proplists:get_value(<<"name">>, Producer, null),
+    case proplists:get_value(<<"type">>, Producer, null) of
+        <<"org">> ->
+            #organization { id = Id, name = Name };
+        <<"person">> ->
+            #person{ id = Id, name = Name }
+    end.
 
 listings() ->
     Response = gen_server:call(?MODULE, get_show_listings),
@@ -409,61 +337,60 @@ prepare_statements(C, State) ->
     {ok, InsertPress} = epgsql:parse(C, "insert_show_press", InsertPressSql, [uuid, text, text]),
 
     %% SELECT Statements
-    %% This will get the show's metadata
-    GetShowSql = "SELECT s.title, s.description_markdown, s.special_thanks, d.show_date "
-        ++ "FROM shows AS s INNER JOIN show_dates AS d USING (show_id) WHERE s.show_id = $1",
-    {ok, GetShow} = epgsql:parse(C, "get_show_meta", GetShowSql, [uuid]),
-
-    GetProducersSql = "SELECT o.org_id, o.name, p.person_id, p.name FROM producers AS prod "
-        ++ "LEFT OUTER JOIN organizations AS o USING (org_id) "
-        ++ "LEFT OUTER JOIN people AS p USING (person_id) "
-        ++ "WHERE prod.show_id = $1 ORDER BY prod.listed_order ASC",
-    {ok, GetProducers} = epgsql:parse(C, "get_producers", GetProducersSql, [uuid]),
-
-    %% This monstrosity will get all the performers in a show, even if spanning
-    %% Many performances.
-    GetOnstageSql = "SELECT w.work_id, w.title, "
-        ++ "people2.name AS performer_name, people2.person_id AS performer_id, po.role "
-        ++ "FROM works AS w INNER JOIN performances AS p USING (work_id) "
-        ++ "INNER JOIN performance_onstage AS po USING (performance_id) "
-        ++ "INNER JOIN people AS people2 ON (people2.person_id = po.performer_id) "
-        ++ "WHERE p.show_id = $1 "
-        ++ "GROUP BY w.work_id, people2.person_id, p.performance_id, w.title, "
-        ++ "people2.name, po.role ORDER BY p.performance_order;",
-    {ok, GetOnstage} = epgsql:parse(C, "get_show_onstage", GetOnstageSql, [uuid]),
-
-    GetOffstageSql = "SELECT w.work_id, w.title, off.job, person.person_id, person.name FROM performance_offstage AS off "
-        ++ "INNER JOIN people AS person USING (person_id) INNER JOIN performances AS p USING (performance_id) "
-        ++ "INNER JOIN shows USING (show_id) INNER JOIN works AS w ON (w.work_id = p.work_id) WHERE show_id = $1",
-    {ok, GetOffstage} = epgsql:parse(C, "get_show_offstage", GetOffstageSql, [uuid]),
-
-    %% Pulls the authors of a show.
-    GetAuthorsSql = "SELECT w.title, p.person_id AS author_id, p.name AS author_name FROM "
-        ++ "(SELECT p.work_id FROM performances AS p WHERE p.show_id = $1) AS works_in_show "
-        ++ "INNER JOIN works AS w USING (work_id) INNER JOIN authorship AS a USING (work_id) "
-        ++ "INNER JOIN people AS p USING (person_id)",
-    {ok, GetAuthors} = epgsql:parse(C, "get_show_authors", GetAuthorsSql, [uuid]),
-
-    %% Pulls the directors of a show.
-    GetDirectorsSql = "SELECT w.title, p.person_id AS director_id, p.name AS director_name, "
-        ++ " perf.directors_note_markdown, perf.description_markdown FROM "
-        ++ "works AS w INNER JOIN performances AS perf USING (work_id) INNER JOIN "
-        ++ "performance_directors AS pd USING (performance_id) INNER JOIN people AS p "
-        ++ "ON (p.person_id = pd.director_id) INNER JOIN shows AS s ON (perf.show_id = s.show_id) "
-        ++ "WHERE s.show_id = $1",
-    {ok, GetDirectors} = epgsql:parse(C, "get_show_directors", GetDirectorsSql, [uuid]),
-
-    %% Get the shows links. 
-    GetLinksSql = "SELECT link, type FROM show_links WHERE show_id = $1",
-    {ok, GetLinks} = epgsql:parse(C, "get_show_links", GetLinksSql, [uuid]),
-
-    %% Get the shows press.
-    GetPressSql = "SELECT link, description FROM press_links WHERE show_id = $1",
-    {ok, GetPress} = epgsql:parse(C, "get_show_press", GetPressSql, [uuid]),
-    
-    %% Get the shows press.
-    GetHostsSql = "SELECT p.person_id, p.name FROM people AS p INNER JOIN show_hosts AS sh USING (person_id) WHERE sh.show_id = $1",
-    {ok, GetHosts} = epgsql:parse(C, "get_show_hosts", GetHostsSql, [uuid]),
+    %% "BEHOLD," he cackled, "MY GREATEST CREATION!"
+    GetShowSql = 
+"
+SELECT
+    s.show_id,
+    s.title,
+    s.description_markdown,
+    s.special_thanks,
+    array_to_json(ARRAY(SELECT (CASE WHEN prod.person_id IS NULL
+                                    THEN ('org'::person_or_org_label, prod.org_id, o.name)::person_or_org
+                                    ELSE ('person'::person_or_org_label, prod.person_id, p.name)::person_or_org
+                               END)
+                           FROM producers prod
+                           LEFT OUTER JOIN people p USING (person_id)
+                           LEFT OUTER JOIN organizations o USING (org_id)
+                           WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers,
+                  array_to_json(ARRAY(SELECT (pl.link, pl.description)::press_link FROM press_links pl WHERE show_id = s.show_id)) AS press_links,
+                  array_to_json(ARRAY(SELECT (sl.link, sl.type)::external_link FROM show_links sl WHERE sl.show_id = s.show_id)) AS external_links,
+                  array_to_json(ARRAY(SELECT sd.show_date from show_dates sd WHERE sd.show_id = s.show_id)) AS dates,
+                  array_to_json(ARRAY(SELECT (p.person_id, p.name)::person_pair FROM people p INNER JOIN show_hosts sh USING (person_id) where sh.show_id = s.show_id)) AS hosts,
+                  array_to_json(ARRAY(SELECT (perf.performance_id,
+                        w.work_id, 
+                        w.title, 
+                        ARRAY(SELECT (CASE WHEN a.person_id IS NULL 
+                                          THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
+                                          ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
+                                     END)
+                              FROM authorship a
+                              LEFT OUTER JOIN people p USING (person_id)
+                              LEFT OUTER JOIN organizations o USING (org_id)
+                              WHERE a.work_id = w.work_id),
+                        perf.description_markdown,
+                        perf.directors_note_markdown,
+                        ARRAY(SELECT (p.person_id, p.name)::person_pair
+                                  FROM performance_directors pd
+                                  INNER JOIN people p ON (pd.director_id = p.person_id)
+                                  WHERE pd.performance_id = perf.performance_id),
+                        ARRAY(SELECT ((p.person_id, p.name)::person_pair, po.role)::onstage_performance
+                                  FROM performance_onstage po
+                                  INNER JOIN people p ON (p.person_id = po.performer_id)
+                                  WHERE po.performance_id = perf.performance_id),
+                        ARRAY(SELECT (CASE WHEN po.person_id IS NULL
+                                          THEN (('org'::person_or_org_label, po.org_id, o.name)::person_or_org, po.job)::offstage_performance
+                                          ELSE (('person'::person_or_org_label, po.person_id, p.name)::person_or_org, po.job)::offstage_performance
+                                      END)
+                                FROM performance_offstage po
+                                LEFT OUTER JOIN organizations o USING (org_id)
+                                LEFT OUTER JOIN people p USING (person_id)
+                                WHERE po.performance_id = perf.performance_id ORDER BY perf.performance_order DESC))::aggregated_performance
+                       FROM works w
+                       INNER JOIN performances perf USING (work_id)
+                       WHERE perf.show_id = s.show_id)) AS performances
+FROM shows AS s where s.show_id = $1",
+    {ok, GetShowStatement} = epgsql:parse(C, "get_show_statement", GetShowSql, [uuid]),
   
     %% For show listings -- much like the meta of a single one.
     GetShowListingsSql = "SELECT s.show_id, s.title FROM shows AS s LIMIT 30",
@@ -483,14 +410,6 @@ prepare_statements(C, State) ->
        insert_producer_statement=InsertProducer,
        
        get_show_listings=GetShowListings,
-       get_show_meta=GetShow,
-       get_show_producers=GetProducers,
-       get_show_onstage=GetOnstage,
-       get_show_offstage=GetOffstage,
-       get_show_authorship=GetAuthors,
-       get_show_directors=GetDirectors,
-       get_show_links=GetLinks,
-       get_show_press=GetPress,
-       get_show_hosts=GetHosts
+       get_show_statement=GetShowStatement
      }.
 

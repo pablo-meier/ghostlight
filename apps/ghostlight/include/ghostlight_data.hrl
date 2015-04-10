@@ -86,7 +86,7 @@
     offstage = []           :: list(#offstage{}),
     directors = []          :: list(#person{}),
     directors_note = null   :: null | binary(),
-    description = null   :: null | binary()
+    description = null      :: null | binary()
 }).
 
 -record(show, {
@@ -174,15 +174,7 @@
                    insert_producer_statement,
 
                    get_show_listings,
-                   get_show_meta,
-                   get_show_producers,
-                   get_show_onstage,
-                   get_show_offstage,
-                   get_show_authorship,
-                   get_show_directors,
-                   get_show_links,
-                   get_show_press,
-                   get_show_hosts,
+                   get_show_statement,
 
                    %% People
                    insert_person_statement,

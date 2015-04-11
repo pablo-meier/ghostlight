@@ -61,34 +61,34 @@
         }
       ],
       "offstage" : [
-          {
-              "contributor" : {"name" : "Andrew Diaz" },
-              "job" : "Set Designer"
-          },
-          {
-              "contributor" : {"name" : "Scot Gianelli" },
-              "job" : "Lighting Designer"
-          },
-          {
-              "contributor" : {"name" : "Travis Alexandra Boatright" },
-              "job" : "Costume Designer"
-          },
-          {
-              "contributor" : {"name" : "Elliot Davoren" },
-              "job" : "Sound Designer"
-          },
-          {
-              "contributor" : {"name" : "Cristina Pitter" },
-              "job" : "Props Master"
-          },
-          {
-              "contributor" : {"name" : "Amy Jo Jackson" },
-              "job" : "Voice and Speech Coach"
-          },
-          {
-              "contributor" : {"name" : "Colleen McCaughey" },
-              "job" : "Stage Manager"
-          }
+        {
+            "contributor" : {"person": {"name" : "Andrew Diaz" }},
+            "job" : "Set Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Scot Gianelli" }},
+            "job" : "Lighting Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Travis Alexandra Boatright" }},
+            "job" : "Costume Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Elliot Davoren" }},
+            "job" : "Sound Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Cristina Pitter" }},
+            "job" : "Props Master"
+        },
+        {
+            "contributor" : {"person": {"name" : "Amy Jo Jackson" }},
+            "job" : "Voice and Speech Coach"
+        },
+        {
+            "contributor" : {"person": {"name" : "Colleen McCaughey" }},
+            "job" : "Stage Manager"
+        }
       ]
     }
   ]

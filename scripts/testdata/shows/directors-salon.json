@@ -4,9 +4,11 @@
   "dates" : ["2015-03-20T19:00:00.000Z"],
 
   "producers": [
-    "org": {
-      "name": "Working Theatre"
-    } 
+    {
+      "org": {
+        "name": "Working Theatre"
+      } 
+    }
   ],
 
   "performances": [

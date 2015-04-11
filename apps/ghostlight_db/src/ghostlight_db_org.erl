@@ -135,10 +135,10 @@ get(OrgId) ->
        }]},
      {ok, []}] = Reply,
 
-    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(decode_not_null(Links)),
-    MemberList = [ parse_member(Member) || Member <- decode_not_null(Members)],
-    EmployeeList = [ parse_employee(Employee) || Employee <- decode_not_null(Employees)],
-    ShowList = [ parse_show_abbrev(Show) || Show <- decode_not_null(ShowsProduced) ],
+    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
+    MemberList = [ parse_member(Member) || Member <- ghostlight_db_utils:decode_not_null(Members)],
+    EmployeeList = [ parse_employee(Employee) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
+    ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
 
     #org_return{
       org=#organization{
@@ -152,9 +152,6 @@ get(OrgId) ->
           },
       shows_produced = ShowList
     }.
-
-decode_not_null(null) -> [];
-decode_not_null(Expr) -> jiffy:decode(Expr).
 
 parse_member({Member}) ->
     #org_member{

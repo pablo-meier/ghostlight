@@ -61,22 +61,8 @@ handle_call(get_person_listings, _From, State=#db_state{connection=C, get_person
     {reply, Rows, State};
 
 
-handle_call({get_person, PersonId}, _From, State=#db_state{get_person_name=GN,
-                                                           get_person_authorship=GA,
-                                                           get_person_orgs=GO,
-                                                           get_person_memberships=GOM,
-                                                           get_person_directorships=GD,
-                                                           get_person_onstage=POn,
-                                                           get_person_offstage=POff,
-                                                           get_person_links=GPL}) ->
-    Batch = [ {GN, [PersonId]},
-              {GA, [PersonId]},
-              {GO, [PersonId]},
-              {GOM, [PersonId]},
-              {GD, [PersonId]},
-              {POn, [PersonId]},
-              {POff, [PersonId]},
-              {GPL, [PersonId]} ],
+handle_call({get_person, PersonId}, _From, State=#db_state{get_person_statement=GS}) ->
+    Batch = [ {GS, [PersonId]} ],
     Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
@@ -113,44 +99,90 @@ get_inserts(#person{ name=Name,
 
 get(PersonId) ->
     Response = gen_server:call(?MODULE, {get_person, PersonId}),
-    [{ok, _},
-     {ok, [{Name, Description}]},
-     {ok, AuthorshipList},
-     {ok, OrgsList},
-     {ok, Memberships},
-     {ok, DirectedList},
-     {ok, OnstageList},
-     {ok, OffstageList},
-     {ok, Links},
-     {ok, _}] = Response,
-    Authors = [ #work{id=WorkId, title=Title } || {WorkId, Title, _Author} <- AuthorshipList],
-    OrgsAsEmployee = [ #org_work{org_id=OrgId, org_name=OrgName, title=Job} || {OrgId, OrgName, Job} <- OrgsList],
-    OrgsAsMember = [ #organization{id=OrgId, name=OrgName, description=OrgDescription} || {OrgId, OrgName, OrgDescription} <- Memberships],
-    Onstage = [ #show{ title=ShowTitle,
-                       id=ShowId,
-%                       org=#organization{id=OrgId, name=OrgName},
-                       performances=[#performance{
-                                       work=#work{ id=WorkId, title=WorkTitle },
-                                       onstage=#onstage{ role=Role }
-                                    }]
-                     } || {ShowId, ShowTitle, WorkId, WorkTitle, _OrgId, _OrgName, Role} <- OnstageList ],
-    Offstage = [ #show{ title=ShowTitle,
-                       id=ShowId,
-%                       org=#organization{id=OrgId, name=OrgName},
-                       performances=[#performance{
-                                       work=#work{ id=WorkId, title=WorkTitle },
-                                       offstage=#offstage{ job=Job }
-                                    }]
-                     } || {ShowId, ShowTitle, WorkId, WorkTitle, _OrgId, _OrgName, Job} <- OffstageList ],
-    Directed = [ #show{ title=ShowTitle,
-                        id=ShowId,
-%                        org=#organization{id=OrgId, name=OrgName},
-                        performances=[#performance{
-                                        work=#work{ id=WorkId, title=WorkTitle }
-                                     }]
-                      } || {ShowId, ShowTitle, WorkId, WorkTitle, _OrgId, _OrgName} <- DirectedList ],
-    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(Links),
- 
+    [{ok, []},
+     {ok, [{
+        Name,
+        Description,
+        Authorships,
+        Director,
+        Onstage,
+        Offstage,
+        Links,
+        Employee,
+        Member,
+        Producer
+       }]},
+     {ok, []}] = Response,
+
+    AuthorList = [#work{
+                     id = proplists:get_value(<<"work_id">>, Work),
+                     title = proplists:get_value(<<"name">>, Work)
+                  } || {Work} <- ghostlight_db_utils:decode_not_null(Authorships)],
+
+    OnstageList = [#show{
+                      id = proplists:get_value(<<"show_id">>, Show),
+                      title = proplists:get_value(<<"title">>, Show),
+                      performances = [#performance{
+                                        work = #work {
+                                                  id = proplists:get_value(<<"work_id">>, RoleObj),
+                                                  title = proplists:get_value(<<"title">>, RoleObj)
+                                               },
+                                        onstage = #onstage {
+                                                     role = proplists:get_value(<<"role">>, RoleObj)
+                                                  }
+                                     } || {RoleObj} <- proplists:get_value(<<"roles">>, Show)],
+                      producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)]
+                   } || {Show} <- ghostlight_db_utils:decode_not_null(Onstage)],
+
+    OffstageList = [#show{
+                       id = proplists:get_value(<<"show_id">>, Show),
+                       title = proplists:get_value(<<"title">>, Show),
+                       performances = [#performance{
+                                         work = #work {
+                                                   id = proplists:get_value(<<"work_id">>, RoleObj),
+                                                   title = proplists:get_value(<<"title">>, RoleObj)
+                                                },
+                                         offstage = #offstage {
+                                                      job = proplists:get_value(<<"job">>, RoleObj)
+                                                     }
+                                      } || {RoleObj} <- proplists:get_value(<<"jobs">>, Show)],
+                       producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)]
+                    } || {Show} <- ghostlight_db_utils:decode_not_null(Offstage)],
+
+    DirectorList = [#show{
+                       id = proplists:get_value(<<"show_id">>, Show),
+                       title = proplists:get_value(<<"title">>, Show),
+                       performances = [#performance{
+                                         work = #work {
+                                                   id = proplists:get_value(<<"work_id">>, RoleObj),
+                                                   title = proplists:get_value(<<"title">>, RoleObj)
+                                                }
+                                      } || {RoleObj} <- proplists:get_value(<<"works">>, Show)],
+                       producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)]
+                    } || {Show} <- ghostlight_db_utils:decode_not_null(Director)],
+
+    EmployeeList = [ #org_work {
+                        org_id = proplists:get_value(<<"org_id">>, Emp),
+                        org_name = proplists:get_value(<<"name">>, Emp),
+                        title = proplists:get_value(<<"title">>, Emp)
+                     } || {Emp} <- ghostlight_db_utils:decode_not_null(Employee)],
+    MemberList = [ #organization{
+                      id = proplists:get_value(<<"org_id">>, Mem),
+                      name = proplists:get_value(<<"name">>, Mem)
+                   } || {Mem} <- ghostlight_db_utils:decode_not_null(Member)],
+
+    ProducerList = [#show{
+                       id = proplists:get_value(<<"show_id">>, Show),
+                       title = proplists:get_value(<<"title">>, Show),
+                       performances = [#performance{
+                                         work = #work {
+                                                   id = proplists:get_value(<<"work_id">>, RoleObj),
+                                                   title = proplists:get_value(<<"title">>, RoleObj)
+                                                }
+                                      } || {RoleObj} <- proplists:get_value(<<"works">>, Show)]
+                    } || {Show} <- ghostlight_db_utils:decode_not_null(Producer)],
+    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
+
     #person_return{
        person=#person{
            id = PersonId,
@@ -158,12 +190,13 @@ get(PersonId) ->
            description=Description,
            external_links=ExternalLinks
        },
-       authored = Authors,
-       directed = Directed,
-       onstage = Onstage,
-       offstage = Offstage,
-       orgs_employee = OrgsAsEmployee,
-       orgs_member = OrgsAsMember
+       authored = AuthorList,
+       directed = DirectorList,
+       onstage = OnstageList,
+       offstage = OffstageList,
+       orgs_employee = EmployeeList,
+       orgs_member = MemberList,
+       shows_produced = ProducerList
     }.
 
 listings() ->
@@ -180,66 +213,142 @@ get_inserts(Person) ->
 prepare_statements(C, State) ->
     PersonSql = "INSERT INTO people (person_id, name, description_src, description_markdown, photo_id, date_added) VALUES($1, $2, $3, $4, NULL, CURRENT_DATE)", 
     {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text, text, text]),
-
     PersonLinksSql = "INSERT INTO people_links (person_id, link, type) VALUES($1, $2, $3::link_type)",
     {ok, PersonLinks} = epgsql:parse(C, "insert_person_links", PersonLinksSql, [uuid, text, text]),
 
-    GetPersonNameSql = "SELECT name, description_markdown FROM people WHERE person_id = $1",
-    {ok, GetPersonName} = epgsql:parse(C, "get_person_name", GetPersonNameSql, [uuid]),
-    
-    %% Pulls the works authored by a person.
-    GetShowsAuthoredSql = "SELECT w.work_id, w.title, p.name FROM authorship AS a "
-        ++ "INNER JOIN works AS w USING (work_id) INNER JOIN people AS p using (person_id) "
-        ++ "WHERE w.acl = 'public' AND p.person_id = $1",
-    {ok, GetShowsAuthored} = epgsql:parse(C, "get_authorships", GetShowsAuthoredSql, [uuid]),
-
-    GetPersonOrgsSql = "SELECT o.org_id, o.name, oe.title FROM organizations AS o INNER JOIN org_employees AS oe "
-        ++ "USING (org_id) WHERE oe.person_id = $1 AND o.visibility = 'public'",
-    {ok, GetPersonOrgs} = epgsql:parse(C, "get_person_orgs", GetPersonOrgsSql, [uuid]),
-
-    GetOrgMembershipsSql = "SELECT o.org_id, o.name, o.description_markdown FROM organizations AS o INNER JOIN "
-        ++ "org_members AS om USING (org_id) WHERE om.person_id = $1 AND o.visibility = 'public'",
-    {ok, GetOrgMemberships} = epgsql:parse(C, "get_person_org_memberships", GetOrgMembershipsSql, [uuid]),
-
-    GetPersonOnstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.role FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN producers AS prod USING (show_id) "
-        ++ "INNER JOIN organizations AS o USING (org_id) "
-        ++ "INNER JOIN performance_onstage AS po USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
-        ++ "WHERE po.performer_id = $1",
-    {ok, GetPersonOnstage} = epgsql:parse(C, "get_person_onstage", GetPersonOnstageSql, [uuid]),
-
-    GetPersonOffstageSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name, po.job FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN producers AS prod USING (show_id) "
-        ++ "INNER JOIN organizations AS o USING (org_id) "
-        ++ "INNER JOIN performance_offstage AS po USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
-        ++ "WHERE po.person_id = $1",
-    {ok, GetPersonOffstage} = epgsql:parse(C, "get_person_offstage", GetPersonOffstageSql, [uuid]),
-
-    GetPersonDirectedSql = "SELECT s.show_id, s.title, w.work_id, w.title, o.org_id, o.name FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN producers AS prod USING (show_id) "
-        ++ "INNER JOIN organizations AS o USING (org_id) "
-        ++ "INNER JOIN performance_directors AS pd USING (performance_id) INNER JOIN works AS w ON (p.work_id = w.work_id) "
-        ++ "WHERE pd.director_id = $1",
-    {ok, GetPersonDirected} = epgsql:parse(C, "get_person_directed", GetPersonDirectedSql, [uuid]),
-
-    GetPersonLinksSql = "SELECT link, type FROM people_links WHERE person_id = $1",
-    {ok, GetPersonLinks} = epgsql:parse(C, "get_people_links", GetPersonLinksSql, [uuid]),
-
     GetPersonListingsSql = "SELECT p.person_id, p.name FROM people AS p ORDER BY p.name ASC",
     {ok, GetPersonListings} = epgsql:parse(C, "get_person_listings", GetPersonListingsSql, []),
+
+    GetPersonSql =
+"
+SELECT
+    p.name,
+    p.description_markdown AS description,
+    array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
+                        FROM works w 
+                        INNER JOIN authorship a USING (work_id)
+                        where a.person_id = p.person_id)) AS authorships,
+    -- Director
+    (
+        SELECT to_json(array_agg(directed))
+        FROM (SELECT s.show_id,
+                     s.title,
+                     array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
+                                                FROM works w
+                                                INNER JOIN performances perf USING (work_id)
+                                                INNER JOIN performance_directors pd USING (performance_id)
+                                                WHERE perf.show_id = s.show_id
+                                                AND pd.director_id = p.person_id
+                                                ORDER BY perf.performance_order)) AS works,
+                     array_to_json(ARRAY(SELECT (CASE WHEN prod.person_id IS NULL
+                                                     THEN ('org'::person_or_org_label, prod.org_id, o.name)::person_or_org
+                                                     ELSE ('person'::person_or_org_label, prod.person_id, p.name)::person_or_org
+                                                END)
+                                            FROM producers prod
+                                            LEFT OUTER JOIN people p USING (person_id)
+                                            LEFT OUTER JOIN organizations o USING (org_id)
+                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers
+               FROM shows s
+               INNER JOIN performances perf USING (show_id)
+               INNER JOIN performance_directors pd USING (performance_id)
+               WHERE pd.director_id = p.person_id) AS directed
+    ) AS directorships,
+    -- Onstage
+    (
+        SELECT to_json(array_agg(onstaged))
+        FROM (SELECT s.show_id,
+                     s.title,
+                     (SELECT array_agg(collected)
+                      FROM (SELECT w.work_id, w.title, po.role
+                                   FROM works w
+                                   INNER JOIN performances perf USING (work_id)
+                                   WHERE perf.show_id = s.show_id
+                                   AND perf.performance_id = po.performance_id
+                                   AND po.performer_id = p.person_id
+                                   ORDER BY perf.performance_order) AS collected) AS roles,
+                     array_to_json(ARRAY(SELECT (CASE WHEN prod.person_id IS NULL
+                                                     THEN ('org'::person_or_org_label, prod.org_id, o.name)::person_or_org
+                                                     ELSE ('person'::person_or_org_label, prod.person_id, p.name)::person_or_org
+                                                END)
+                                            FROM producers prod
+                                            LEFT OUTER JOIN people p USING (person_id)
+                                            LEFT OUTER JOIN organizations o USING (org_id)
+                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers
+               FROM shows s
+               INNER JOIN performances perf USING (show_id)
+               INNER JOIN performance_onstage po USING (performance_id)
+               WHERE po.performer_id = p.person_id) AS onstaged
+    ) AS onstage,
+    -- Offstage
+    (
+        SELECT to_json(array_agg(offstaged))
+        FROM (SELECT s.show_id,
+                     s.title,
+                     (SELECT array_agg(collected)
+                      FROM (SELECT w.work_id, w.title, po.job
+                                   FROM works w
+                                   INNER JOIN performances perf USING (work_id)
+                                   WHERE perf.show_id = s.show_id
+                                   AND perf.performance_id = po.performance_id
+                                   AND po.person_id = p.person_id
+                                   ORDER BY perf.performance_order) AS collected) AS jobs,
+                     array_to_json(ARRAY(SELECT (CASE WHEN prod.person_id IS NULL
+                                                     THEN ('org'::person_or_org_label, prod.org_id, o.name)::person_or_org
+                                                     ELSE ('person'::person_or_org_label, prod.person_id, p.name)::person_or_org
+                                                END)
+                                            FROM producers prod
+                                            LEFT OUTER JOIN people p USING (person_id)
+                                            LEFT OUTER JOIN organizations o USING (org_id)
+                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers
+               FROM shows s
+               INNER JOIN performances perf USING (show_id)
+               INNER JOIN performance_offstage po USING (performance_id)
+               WHERE po.person_id = p.person_id) AS offstaged
+    ) AS offstage,
+    -- Links
+    array_to_json(ARRAY(SELECT (pl.link, pl.type)::external_link
+                        FROM people_links pl
+                        WHERE pl.person_id = p.person_id)) AS links,
+    -- Employee
+    (
+        SELECT to_json(array_agg(emp))
+        FROM (SELECT o.org_id, o.name, oe.title
+              FROM organizations o
+              INNER JOIN org_employees oe USING (org_id)
+              WHERE oe.person_id = p.person_id) AS emp
+    ) AS employee,
+    -- Member 
+    (
+        SELECT to_json(array_agg(mem))
+        FROM (SELECT o.org_id, o.name
+              FROM organizations o
+              INNER JOIN org_members om USING (org_id)
+              WHERE om.person_id = p.person_id) AS mem
+    ) AS member,
+    -- Producer
+    (
+        SELECT to_json(array_agg(prod))
+        FROM (SELECT s.show_id,
+                     s.title,
+                     array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
+                                                FROM works w
+                                                INNER JOIN performances p USING (work_id)
+                                                WHERE p.show_id = s.show_id)) AS works
+               FROM shows s
+               INNER JOIN producers USING (show_id)
+               WHERE producers.person_id = p.person_id) AS prod
+    ) AS shows_produced
+FROM people p
+WHERE p.person_id = $1
+",
+    {ok, GetPerson} = epgsql:parse(C, "get_person_statement", GetPersonSql, [uuid]),
 
     State#db_state{
        insert_person_statement=InsertPerson,
        insert_person_links_statement=PersonLinks,
        get_person_listings=GetPersonListings,
-       get_person_name=GetPersonName,
-       get_person_authorship=GetShowsAuthored,
-       get_person_orgs=GetPersonOrgs,
-       get_person_onstage=GetPersonOnstage,
-       get_person_offstage=GetPersonOffstage,
-       get_person_directorships=GetPersonDirected,
-       get_person_links=GetPersonLinks,
-       get_person_memberships=GetOrgMemberships
+
+       get_person_statement=GetPerson
     }.
 
 

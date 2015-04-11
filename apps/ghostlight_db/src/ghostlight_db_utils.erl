@@ -2,6 +2,7 @@
 -export([connect_to_postgres/0,
          markdown_or_null/1,
          fresh_uuid/0,
+         decode_not_null/1,
          null_if_unspecified/1,
          get_state/1,
          parse_person_or_org/1,
@@ -23,6 +24,9 @@ null_if_unspecified({}) -> null;
 null_if_unspecified(null) -> null;
 null_if_unspecified(<<"">>) -> null;
 null_if_unspecified(Else) -> Else.
+
+decode_not_null(null) -> [];
+decode_not_null(Expr) -> jiffy:decode(Expr).
 
 markdown_or_null(null) -> null;
 markdown_or_null(Body) when is_binary(Body) ->

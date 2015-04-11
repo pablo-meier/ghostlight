@@ -253,5 +253,5 @@ CREATE TYPE production_abbrev AS (
     show_id UUID,
     title TEXT,
     producers person_or_org[]
-)
+);
 

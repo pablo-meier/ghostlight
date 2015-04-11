@@ -120,7 +120,8 @@
     onstage = []          :: list(#show{}),
     offstage = []         :: list(#show{}),
     orgs_employee = []    :: list(#org_work{}),
-    orgs_member = []      :: list(#organization{})
+    orgs_member = []      :: list(#organization{}),
+    shows_produced = []   :: list(#show{})
 }).
 
 -record(org_return, {
@@ -174,12 +175,5 @@
                    insert_person_statement,
                    insert_person_links_statement,
                    get_person_listings,
-                   get_person_name,
-                   get_person_authorship,
-                   get_person_orgs,
-                   get_person_onstage,
-                   get_person_offstage,
-                   get_person_directorships,
-                   get_person_links,
-                   get_person_memberships
+                   get_person_statement
 }).

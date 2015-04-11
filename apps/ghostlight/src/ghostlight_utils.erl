@@ -11,22 +11,26 @@
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
 external_links_json_to_record(Json) when is_list(Json) ->
-    #external_links{
-        website = proplists:get_value(<<"website">>, Json, null),
-        email_address = proplists:get_value(<<"email">>, Json, null),
-        blog = proplists:get_value(<<"blog">>, Json, null),
-        mailing_list = proplists:get_value(<<"newsletter">>, Json, null),
-        facebook = proplists:get_value(<<"facebook">>, Json, null),
-        twitter = proplists:get_value(<<"twitter">>, Json, null),
-        instagram = proplists:get_value(<<"instagram">>, Json, null),
-        vimeo = proplists:get_value(<<"vimeo">>, Json, null),
-        youtube = proplists:get_value(<<"youtube">>, Json, null),
-        pinterest = proplists:get_value(<<"pinterest">>, Json, null),
-        tumblr = proplists:get_value(<<"tumblr">>, Json, null),
-        gplus = proplists:get_value(<<"gplus">>, Json, null),
-        patreon = proplists:get_value(<<"patreon">>, Json, null),
-        newplayx = proplists:get_value(<<"newplayx">>, Json, null)
-    }.
+    case proplists:get_value(<<"social">>, Json) of
+        {SocialBlock} ->
+            #external_links{
+                website = proplists:get_value(<<"website">>, SocialBlock, null),
+                email_address = proplists:get_value(<<"email">>, SocialBlock, null),
+                blog = proplists:get_value(<<"blog">>, SocialBlock, null),
+                mailing_list = proplists:get_value(<<"newsletter">>, SocialBlock, null),
+                facebook = proplists:get_value(<<"facebook">>, SocialBlock, null),
+                twitter = proplists:get_value(<<"twitter">>, SocialBlock, null),
+                instagram = proplists:get_value(<<"instagram">>, SocialBlock, null),
+                vimeo = proplists:get_value(<<"vimeo">>, SocialBlock, null),
+                youtube = proplists:get_value(<<"youtube">>, SocialBlock, null),
+                pinterest = proplists:get_value(<<"pinterest">>, SocialBlock, null),
+                tumblr = proplists:get_value(<<"tumblr">>, SocialBlock, null),
+                gplus = proplists:get_value(<<"gplus">>, SocialBlock, null),
+                patreon = proplists:get_value(<<"patreon">>, SocialBlock, null),
+                newplayx = proplists:get_value(<<"newplayx">>, SocialBlock, null)
+            };
+        undefined -> #external_links{}
+    end.
 
 external_links_record_to_proplist(null) -> [];
 external_links_record_to_proplist(

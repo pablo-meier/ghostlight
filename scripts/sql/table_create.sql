@@ -225,8 +225,18 @@ CREATE TABLE IF NOT EXISTS show_hosts (
 -- composite data.
 
 CREATE TYPE person_pair AS (id UUID, name TEXT);
+CREATE TYPE org_pair AS (org_id UUID, name TEXT);
+CREATE TYPE work_pair AS (work_id UUID, name TEXT);
+
 CREATE TYPE external_link AS (link TEXT, type link_type);
 CREATE TYPE press_link AS (link TEXT, description TEXT);
+
+CREATE TYPE person_or_org_label AS ENUM ( 'person', 'org');
+CREATE TYPE person_or_org AS ( type person_or_org_label, id UUID, name TEXT);
+
+CREATE TYPE onstage_performance AS ( performer person_pair, role TEXT);
+CREATE TYPE offstage_performance AS ( entity person_or_org, job TEXT);
+
 CREATE TYPE aggregated_performance AS (
     performance_id UUID,
     work_id UUID,
@@ -238,17 +248,10 @@ CREATE TYPE aggregated_performance AS (
     onstage onstage_performance[],
     offstage offstage_performance[]
 );
-CREATE TYPE person_or_org_label AS ENUM ( 'person', 'org');
-CREATE TYPE onstage_performance AS ( performer person_pair, role TEXT);
-CREATE TYPE person_or_org AS ( type person_or_org_label, id UUID, name TEXT);
-CREATE TYPE offstage_performance AS ( entity person_or_org, job TEXT);
-
-CREATE TYPE org_pair AS (org_id UUID, name TEXT);
 
 CREATE TYPE production_abbrev AS (
     show_id UUID,
     title TEXT,
     producers person_or_org[]
 )
-
 

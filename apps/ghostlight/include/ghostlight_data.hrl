@@ -153,12 +153,7 @@
                    insert_org_member,
                    insert_org_external_link,
                    get_org_listings,
-                   get_org_meta,
-                   get_org_show_dates,
-                   get_produced_by_org,
-                   get_org_employees,
-                   get_org_members,
-                   get_org_links,
+                   get_org_statement,
 
                    %% Productions
                    insert_performance_statement,

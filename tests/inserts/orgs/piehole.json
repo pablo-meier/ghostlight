@@ -2,12 +2,16 @@
     "name": "PIEHOLE",
     "tagline": "Piehole is a laboratory of theater artists who investigate the process of collaboration and collective authorship. We draw from a shared fascination with objects and media to create handmade universes, in an attempt to foster a community of doubters. We continually re-imagine our process, but always eat every four hours.",
     "description": "Piehole's work has performed at galleries, theaters, and hotel rooms, in NYC, Philly, and Prague. We have received grants from the BAX Space Grant program, the Mental Insight Foundation, and Puppeteers of America. We most recently completed a 3-week run of Old Paper Houses at the Irondale Center in Feb/March 2015, following a workshop run at The Connelly Theater in March 2014.  In between those OPH showings, Piehole began developing a Mister Ed-inspired piece called Trying to Get the Horse to Talk, and performed it at New Skin for the Old Ceremony at Cloud City. Other recent works include: an adaptation of The Fizzles (a collaborative book by Jasper Johns and Samuel Beckett) which performed at Triple Canopy in Greenpoint, and 2 Stories that End in Suicide (a play about self-censorship) which performed at HERE Arts Center and The Brick Theater. Piehole's current core group includes Tara Ahmadinejad, Allison LaPlatney, Alexandra Panzer, Elliot B. Quick, and Jeff Wood.",
-  "website_link": "http://www.pieholed.com/",
-  "email": "pieholed@gmail.com",
-  "facebook": "https://www.facebook.com/pages/Piehole/163999200321547",
-  "instagram": "http://instagram.com/pieholed",
-  "newsletter": "http://eepurl.com/Lxxbb",
-  "blog": "http://www.pieholed.com/notebook",
+
+  "social": {
+    "website": "http://www.pieholed.com/",
+    "email": "pieholed@gmail.com",
+    "facebook": "https://www.facebook.com/pages/Piehole/163999200321547",
+    "instagram": "http://instagram.com/pieholed",
+    "newsletter": "http://eepurl.com/Lxxbb",
+    "blog": "http://www.pieholed.com/notebook"
+  },
+
   "members": [
     { 
       "person": { "name": "Tara Ahmadinejad" },

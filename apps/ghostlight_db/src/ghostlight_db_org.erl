@@ -44,18 +44,8 @@ handle_call(get_org_listings, _From, State=#db_state{connection=C, get_org_listi
     {ok, Rows} = epgsql:execute(C, GO),
     {reply, Rows, State};
 
-handle_call({get_org, OrgId}, _From, State=#db_state{get_org_meta=GOI,
-                                                     get_org_show_dates=GOD,
-                                                     get_produced_by_org=GPO,
-                                                     get_org_employees=GOE,
-                                                     get_org_members=GOM,
-                                                     get_org_links=GOL}) ->
-    Batch = [ {GOI, [OrgId]},
-              {GOD, [OrgId]},
-              {GPO, [OrgId]},
-              {GOE, [OrgId]},
-              {GOM, [OrgId]},
-              {GOL, [OrgId]} ],
+handle_call({get_org, OrgId}, _From, State=#db_state{get_org_statement=GO}) ->
+    Batch = [ {GO, [OrgId]} ],
     Reply = ghostlight_db_utils:exec_batch(Batch, State),
     {reply, Reply, State};
 
@@ -132,70 +122,69 @@ employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=De
 get(OrgId) ->
     Reply = gen_server:call(?MODULE, {get_org, OrgId}),
     [{ok, []},
-     {ok, Meta},
-     {ok, Dates},
-     {ok, Produced},
-     {ok, Employees},
-     {ok, Members},
-     {ok, Links},
+     {ok,
+      [{
+        OrgId,
+        OrgName,
+        OrgTagline,
+        OrgDescription,
+        Links,
+        ShowsProduced,
+        Employees,
+        Members
+       }]},
      {ok, []}] = Reply,
 
-    [{Name, Tagline, OrgDescription}] = Meta,
-    DateMap = lists:foldl(fun({Id, Title, Date}, Accum) ->
-                                  case maps:get({Id, Title}, Accum, undefined) of
-                                      undefined -> maps:put({Id, Title}, [Date], Accum);
-                                      DateList -> maps:put({Id, Title}, [Date|DateList], Accum)
-                                  end
-                          end, maps:new(), Dates),
-    ShowList = condense_performances_in_show(Produced, DateMap),
-    EmployeeList = [ #org_employee{
-                        title=PersonTitle,
-                        person=#person{
-                            id=PersonId,
-                            name=PersonName
-                        },
-                        description=EmpDescription
-                     } || {PersonId, PersonName, PersonTitle, EmpDescription} <- Employees ],
-    MemberList =[ #org_member{
-                        member=#person{
-                            id=PersonId,
-                            name=PersonName
-                        },
-                        description=MemDescription
-                     } || {PersonId, PersonName, MemDescription} <- Members ],
-    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(Links),
+    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(decode_not_null(Links)),
+    MemberList = [ parse_member(Member) || Member <- decode_not_null(Members)],
+    EmployeeList = [ parse_employee(Employee) || Employee <- decode_not_null(Employees)],
+    ShowList = [ parse_show_abbrev(Show) || Show <- decode_not_null(ShowsProduced) ],
+
     #org_return{
       org=#organization{
              id=OrgId,
-             name=Name,
-             tagline=Tagline,
-             members=MemberList,
-             employees=EmployeeList,
+             name=OrgName,
+             tagline=OrgTagline,
              description=OrgDescription,
-             external_links=ExternalLinks
+             external_links=ExternalLinks,
+             members=MemberList,
+             employees=EmployeeList
           },
-      shows_produced=ShowList
+      shows_produced = ShowList
     }.
 
-condense_performances_in_show(ShowList, DateMap) ->
-    AsMap = lists:foldl(fun ({ShowId, ShowTitle, WorkId, WorkTitle}, Accum) ->
-                                NewPerformance = #performance{work=#work{id=WorkId, title=WorkTitle}},
-                                case maps:get({ShowId, ShowTitle}, Accum, none) of
-                                    none ->
-                                        maps:put({ShowId, ShowTitle}, [NewPerformance], Accum);
-                                    PerformanceList ->
-                                        maps:put({ShowId, ShowTitle}, [NewPerformance|PerformanceList], Accum)
-                                end
-                        end, maps:new(), ShowList),
-    WithDates = [ #show{
-                    id = ShowId,
-                    title = ShowTitle,
-                    performances = lists:reverse(maps:get({ShowId, ShowTitle}, AsMap)),
-                    dates = maps:get({ShowId, ShowTitle}, DateMap)
-                 } || {ShowId, ShowTitle} <- maps:keys(AsMap) ],
-    lists:sort(fun(#show{dates=[D1|_]}, #show{dates=[D2|_]}) ->
-                       D1 >= D2
-               end, WithDates).
+decode_not_null(null) -> [];
+decode_not_null(Expr) -> jiffy:decode(Expr).
+
+parse_member({Member}) ->
+    #org_member{
+       member = #person {
+                   id = proplists:get_value(<<"person_id">>, Member),
+                   name = proplists:get_value(<<"name">>, Member)
+                },
+       description = proplists:get_value(<<"description">>, Member, null)
+    }.
+
+parse_employee({Employee}) ->
+    #org_employee{
+       person = #person {
+                   id = proplists:get_value(<<"person_id">>, Employee),
+                   name = proplists:get_value(<<"name">>, Employee)
+                },
+       title = proplists:get_value(<<"title">>, Employee, null),
+       description = proplists:get_value(<<"description">>, Employee, null)
+    }.
+
+parse_show_abbrev({Show}) ->
+    #show{
+       id = proplists:get_value(<<"show_id">>, Show),
+       title = proplists:get_value(<<"title">>, Show),
+       performances=[#performance{
+                        work=#work{ id = proplists:get_value(<<"work_id">>, Work),
+                                    title = proplists:get_value(<<"name">>, Work)}} 
+                     || {Work} <- proplists:get_value(<<"works">>, Show)
+                    ]
+    }.
 
 listings() ->
     Results = gen_server:call(?MODULE, get_org_listings),
@@ -231,30 +220,46 @@ prepare_statements(C, State) ->
     OrgExternalLinkSql = "INSERT INTO org_links (org_id, link, type) VALUES ($1, $2, $3::link_type)",
     {ok, OrgExternalLink} = epgsql:parse(C, "insert_org_external", OrgExternalLinkSql, [uuid, text, text]),
 
-    GetOrgMetaSql = "SELECT o.name, o.tagline, o.description_markdown FROM organizations AS o WHERE o.org_id = $1",
-    {ok, GetOrgMeta} = epgsql:parse(C, "get_org_meta", GetOrgMetaSql, [uuid]),
-
-    GetProducedByOrgSql = "SELECT s.show_id, s.title, w.work_id, w.title FROM shows AS s "
-        ++ "INNER JOIN performances AS p USING (show_id) INNER JOIN producers AS prod USING (show_id) "
-        ++ "INNER JOIN organizations AS o USING (org_id) "
-        ++ "INNER JOIN works AS w ON (p.work_id = w.work_id) WHERE o.org_id = $1",
-    {ok, GetProducedByOrg} = epgsql:parse(C, "get_produced_by_org", GetProducedByOrgSql, [uuid]),
-
-    GetDatesOfShowSql = "SELECT s.show_id, s.title, d.show_date FROM shows AS s INNER JOIN "
-        ++ "producers AS p USING (show_id) INNER JOIN organizations AS o USING (org_id) INNER JOIN show_dates AS d "
-        ++ "USING (show_id) WHERE o.org_id = $1 ORDER BY d.show_date ASC",
-    {ok, GetDatesOfShow} = epgsql:parse(C, "get_dates_of_shows_by_org", GetDatesOfShowSql, [uuid]),
-
-    GetOrgEmployeesSql = "SELECT p.person_id, p.name, oe.title, oe.description_markdown FROM org_employees AS oe INNER JOIN people AS p USING "
-        ++ "(person_id) WHERE oe.org_id = $1",
-    {ok, GetOrgEmployees} = epgsql:parse(C, "get_org_employees", GetOrgEmployeesSql, [uuid]),
-    
-    GetOrgMembersSql = "SELECT p.person_id, p.name, om.description_markdown FROM org_members AS om INNER JOIN people AS p USING "
-        ++ "(person_id) WHERE om.org_id = $1",
-    {ok, GetOrgMembers} = epgsql:parse(C, "get_org_members", GetOrgMembersSql, [uuid]),
-
-    GetOrgLinksSql = "SELECT link, type FROM org_links WHERE org_id = $1",
-    {ok, GetOrgLinks} = epgsql:parse(C, "get_org_links", GetOrgLinksSql, [uuid]),
+    GetOrgSql =
+"
+SELECT
+    o.org_id,
+    o.name,
+    o.tagline,
+    o.description_markdown,
+    array_to_json(ARRAY(SELECT (ol.link, ol.type)::external_link
+                            FROM org_links ol
+                            WHERE ol.org_id = o.org_id)) AS links,
+    (
+        SELECT to_json(array_agg(prod))
+        FROM (SELECT s.show_id,
+                     s.title,
+                     array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
+                                                FROM works w
+                                                INNER JOIN performances p USING (work_id)
+                                                WHERE p.show_id = s.show_id ORDER BY p.performance_order)) AS works
+               FROM shows s
+               INNER JOIN producers USING (show_id)
+               WHERE producers.org_id = o.org_id) AS prod
+    ) AS shows_produced,
+    (
+        SELECT to_json(array_agg(emp))
+        FROM (SELECT oe.org_id, p.person_id, p.name, oe.title, oe.description_markdown AS description
+              FROM org_employees oe
+              INNER JOIN people p USING (person_id)) AS emp 
+        WHERE emp.org_id = o.org_id
+    ) AS employees, 
+    (
+        SELECT to_json(array_agg(mem))
+        FROM (SELECT om.org_id, p.person_id, p.name, om.description_markdown AS description
+              FROM org_members om
+              INNER JOIN people p USING (person_id)) AS mem
+        WHERE mem.org_id = o.org_id
+    ) AS members
+FROM organizations o
+WHERE o.org_id = $1
+",
+    {ok, GetOrg} = epgsql:parse(C, "get_org_statement", GetOrgSql, [uuid]),
 
     GetOrgListingsSql = "SELECT o.org_id, o.name, o.tagline, o.description_markdown FROM organizations AS o ORDER BY o.name ASC LIMIT 50",
     {ok, GetOrgListings} = epgsql:parse(C, "get_org_listings", GetOrgListingsSql, []),
@@ -262,13 +267,9 @@ prepare_statements(C, State) ->
  
     State#db_state{
        insert_org_statement=InsertOrg,
+
+       get_org_statement=GetOrg,
        get_org_listings=GetOrgListings,
-       get_org_meta=GetOrgMeta,
-       get_produced_by_org=GetProducedByOrg,
-       get_org_show_dates=GetDatesOfShow,
-       get_org_employees=GetOrgEmployees,
-       get_org_members=GetOrgMembers,
-       get_org_links=GetOrgLinks,
 
        insert_org_employee=InsertOrgEmployee,
        insert_org_member=InsertOrgMember,

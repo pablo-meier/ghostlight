@@ -1,0 +1,14 @@
+{
+  "name": "ghostlight-scripts",
+  "version": "0.1.0",
+  "description": "An example module to illustrate the usage of a package.json",
+  "author": "Pablo Meier <pablo@ghostlight.io>",
+  "repository": {
+    "type": "git",
+    "url": "https://paul.meier@bitbucket.org/paul.meier/ghostlight.git"
+  },
+  "dependencies": {
+    "lodash": "^3.6.0",
+    "request": "^2.55.0"
+  }
+}

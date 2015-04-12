@@ -5,7 +5,9 @@
 {% block content %}
   <h1>{{ name }}</h1>
   {% if tagline %}
-    <h2 class="subheader">{{ tagline }}</h2>
+  {% autoescape off %}
+    <h3 class="subheader">{{ tagline }}</h3>
+  {% endautoescape %}
   {% endif %}
 
   {% include "social_media.html" %}

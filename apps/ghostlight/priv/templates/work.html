@@ -6,13 +6,7 @@
 <h1><em>{{ title }}</em></h1>
   <h3>By
     {% for author in authors %}
-      <a href="/people/{{ author.author_id }}">{{ author.author_name }}</a>&nbsp;
-    {% endfor %}
-  {% if collab_org %}
-      with <a href="/organizations/{{ collab_org.org_id }}">{{ collab_org.org_name }}</a></h3>
-  {% else %}
-      </h3>
-  {% endif %}
+      <a href="/people/{{ author.author_id }}">{{ author.author_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% if collab_org %} with <a href="/organizations/{{ collab_org.org_id }}">{{ collab_org.org_name }}</a>{% endif %}.</h3>
 
   {% if minutes_long %}
   <p><strong>{{ minutes_long }} minutes.</strong></p>
@@ -30,12 +24,7 @@
     {% for show in shows %}
     <li><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a>, produced by 
         {% for producer in show.producers %}
-          {% if producer.type == "org" %}
-            <a href="/organizations/{{ producer.id }}">{{ producer.name }}</a> 
-          {% else %}
-            <a href="/people/{{ producer.id }}">{{ producer.name }}</a> 
-          {% endif %}
-        {% endfor %}</li>
+          {% if producer.type == "org" %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}.</li>
     {% endfor %}
   </ul>
   {% endif %}

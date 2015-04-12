@@ -2,94 +2,139 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{% block head %}
+    <script type="text/javascript" src="//d3js.org/d3.v3.min.js"> </script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.min.js"> </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"> </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment-range/1.0.7/moment-range.min.js"> </script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css" />
+{% endblock %}
+
 {% block content %}
   <h1><em>{{ title }}</em></h1>
-   <!-- If only one performance, author(s) here -->
-   <h3>Presented by 
-       {% for producer in producers %}
-         {% if forloop.last and not forloop.first %} and {% endif %}
-         {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last %},  {% endif %}
-       {% endfor %}</h3>
+    <!-- If only one performance, author(s) here -->
+    <h3>Presented by 
+        {% for producer in producers %}
+          {% if forloop.last and not forloop.first %} and {% endif %}
+          {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last %},  {% endif %}
+        {% endfor %}</h3>
 
   {% include "social_media.html" %}
 
-   <ul>
-       {% for date in dates %}
-       <li><strong>{{ date|date:"l, N jS, Y, h:iA" }} </strong></li>
-       {% endfor %}
-   </ul>
+  <div id="dateview"></div>
+  <script type="text/javascript">
+    (function () {
+    var dates = [
+        {% autoescape off %}{% for date in dates %}
+          new Date({{ date|date:"Y, n - 1, j"}}){% if not forloop.last %},{% endif %}
+        {% endfor %}{% endautoescape %}
+    ];
 
-   {% if hosts %}
-     <p>Hosted by  {% for host in hosts %}
-     <a href="{{ host.host_id }}">{{ host.host_name }}</a>&nbsp;
-     {% endfor %}</p>
-   {% endif %}
+    var data = {};
+    dates.forEach(function(d) { data[ (d.getTime() / 1000).toString() ] = 10 });
 
-   {% if description %}
-     {% autoescape off %} {{ description }} {% endautoescape %}
-   {% endif %}
+    var first = dates[0];
+    var last = dates[dates.length - 1];
+    var monthsApart = moment.range(first, last).diff('months') + 1;
 
-   {% if press %}
-     <h3>Coverage</h3>
-     <ul>
-       {% for press_link in press %}
-       <li><a href="{{ press_link.link }}">{{ press_link.description }}</a></li>
-       {% endfor %}
-     </ul>
-   {% endif %}
+    console.log('data is', data);
 
-   {% for performance in performances %}
-   <hr />
-       <h3><a href="/works/{{ performance.work.work_id }}"><em>{{ performance.work.title }}</em></a></h3>
-       <h5>by {% for author in performance.work.authors %}
-               {% if forloop.last and not forloop.first %} and {% endif %}<a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% if not forloop.last %},  {% endif %}
-               {% endfor %} </h5>
-       <h5> Directed by 
-       {% for director in performance.directors %}
-           <a href="/people/{{ director.person_id }}">{{ director.name }}</a>
-       {% endfor %}</h5>
+    var options = {
+      itemSelector: '#dateview',
+      domain: 'month',
+      subDomain: 'x_day',
+      domainLabelFormat: '%B %Y',
+      subDomainTitleFormat: {
+        empty: '{date}',
+        filled: '{date}'
+      },
+      tooltip: true,
+      cellSize: 15,
+      weekStartOnMonday: false,
+      domainGutter: 8,
+      displayLegend: false,
+      range: monthsApart,
+      legend: [10],
+      start: dates[0],
+      dataType: 'json',
+      data: data
+    };
+    var cal = new CalHeatMap();
+    cal.init(options);
+    })();
+  </script>
 
-       {% if performance.description %}
-         {% autoescape off %} {{ performance.description }} {% endautoescape %}
-       {% endif %}
+  {% if hosts %}
+    <p>Hosted by  {% for host in hosts %}
+    <a href="{{ host.host_id }}">{{ host.host_name }}</a>&nbsp;
+    {% endfor %}</p>
+  {% endif %}
 
-       <h5>Starring</h5>
-       <table>
-         <tr>
-             <th><strong>Role<strong></th>
-             <th><strong>Performer</strong></th>
-         </tr>
-       {% for onstage in performance.onstage %}
-       <tr>
-           <td>{{ onstage.role }}</td>
-           <td><a href="/people/{{ onstage.person_id }}">{{ onstage.name }}</a></td>
-       </tr>
-       {% endfor %} <!-- for onstage -->
-       </table>
+  {% if description %}
+    {% autoescape off %} {{ description }} {% endautoescape %}
+  {% endif %}
 
-       {% if performance.offstage %}
-       <h5>Creative Team</h5>
-       <table>
-           <tr>
-               <td>Position</td>
-               <td>Contributor</td>
-           </tr>
-       {% for offstage in performance.offstage %}
-         <tr>
-             <td>{{ offstage.job }}</td>
-             <td><a href="/people/{{ offstage.person_id }}">{{ offstage.name }}</a></td>
-         </tr>
-       {% endfor %}
-       </table>
-       {% endif %}
+  {% if press %}
+    <h3>Coverage</h3>
+    <ul>
+      {% for press_link in press %}
+      <li><a href="{{ press_link.link }}">{{ press_link.description }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 
-       {% if performance.directors_note %}
-         {% autoescape off %} {{ performance.directors_note }} {% endautoescape %}
-       {% endif %}
+  {% for performance in performances %}
+  <hr />
+      <h3><a href="/works/{{ performance.work.work_id }}"><em>{{ performance.work.title }}</em></a></h3>
+      <h5>by {% for author in performance.work.authors %}
+              {% if forloop.last and not forloop.first %} and {% endif %}<a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% if not forloop.last %},  {% endif %}
+              {% endfor %} </h5>
+      <h5> Directed by 
+      {% for director in performance.directors %}
+          <a href="/people/{{ director.person_id }}">{{ director.name }}</a>
+      {% endfor %}</h5>
 
-   {% endfor %}
+      {% if performance.description %}
+        {% autoescape off %} {{ performance.description }} {% endautoescape %}
+      {% endif %}
 
-   {% if special_thanks %}
-     <p class="text-center"><small>Special thanks to {{ special_thanks }}</small></p>
-   {% endif %}
+      <h5>Starring</h5>
+      <table>
+        <tr>
+            <th><strong>Role<strong></th>
+            <th><strong>Performer</strong></th>
+        </tr>
+      {% for onstage in performance.onstage %}
+      <tr>
+          <td>{{ onstage.role }}</td>
+          <td><a href="/people/{{ onstage.person_id }}">{{ onstage.name }}</a></td>
+      </tr>
+      {% endfor %} <!-- for onstage -->
+      </table>
+
+      {% if performance.offstage %}
+      <h5>Creative Team</h5>
+      <table>
+          <tr>
+              <td>Position</td>
+              <td>Contributor</td>
+          </tr>
+      {% for offstage in performance.offstage %}
+        <tr>
+            <td>{{ offstage.job }}</td>
+            <td><a href="/people/{{ offstage.person_id }}">{{ offstage.name }}</a></td>
+        </tr>
+      {% endfor %}
+      </table>
+      {% endif %}
+
+      {% if performance.directors_note %}
+        {% autoescape off %} {{ performance.directors_note }} {% endautoescape %}
+      {% endif %}
+
+  {% endfor %}
+
+  {% if special_thanks %}
+    <p class="text-center"><small>Special thanks to {{ special_thanks }}</small></p>
+  {% endif %}
 {% endblock %}

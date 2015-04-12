@@ -347,7 +347,7 @@ SELECT
              WHERE prod.show_id = s.show_id ORDER BY prod.listed_order ASC)) AS producers,
     array_to_json(ARRAY(SELECT (pl.link, pl.description)::press_link FROM press_links pl WHERE show_id = s.show_id)) AS press_links,
     array_to_json(ARRAY(SELECT (sl.link, sl.type)::external_link FROM show_links sl WHERE sl.show_id = s.show_id)) AS external_links,
-    array_to_json(ARRAY(SELECT sd.show_date from show_dates sd WHERE sd.show_id = s.show_id)) AS dates,
+    array_to_json(ARRAY(SELECT sd.show_date from show_dates sd WHERE sd.show_id = s.show_id ORDER BY sd.show_date ASC)) AS dates,
     array_to_json(ARRAY(SELECT (p.person_id, p.name)::person_pair FROM people p INNER JOIN show_hosts sh USING (person_id) where sh.show_id = s.show_id)) AS hosts,
     array_to_json(ARRAY(SELECT (perf.performance_id,
           w.work_id, 

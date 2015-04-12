@@ -72,7 +72,9 @@ parse_person_or_org({Entity}) ->
 
 
 external_links_sql_to_record(Links) ->
-    lists:foldl(fun({Link, Type}, Accum) ->
+    lists:foldl(fun({Proplist}, Accum) ->
+                        Link = proplists:get_value(<<"link">>, Proplist, null),
+                        Type = proplists:get_value(<<"type">>, Proplist, null),
                         case Link of 
                             null -> Accum;
                             _ -> case Type of

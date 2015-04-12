@@ -1,0 +1,201 @@
+{
+  "title" : "Soldier X",
+  "special_thanks" : "",
+  "dates" : [
+             "2015-03-24T20:30:00.000Z",
+             "2015-03-25T20:30:00.000Z",
+             "2015-03-26T20:30:00.000Z",
+             "2015-03-27T20:30:00.000Z",
+             "2015-03-28T20:30:00.000Z",
+             "2015-03-29T16:00:00.000Z",
+
+             "2015-03-31T20:30:00.000Z",
+             "2015-04-01T20:30:00.000Z",
+             "2015-04-02T20:30:00.000Z",
+             "2015-04-03T20:30:00.000Z",
+             "2015-04-04T20:30:00.000Z",
+             "2015-04-05T16:00:00.000Z",
+
+             "2015-04-07T20:30:00.000Z",
+             "2015-04-08T20:30:00.000Z",
+             "2015-04-09T20:30:00.000Z",
+             "2015-04-10T20:30:00.000Z",
+             "2015-04-11T20:30:00.000Z",
+             "2015-04-12T16:00:00.000Z",
+
+             "2015-04-14T20:30:00.000Z",
+             "2015-04-15T20:30:00.000Z",
+             "2015-04-16T20:30:00.000Z",
+             "2015-04-17T20:30:00.000Z",
+             "2015-04-18T20:30:00.000Z",
+             "2015-04-19T16:00:00.000Z"
+             ],
+
+  "producers": [
+    {
+      "org" : {
+        "name": "Ma-Yi Theater Company",
+        "tagline": "_We are about new work_",
+        "description" : "Founded in 1989, Ma-Yi Theater Company is a Drama Desk and Obie Award-winning not-for-profit 501(c)(3) organization whose primary mission is to develop and produce new and innovative plays by Asian American writers. Since its founding, Ma-Yi has distinguished itself as one of the country’s leading incubators of new work shaping the national discourse about what it means to be Asian American today.\n\n* We provide a home for generative artists to take big innovative risks as they hone individual and collective skills.\n* We encourage our artists to stake new creative territories by pushing Asian American Theater beyond easily identifiable markers.\n* We challenge popular prescriptions of what culturally specific theater should be by producing challenging, forward-thinking plays written by today’s most exciting playwrights.\n* We aspire to be exemplars of how theater can be an active local partner to our diverse communities, while participating in larger, global conversations about our roles as artists/citizens.\n* We are guided by knowing WHY and for WHOM we create."
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Soldier X",
+        "authors" : [{"person": {"name": "Rehana Lew Mirza"}}],
+        "description": "**SOLDIER X** follows a young African American social worker who becomes professionally compromised when she falls for a returning veteran that’s romantically entangled with his fallen friend’s Muslim sister. The play tallies the emotional scars inflicted on our young men and women returning home from Iraq and Afghanistan. How exactly do you rejoin a society that remains as conflicted about its wars as it is with issues of race and gender?"
+      },
+      "directors": [{"name": "Lucie Tiberghien"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Kaliswa Brewster"},
+          "role" : "Monica Burnes"
+        },
+        {
+          "performer" : {"name": "Cleo Gray"},
+          "role" : "Lori"
+        },
+        {
+          "performer" : {"name": "Jared McNeill"},
+          "role" : "Jay Richards"
+        },
+        {
+          "performer" : {"name": "Turna Mete"},
+          "role" : "Amani Mehmod"
+        },
+        {
+          "performer" : {"name": "Carolyn Michelle Smith"},
+          "role" : "Lynn Downey"
+        }
+      ],
+      "offstage" : [
+        {
+            "contributor" : {"person": {"name" : "Daniel Conway" }},
+            "job" : "Set Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Peter West" }},
+            "job" : "Lighting Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Beth Goldenberg" }},
+            "job" : "Costume Designer"
+        },
+        {
+            "contributor" : {"org": {"name" : "Broken Chord" }},
+            "job" : "Sound Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Sarah Devon Ford" }},
+            "job" : "Assistant Stage Manager"
+        },
+        {
+            "contributor" : {"person": {"name" : "Jennifer Delac" }},
+            "job" : "Production Stage Manager"
+        },
+        {
+            "contributor" : {"person": {"name" : "Libby Jensen" }},
+            "job" : "Production Manager"
+        },
+        {
+            "contributor" : {"org": {"name" : "Sam Rudy Media Relations" }},
+            "job" : "Public Relations"
+        },
+        {
+            "contributor" : {"person": {"name" : "Suzette Porte" }},
+            "job" : "Producer"
+        },
+
+        {
+            "contributor" : {"person": {"name" : "Jennie Haskamp" }},
+            "job" : "Military Consultant"
+        },
+        {
+            "contributor" : {"person": {"name" : "Col. Odelia Tablit" }},
+            "job" : "Military Consultant"
+        },
+        {
+            "contributor" : {"person": {"name" : "Ed Walsh" }},
+            "job" : "Military Consultant"
+        },
+
+        {
+            "contributor" : {"person": {"name" : "Rachel Townsend" }},
+            "job" : "Assistant Costume Design"
+        },
+        {
+            "contributor" : {"person": {"name" : "Nicholas Flinn"}},
+            "job" : "Assistant Lighting Design"
+        },
+        {
+            "contributor" : {"person": {"name" : "Emily Auciello" }},
+            "job" : "Assistant Sound Design"
+        },
+        {
+            "contributor" : {"person": {"name" : "Justin Cox" }},
+            "job" : "Prop Supervisor"
+        },
+        {
+            "contributor" : {"person": {"name" : "Michelle Tarantina" }},
+            "job" : "Wardrobe Supervisor"
+        },
+        {
+            "contributor" : {"person": {"name" : "Derek Dickinson" }},
+            "job" : "Technical Director"
+        },
+        {
+            "contributor" : {"org": {"name" : "Derek Dickinson LLC" }},
+            "job" : "Technical Director"
+        },
+        {
+            "contributor" : {"person": {"name" : "Charlie Babbitt" }},
+            "job" : "Master Electrician/Audio Supervisor"
+        },
+        {
+            "contributor" : {"person": {"name" : "Christopher D'Angelo" }},
+            "job" : "Assistant Master Electrician"
+        },
+        {
+            "contributor" : {"person": {"name" : "Andrew Trent" }},
+            "job" : "Programmer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Jorge Olivo" }},
+            "job" : "Board Operator"
+        },
+
+        {
+            "contributor" : {"person": {"name" : "Psyril Apacible" }},
+            "job" : "Additional Crew"
+        },
+        {
+            "contributor" : {"person": {"name" : "Jeffrey Walker" }},
+            "job" : "Additional Crew"
+        },
+        {
+            "contributor" : {"person": {"name" : "Ashley Tata" }},
+            "job" : "Additional Crew"
+        },
+        {
+            "contributor" : {"person": {"name" : "Matt Carrington" }},
+            "job" : "Additional Crew"
+        },
+        {
+            "contributor" : {"person": {"name" : "Alex Tomea" }},
+            "job" : "Additional Crew"
+        },
+        {
+            "contributor" : {"person": {"name" : "Derek Roe" }},
+            "job" : "Additional Crew"
+        },
+        {
+            "contributor" : {"person": {"name" : "Avinesh Rana" }},
+            "job" : "Additional Crew"
+        }
+      ]
+    }
+  ]
+}

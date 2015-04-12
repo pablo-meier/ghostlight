@@ -9,24 +9,47 @@
     </head>
     <body>
         <nav class="top-bar" data-topbar>
-            <ul class="name">
-                <h1><a href="/">Ghostlight</a></h1>
+            <ul class="title-area">
+                <li class="name">
+                    <h1><a href="/">Ghostlight</a></h1>
+                </li>
             </ul>
-        </nav>
 
-
-        <div class="row">
-
-            <div id="sidebar" class="medium-2 columns">
-                <ul class="side-nav">
+            <section class="top-bar-section">
+                <ul class="left">
                     <li><a href="/shows">productions</a></li>
                     <li><a href="/people">people</a></li>
                     <li><a href="/organizations">organizations</a></li>
                     <li><a href="/works">pieces</a></li>
                 </ul>
-            </div> <!-- sidebar -->
 
-            <div id="content" class="medium-10 columns">
+                <ul class="right">
+
+                    <li class="has-form">
+                      <div class="row collapse">
+                        <div class="large-8 small-9 columns">
+                          <input type="text" placeholder="Search...">
+                        </div>
+                        <div class="large-4 small-3 columns">
+                          <a href="#" class="button expand">Search</a>
+                        </div>
+                      </div>
+                    </li>
+
+                    <li class="has-dropdown">
+                        <a href="#">Pablo!</a>
+                        <ul class="dropdown">
+                            <li><a href="#">How's My Driving?</a></li>
+                            <li><a href="#">Settings</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+        </nav>
+
+
+        <div class="row">
+            <div id="content" class="medium-12 columns">
                 {% block content %} {% endblock %}
             </div>  <!-- content -->
         </div> <!-- row -->

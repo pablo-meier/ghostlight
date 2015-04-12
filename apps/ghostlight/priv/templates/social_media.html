@@ -1,7 +1,7 @@
   {% if links %}
     <ul>
         {% if links.website %}<li><a href="{{ links.website }}">Website</a></li>{% endif %}
-        {% if links.email %}<li><a href="{{ links.email }}">Email</a></li>{% endif %}
+        {% if links.email %}<li><a href="mailto:{{ links.email }}">Email</a></li>{% endif %}
         {% if links.blog %}<li><a href="{{ links.blog }}">Blog</a></li>{% endif %}
         {% if links.newsletter %}<li><a href="{{ links.newsletter }}">Newsletter</a></li>{% endif %}
         {% if links.facebook %}<li><a href="{{ links.facebook }}">Facebook</a></li>{% endif %}

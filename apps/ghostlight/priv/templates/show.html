@@ -3,16 +3,13 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <h1>{{ title }}</h1>
+  <h1><em>{{ title }}</em></h1>
    <!-- If only one performance, author(s) here -->
-   <h2>Presented by 
+   <h3>Presented by 
        {% for producer in producers %}
-         {% if producer.is_org %}
-           <a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>
-         {% else %}
-           <a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>
-         {% endif %}
-       {% endfor %}</h2>
+         {% if forloop.last and not forloop.first %} and {% endif %}
+         {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last %},  {% endif %}
+       {% endfor %}</h3>
 
   {% include "social_media.html" %}
 
@@ -43,14 +40,14 @@
 
    {% for performance in performances %}
    <hr />
-       <h3><a href="/works/{{ performance.work.work_id }}">{{ performance.work.title }}</a></h3>
-       <h4>by {% for author in performance.work.authors %}
-               <a href="/people/{{ author.person_id }}">{{ author.name }}</a>
-               {% endfor %} </h4>
-       <h4> Directed by 
+       <h3><a href="/works/{{ performance.work.work_id }}"><em>{{ performance.work.title }}</em></a></h3>
+       <h5>by {% for author in performance.work.authors %}
+               {% if forloop.last and not forloop.first %} and {% endif %}<a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% if not forloop.last %},  {% endif %}
+               {% endfor %} </h5>
+       <h5> Directed by 
        {% for director in performance.directors %}
            <a href="/people/{{ director.person_id }}">{{ director.name }}</a>
-       {% endfor %}</h4>
+       {% endfor %}</h5>
 
        {% if performance.description %}
          {% autoescape off %} {{ performance.description }} {% endautoescape %}

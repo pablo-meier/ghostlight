@@ -181,6 +181,7 @@ get(PersonId) ->
                                                 }
                                       } || {RoleObj} <- proplists:get_value(<<"works">>, Show)]
                     } || {Show} <- ghostlight_db_utils:decode_not_null(Producer)],
+
     ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
 
     #person_return{

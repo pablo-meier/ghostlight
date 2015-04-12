@@ -154,7 +154,6 @@ record_to_json(#show{
         {<<"show_id">>, ShowId},
         {<<"show_title">>, ShowTitle},
         {<<"special_thanks">>, SpecialThanks},
-%        {<<"producing_org">>, ghostlight_org:record_to_json(Org)},
         {<<"performances">>, [ performance_record_to_json(Performance) || Performance <- Performances ]},
         {<<"dates">>, [ ghostlight_utils:erl_date_to_iso8601(Date) || Date <- Dates ]}
     ]).

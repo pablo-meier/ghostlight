@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ghostlight | New Organization</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+        <script src="/static/js/ghostlight.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <nav class="top-bar" data-topbar>
+            <ul class="title-area">
+                <li class="name">
+                    <h1><a href="/">Ghostlight</a></h1>
+                </li>
+            </ul>
+
+            <section class="top-bar-section">
+                <ul class="left">
+                    <li><a href="/shows">productions</a></li>
+                    <li><a href="/people">people</a></li>
+                    <li><a href="/organizations">organizations</a></li>
+                    <li><a href="/works">pieces</a></li>
+                </ul>
+
+                <ul class="right">
+
+                    <li class="has-form">
+                      <div class="row collapse">
+                        <div class="large-8 small-9 columns">
+                          <input type="text" placeholder="Search...">
+                        </div>
+                        <div class="large-4 small-3 columns">
+                          <a href="#" class="button expand">Search</a>
+                        </div>
+                      </div>
+                    </li>
+
+                    <li class="has-dropdown">
+                        <a href="#">Pablo!</a>
+                        <ul class="dropdown">
+                            <li><a href="#">How's My Driving?</a></li>
+                            <li><a href="#">Settings</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+        </nav>
+
+
+        <div class="row">
+            <div id="content" class="medium-12 columns">
+<h1>New Organization</h1>
+
+<form data-abide>
+  <label>Name:
+    <input type="text" placeholder="The Goose Lightning Collective" required/></label>
+
+  <label>Tagline:
+    <input type="text" placeholder="Destructuring the revolution, desugaring the syntax."/></label>
+
+  <label>Description:
+    <textarea placeholder="((restrained by cops and forced to watch a man put mustard on a bagel) nno!! you're ruining it! That's quality bakedgoods"></textarea></label>
+
+  <fieldset>
+    <legend>External Links</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+          <p>If this organization has web presence elsewhere (Website, Mailing List, Twitter&hellip;) here's the place to add it!</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <a href="#" class="button tiny left inline">Add Link&hellip;</a>
+      </div>
+    </div> <!-- row -->
+
+    <div class="row">
+      <div class="small-4 rows">
+        <label>Type
+          <select>
+            <option value="website">Website</option>
+            <option value="email">Email Address</option>
+            <option value="blog">Blog</option>
+            <option value="newsletter">Newsletter</option>
+            <option value="facebook">Facebook</option>
+            <option value="twitter">Twitter</option>
+            <option value="instagram">Instagram</option>
+            <option value="vimeo">Vimeo</option>
+            <option value="youtube">YouTube</option>
+            <option value="pinterest">Pinterest</option>
+            <option value="tumblr">Tumblr</option>
+            <option value="gplus">Google Plus (lol)</option>
+            <option value="patreon">Patreon</option>
+            <option value="newplayx">New Play Exchange</option>
+          </select>
+        </label>
+      </div>
+      <div class="small-8 rows">
+        <label>Link:
+          <input type="url" placeholder="http://zombo.com"/></label>
+      </div>
+    </div> <!-- row -->
+  </fieldset>
+
+  <fieldset>
+    <legend>Org Employees</legend>
+    <div class="panel">
+    <p>Ghostlight thinks of 'employees' as the people who <em>run</em> the organization, under a title. They may or may not be members in the traditional sense.</p>
+    </div>
+    <a href="#" class="button">Add an Employee&hellip;</a>
+
+    <label>Title:
+      <input type="text" placeholder="Chief Flossing Enforcer"/></label>
+    <label>Name:
+      <input type="text" placeholder="Bilbo McGibbons"/></label>
+    <input id="person1equity" type="checkbox"><label for="person1equity">Actor's Equity Association?</label>
+    <label>Description (as employee):
+      <textarea placeholder="ya, last name spelled: [distant howl] as in far off train, [metallic scraping] as in axe being dragged through quarry, [quiet sobbing] as in"></textarea></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Org Members</legend>
+    <div class="panel">
+    <p>Members are the people in the group! No titles, we're all just happy to be here!</p>
+    </div>
+    <a href="#" class="button">Add a Member&hellip;</a>
+
+    <label>Description:
+      <textarea placeholder="ya, last name spelled: [distant howl] as in far off train, [metallic scraping] as in axe being dragged through quarry, [quiet sobbing] as in"></textarea></label>
+    <label>Name:
+      <input type="text" placeholder="Bilbo McGibbons"/></label>
+    <input id="person1equity" type="checkbox"><label for="person1equity">Actor's Equity Association?</label>
+  </fieldset>
+</form>
+
+
+            </div>  <!-- content -->
+        </div> <!-- row -->
+
+        <div id="footer">
+            <div class="row">
+               <div class="medium-12 columns">
+                   <p><a href="/">ghostlight</a> is made by <a href="http://morepaul.com">pablo</a> and baked with love with a dash of spite.</p>
+          
+                   <p>If ghostlight makes you feel like giving, feel free to donate to a favorite organization of yours! pablo suggests <a href="http://www.blackgirlscode.com/">Black Girls Code</a>, <a href="http://www.transhack.org/">Trans*H4CK</a>, or <a href="http://www.plannedparenthood.org/">Planned Parenthood</a>, and would love to learn more!</p>
+               </div>
+            </div>
+        </div> <!-- footer -->
+
+    <!-- -->
+    <script src="/static/js/vendor/jquery.js"></script>
+    <script src="/static/js/vendor/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+    </body>
+</html>

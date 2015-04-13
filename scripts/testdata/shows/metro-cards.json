@@ -1,0 +1,122 @@
+{
+  "title" : "Metro Cards",
+  "special_thanks" : "The Harold & Mimi Steinberg Trust for the their support of Youngblood and new play productions at EST.",
+  "dates" : ["2015-03-11T19:00:00.000Z",
+             "2015-03-12T19:00:00.000Z",
+             "2015-03-13T19:00:00.000Z",
+             "2015-03-14T19:00:00.000Z",
+             "2015-03-18T19:00:00.000Z",
+             "2015-03-19T19:00:00.000Z",
+             "2015-03-20T19:00:00.000Z",
+             "2015-03-21T19:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood",
+        "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Metro Cards",
+        "authors": [{"person": {"name": "Christopher Sullivan"}}]
+      },
+      "directors": [{"name": "John Giampietro"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Alex Herrald"},
+          "role" : "Harry"
+        },
+        {
+          "performer" : {"name": "Abby Rosebrock"},
+          "role" : "Martina"
+        },
+        {
+          "performer" : {"name": "Diana Oh"},
+          "role" : "Carrie"
+        },
+        {
+          "performer" : {"name": "Lilli Stein"},
+          "role" : "Tori"
+        },
+        {
+          "performer" : {"name": "Brian Quijada"},
+          "role" : "Daniel"
+        },
+        {
+          "performer" : {"name": "Ethan Hova"},
+          "role" : "David"
+        },
+        {
+          "performer" : {"name": "Zac Moon"},
+          "role" : "Billy"
+        },
+        {
+          "performer" : {"name": "Christine Farrell"},
+          "role" : "Leslie"
+        },
+        {
+          "performer" : {"name": "Danny Dale Bess"},
+          "role" : "Homeless Man/Singing Man/Jelly Bean Man"
+        },
+        {
+          "performer" : {"name": "Tommy Crawford"},
+          "role" : "Ian"
+        },
+        {
+          "performer" : {"name": "Shawn Randall"},
+          "role" : "Announcer"
+        },
+        {
+          "performer" : {"name": "Scott Sowers"},
+          "role" : "Charles"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Mikhaela Mahony" }},
+          "job" : "Assistant Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jason Simms" }},
+          "job" : "Scenic Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Mark van Hare" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joe Lankheet" }},
+          "job" : "Production Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Plot Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Audrey Nauman" }},
+          "job" : "Costume Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nicholas Ward" }},
+          "job" : "General Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joshua Langman" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Chelsea Collins" }},
+          "job" : "Assistant Props Master"
+        },
+        {
+          "contributor" : {"person": {"name" : "Eileen Lalley" }},
+          "job" : "Production Stage Manager"
+        }
+      ]
+    }
+  ]
+}

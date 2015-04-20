@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Ghostlight | {% block title %} {% endblock %}</title>
+        <title>ghostlight | {% block title %} {% endblock %}</title>
         <script src="/static/js/vendor/modernizr.js"></script>
         <script src="/static/js/ghostlight.js"></script>
         <link href="/static/css/foundation.css" rel="stylesheet" />
@@ -13,7 +13,7 @@
         <nav class="top-bar" data-topbar>
             <ul class="title-area">
                 <li class="name">
-                    <h1><a href="/">Ghostlight</a></h1>
+                    <h1><a href="/">ghostlight</a></h1>
                 </li>
             </ul>
 
@@ -59,7 +59,7 @@
         <div id="footer">
             <div class="row">
                <div class="medium-12 columns">
-                   <p><a href="/">ghostlight</a> is made by <a href="http://morepaul.com">pablo</a> and baked with love with a dash of spite.</p>
+                   <p><a href="/">ghostlight</a> is made by <a href="http://morepaul.com">pablo</a> and baked with love <small>with a dash of spite.</small></p>
           
                    <p>If ghostlight makes you feel like giving, feel free to donate to a favorite organization of yours! pablo suggests <a href="http://www.blackgirlscode.com/">Black Girls Code</a>, <a href="http://www.transhack.org/">Trans*H4CK</a>, or <a href="http://www.plannedparenthood.org/">Planned Parenthood</a>, and would love to learn more!</p>
                </div>
@@ -72,5 +72,7 @@
     <script>
       $(document).foundation();
     </script>
+    {% block footerjs %}
+    {% endblock %}
     </body>
 </html>

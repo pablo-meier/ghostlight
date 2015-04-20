@@ -46,24 +46,31 @@ content_types_provided(Req, State) ->
      ], Req, State}.
 content_types_accepted(Req, State) ->
     {[
+      {<<"application/json; charset=utf-8">>, post_json},
       {<<"application/json">>, post_json}
      ], Req, State}.
 
 org_to_html(Req, State) ->
     OrgId = cowboy_req:binding(org_id, Req),
-    case OrgId of
-        undefined ->
+    Command = cowboy_req:binding(command, Req),
+    case {OrgId, Command} of
+        {undefined, undefined} ->
             OrgList = ghostlight_db:get_org_listings(),
             ForTemplate = [{orgs, [ record_to_proplist(Org) || Org <- OrgList ]}],
             {ok, Body} = org_listing_template:render(ForTemplate),
             {Body, Req, State};
-        <<"new">> ->
+        {<<"new">>, _} ->
             {ok, Body} = insert_org_template:render([]),
             {Body, Req, State};
-        _ ->
+        {_, undefined} ->
             OrgRecord = ghostlight_db:get_org(OrgId),
             ForTemplate = record_to_proplist(OrgRecord),
             {ok, Body} = org_template:render(ForTemplate),
+            {Body, Req, State};
+        {_, <<"edit">>} ->
+            OrgRecord = ghostlight_db:get_org(OrgId),
+            AsJson = jiffy:encode(record_to_json(OrgRecord)),
+            {ok, Body} = insert_org_template:render([{editmode, AsJson}]),
             {Body, Req, State}
     end.
 
@@ -71,6 +78,7 @@ org_to_html(Req, State) ->
 %% Aw hell yeah Pattern Matching.
 record_to_proplist(#org_return{
                      org=#organization{
+                         id=OrgId,
                          name=Name,
                          tagline=Tagline,
                          description=Description,
@@ -109,7 +117,8 @@ record_to_proplist(#org_return{
                                              name=PersonName
                                          }
                                         } <- Members],
-    [{name, Name},
+    [{id, OrgId},
+     {name, Name},
      {tagline, Tagline},
      {description, Description},
      {shows, ShowProplist},

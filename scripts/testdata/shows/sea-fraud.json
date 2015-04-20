@@ -1,0 +1,87 @@
+{
+  "title" : "Sea Fraud",
+  "special_thanks" : "",
+  "dates" : ["2015-03-11T19:00:00.000Z",
+             "2015-03-12T19:00:00.000Z",
+             "2015-03-13T19:00:00.000Z",
+             "2015-03-14T19:00:00.000Z",
+             "2015-03-18T19:00:00.000Z",
+             "2015-03-19T19:00:00.000Z",
+             "2015-03-20T19:00:00.000Z",
+             "2015-03-21T19:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "The Brick Theater",
+        "description" : "The Brick Theater, Inc is a not-for-profit theater company dedicated to nurturing the work of emerging artists at its performance space in Williamsburg, Brooklyn—The Brick.\n\nThe Brick presents world premieres, monthly performance series, and seasonal festivals, expanding Williamsburg’s profile as a destination for cutting-edge art and entertainment.\n\nThe Brick continues to seek new artists and projects, to provide them with a creative home, and to serve as Williamsburg’s primary incubator of innovative theater arts. "
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Sea Fraud",
+        "authors": [{"person": {"name": "Zoë Geltman"}}],
+        "description": "Is tuna toxic? Does it cause anal leakage? Is it actually snake fish or hagfish or slime fish or toothfish? Can we be sure of anything we eat anymore? You'll be wanting the answers to all that and more in this sometimes surreal and silly, sometimes painfully banal jaunt through office politics, the writing-process, sea creatures and diarrhea, at the end of which you'll be forced to ask the ultimate question: Are we all just giant, bloated tunas? Or is there something else entirely, something sinister and skinny, lurking inside all of us?"
+      },
+      "directors": [{"name": "Julia Sirna-Frest"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Zoë Geltman"},
+          "role" : "Cleurnd"
+        },
+        {
+          "performer" : {"name": "Abby Rosebrock"},
+          "role" : "Ray-Ray"
+        },
+        {
+          "performer" : {"name": "Diana Oh"},
+          "role" : "Big Tuna"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Mikhaela Mahony" }},
+          "job" : "Assistant Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jason Simms" }},
+          "job" : "Scenic Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Mark van Hare" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joe Lankheet" }},
+          "job" : "Production Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Plot Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Audrey Nauman" }},
+          "job" : "Costume Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nicholas Ward" }},
+          "job" : "General Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joshua Langman" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Chelsea Collins" }},
+          "job" : "Assistant Props Master"
+        },
+        {
+          "contributor" : {"person": {"name" : "Eileen Lalley" }},
+          "job" : "Production Stage Manager"
+        }
+      ]
+    }
+  ]
+}

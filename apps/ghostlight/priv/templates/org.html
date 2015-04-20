@@ -3,7 +3,15 @@
 {% block title %}{{ name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ name }}</h1>
+  <div class="row">
+    <div class="small-8 columns">
+      <h1>{{ name }}</h1>
+    </div>
+    <div class="small-4 columns">
+      <a href="/organizations/{{ id }}/edit" id="submitButton" class="button large radius success right">EDIT</a>
+    </div>
+  </div>
+
   {% if tagline %}
   {% autoescape off %}
     <h3 class="subheader">{{ tagline }}</h3>

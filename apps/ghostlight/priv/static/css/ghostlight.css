@@ -5,3 +5,25 @@
     height: auto;
 }
 
+
+
+/* FORMS */
+
+#submitButton {
+  margin-top: 30px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.more-rows-button {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.less-rows-button {
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+

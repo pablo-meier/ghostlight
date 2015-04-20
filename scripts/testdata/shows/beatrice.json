@@ -1,15 +1,22 @@
 {
-  "title" : "Metro Cards",
-  "special_thanks" : "The Harold & Mimi Steinberg Trust for the their support of Youngblood and new play productions at EST.",
-  "dates" : ["2015-04-01T19:00:00.000Z",
-             "2015-04-02T19:00:00.000Z",
-             "2015-04-03T19:00:00.000Z",
-             "2015-04-04T19:00:00.000Z"],
+  "title" : "Beatrice",
+  "special_thanks" : "",
+  "dates" : ["2015-04-11T19:00:00.000Z",
+             "2015-04-12T15:00:00.000Z",
+             "2015-04-12T19:00:00.000Z"],
   "producers": [
     {
       "org" : {
-        "name": "EST Youngblood",
-        "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
+        "name": "Marrow's Edge",
+        "tagline": "Marrow’s Edge. Of the core and at the precipice.",
+        "description" : "We are a performance company dedicated to creating work that simultaneously draws from \"the canon\" and defies the expectations and conventions of the theatrical experience.  Founded by **Ria T. DiLullo** (director) and **Daria Miyeko Marinelli** (playwright), Marrowʼs Edge strives to create theatrical work that is supported by a strong and open process from page to stage and that lives both of the core and at the precipice.",
+        "social": {
+          "facebook": "http://www.facebook.com/1373790343",
+          "tumblr": "http://marrowsedge.tumblr.com/",
+          "twitter": "https://twitter.com/MarrowsEdge",
+          "youtube": "http://www.youtube.com/channel/UCNJwPymhRTWz6P0DNHqP05w",
+          "instagram": "http://instagram.com/marrowsedge"
+        }
       }
     }
   ],
@@ -17,10 +24,11 @@
   "performances": [
     {
       "work" : {
-        "title" : "Metro Cards",
-        "authors": [{"person": {"name": "Christopher Sullivan"}}]
+        "title" : "Beatrice",
+        "authors": [{"person": {"name": "Elijah Guo"}}],
+        "description": "Beatrice Portinari is just another badass girl who plays the flute. Except for the fact that she lives in Medieval 13th Century Italy. And music really sucks because there's no polyphony. And society has forced her to marry. And she's being followed by this really annoying guy who keeps writing poems about her. Loosely based on the figure at the center of Dante's Vita Nuova and Divine Comedy, BEATRICE is a story of Heaven and Hell, life and death, love and loss, a woman ahead of her time, and the number three."
       },
-      "directors": [{"name": "John Giampietro"}],
+      "directors": [{"name": "Ria T. DiLullo"}],
       "onstage": [
         {
           "performer" : {"name": "Alex Herrald"},
@@ -41,34 +49,6 @@
         {
           "performer" : {"name": "Brian Quijada"},
           "role" : "Daniel"
-        },
-        {
-          "performer" : {"name": "Ethan Hova"},
-          "role" : "David"
-        },
-        {
-          "performer" : {"name": "Zac Moon"},
-          "role" : "Billy"
-        },
-        {
-          "performer" : {"name": "Christine Farrell"},
-          "role" : "Leslie"
-        },
-        {
-          "performer" : {"name": "Danny Dale Bess"},
-          "role" : "Homeless Man/Singing Man/Jelly Bean Man"
-        },
-        {
-          "performer" : {"name": "Tommy Crawford"},
-          "role" : "Ian"
-        },
-        {
-          "performer" : {"name": "Shawn Randall"},
-          "role" : "Announcer"
-        },
-        {
-          "performer" : {"name": "Scott Sowers"},
-          "role" : "Charles"
         }
       ],
       "offstage" : [

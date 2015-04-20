@@ -1,0 +1,368 @@
+{
+  "title" : "Kapow-i GoGo",
+  "special_thanks" : "",
+  "dates" : ["2015-04-18T20:00:00.000Z"],
+
+  "description": "Her name is Kapow-i GoGo. And she's going to save The World. Again. And again. And again. Matt Cox's Kapow-i GoGo is an epic, three-part, live-action mash up of Dragon Ball Z, graphic novels, space operas, the Final Fantasy series, and every after-school cartoon you watched in the mid-to-late '90s. It's a geek's Coast of Utopia. A nerd Gatz.\n\n...with cooler hair.\n\n...and more robotic appendages.\n\n_Kapow-i GoGo_ is a theatrical experience built for an audience used to binge-watching Netflix.\n\nIt began as one of the most popular plays at The Flea Theater's #serials@theflea. For the PIT run, the show has been expanded and re-conceived into three totally new, separate evenings: Kapow-i GoGo Gooooo!, Kapow-i GoGo Z, and Kapow-i Returns, taking our plucky blue-haired fighter from ages 14 to 30, following her journey to collect all the legendary Hydra Crystals, to the World's Martial Arts Tournament, to far-flung future dystopias and fights with power-mad cybernetic generals, giant robots, mountain monsters and assorted other final bosses. And, of course, saving the princess.",
+
+  "producers": [
+    {
+      "person": {"name": "Stephen Stout"}
+    },
+    {
+      "person": {"name": "Colin Waitt"}
+    },
+    {
+      "org" : {
+        "name": "The People's Improv Theatre",
+        "description" : "The PIT is dedicated to the instruction, performance, and development of original comedy. The PIT strives to entertain and educate the community about the comedic arts in a safe and nurturing environment.\n\nThe PIT is composed of three elements: a school that focuses on the craft of improvisation, an eclectic variety of electives, and an unparalleled professional writing program; a theater that presents original comedic shows seven nights a week; and a corporate and educational workshop program that offers team building, leadership, and business training."
+      }
+    }
+  ],
+
+  "social": {
+    "website": "http://www.kapowigogo.com/",
+    "twitter": "http://twitter.com/kapowigogo",
+    "facebook": "http://facebook.com/kapowigogo",
+    "instagram": "http://instagram.com/kapowigogo"
+  },
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Kapow-i GoGo Gooo!!!: Episodes 1-3",
+        "authors": [{"person": {"name": "Matt Cox"}}],
+        "description": "The legend begins! Kapow-I Gogo is a 14 year old girl on a big adventure. Can she stand up against evil monsters, the big bad Ultra Corporation, or an eviler space demon? She’s got love, hope, and joy on her side along with her best friends (and 32 year old brother) on a mission to become The World’s Greatest Fighter!"
+      },
+      "directors": [{"name": "Kristen McCarthy Parker"}, {"name": "Joel Soren"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Madeleine Bundy"},
+          "role" : "Kapow-i GoGo"
+        },
+        {
+          "performer" : {"name": "Cristina Pitter"},
+          "role" : "Aunt O'Wynn/Xar Xar Zuu"
+        },
+        {
+          "performer" : {"name": "Mike Axelrod"},
+          "role" : "Hicc-up GoGo"
+        },
+        {
+          "performer" : {"name": "Hank Lin"},
+          "role" : "Master Masterwhiskies"
+        },
+        {
+          "performer" : {"name": "Keola Simpson"},
+          "role" : "Mysterious Man/Swiftfist GoGo/Treehorn/Others"
+        },
+        {
+          "performer" : {"name": "Matt Cox"},
+          "role" : "Mr. Snuggles"
+        },
+        {
+          "performer" : {"name": "Karsten Otto"},
+          "role" : "Mr. Smiles/General President Scar/Others"
+        },
+        {
+          "performer" : {"name": "Evan Malthy"},
+          "role" : "Tuxedo Gary/Others"
+        },
+        {
+          "performer" : {"name": "Tara Pacheco"},
+          "role" : "Fancy Dress Mary/Twig/Dr. Gyro/Others"
+        },
+        {
+          "performer" : {"name": "Andrea Miller"},
+          "role" : "Woogli/Treeleaf/Giggle GoGo/Others"
+        },
+        {
+          "performer" : {"name": "Stephen Stout"},
+          "role" : "General President Red/Whiskers/Blammo GoGo/Others"
+        },
+        {
+          "performer" : {"name": "Colin Waitt"},
+          "role" : "General President Thunderbolt/Others"
+        },
+        {
+          "performer" : {"name": "Jeff Ronan"},
+          "role" : "King Cloudberry/Others"
+        },
+        {
+          "performer" : {"name": "Eliza Simpson"},
+          "role" : "Princess Cloudberry/Others"
+        },
+        {
+          "performer" : {"name": "Asia Kate Dillon"},
+          "role" : "Blade Gunnblade/Others"
+        },
+        {
+          "performer" : {"name": "Alex J. Gould"},
+          "role" : "Koffley/Others"
+        },
+        {
+          "performer" : {"name": "Madame Blood/Others"},
+          "role" : "Amy Jo Jackson"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Production Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Lighting Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Brian Hoes" }},
+          "job" : "Score"
+        },
+        {
+          "contributor" : {"person": {"name" : "Matt Cox" }},
+          "job" : "Sound Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Josh Boerman" }},
+          "job" : "Costumes"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Costumes"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alex J. Gould" }},
+          "job" : "Fight Choreography"
+        },
+        {
+          "contributor" : {"person": {"name" : "Madeleine Bundy" }},
+          "job" : "Graphic Design"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Kapow-i GoGo Z: Episodes 4-6",
+        "authors": [{"person": {"name": "Matt Cox"}}],
+        "description": "The legend continues! 4 years ago, Kapow-i GoGo saved The World from total destruction. Now she’s 18 and kind of depressed. But, the evil General President Thunderbolt is scheming, Princess Cloudberry has gone missing and who is this Blade Gunnblade? Looks like The World needs Kapow-i GoGo to save it. Again."
+      },
+      "directors": [{"name": "Kristen McCarthy Parker"}, {"name": "Joel Soren"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Madeleine Bundy"},
+          "role" : "Kapow-i GoGo"
+        },
+        {
+          "performer" : {"name": "Cristina Pitter"},
+          "role" : "Aunt O'Wynn/Xar Xar Zuu"
+        },
+        {
+          "performer" : {"name": "Mike Axelrod"},
+          "role" : "Hicc-up GoGo"
+        },
+        {
+          "performer" : {"name": "Hank Lin"},
+          "role" : "Master Masterwhiskies"
+        },
+        {
+          "performer" : {"name": "Keola Simpson"},
+          "role" : "Mysterious Man/Swiftfist GoGo/Treehorn/Others"
+        },
+        {
+          "performer" : {"name": "Matt Cox"},
+          "role" : "Mr. Snuggles"
+        },
+        {
+          "performer" : {"name": "Karsten Otto"},
+          "role" : "Mr. Smiles/General President Scar/Others"
+        },
+        {
+          "performer" : {"name": "Evan Malthy"},
+          "role" : "Tuxedo Gary/Others"
+        },
+        {
+          "performer" : {"name": "Tara Pacheco"},
+          "role" : "Fancy Dress Mary/Twig/Dr. Gyro/Others"
+        },
+        {
+          "performer" : {"name": "Andrea Miller"},
+          "role" : "Woogli/Treeleaf/Giggle GoGo/Others"
+        },
+        {
+          "performer" : {"name": "Stephen Stout"},
+          "role" : "General President Red/Whiskers/Blammo GoGo/Others"
+        },
+        {
+          "performer" : {"name": "Colin Waitt"},
+          "role" : "General President Thunderbolt/Others"
+        },
+        {
+          "performer" : {"name": "Jeff Ronan"},
+          "role" : "King Cloudberry/Others"
+        },
+        {
+          "performer" : {"name": "Eliza Simpson"},
+          "role" : "Princess Cloudberry/Others"
+        },
+        {
+          "performer" : {"name": "Asia Kate Dillon"},
+          "role" : "Blade Gunnblade/Others"
+        },
+        {
+          "performer" : {"name": "Alex J. Gould"},
+          "role" : "Koffley/Others"
+        },
+        {
+          "performer" : {"name": "Madame Blood/Others"},
+          "role" : "Amy Jo Jackson"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Production Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Lighting Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Brian Hoes" }},
+          "job" : "Score"
+        },
+        {
+          "contributor" : {"person": {"name" : "Matt Cox" }},
+          "job" : "Sound Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Josh Boerman" }},
+          "job" : "Costumes"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Costumes"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alex J. Gould" }},
+          "job" : "Fight Choreography"
+        },
+        {
+          "contributor" : {"person": {"name" : "Madeleine Bundy" }},
+          "job" : "Graphic Design"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Kapow-i GoGo RETURNS: Episodes 7-9",
+        "authors": [{"person": {"name": "Matt Cox"}}],
+        "description": "The legend ends! After The World altering events of Kapow-i GoGo Z, The World is a different, dark, gritty place. The villainous Ultra Corporation’s decade spanning plot unfolds and Kapow-i finds herself face to face with Madame Blood herself. But the greatest foe waits in the shadows…and it’s someone nobody could expect. Can Kapow-I save the World again (again) one final time? Find out, in an ending that spans an entire decade."
+      },
+      "directors": [{"name": "Kristen McCarthy Parker"}, {"name": "Joel Soren"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Madeleine Bundy"},
+          "role" : "Kapow-i GoGo"
+        },
+        {
+          "performer" : {"name": "Cristina Pitter"},
+          "role" : "Aunt O'Wynn/Xar Xar Zuu"
+        },
+        {
+          "performer" : {"name": "Mike Axelrod"},
+          "role" : "Hicc-up GoGo"
+        },
+        {
+          "performer" : {"name": "Hank Lin"},
+          "role" : "Master Masterwhiskies"
+        },
+        {
+          "performer" : {"name": "Keola Simpson"},
+          "role" : "Mysterious Man/Swiftfist GoGo/Treehorn/Others"
+        },
+        {
+          "performer" : {"name": "Matt Cox"},
+          "role" : "Mr. Snuggles"
+        },
+        {
+          "performer" : {"name": "Karsten Otto"},
+          "role" : "Mr. Smiles/General President Scar/Others"
+        },
+        {
+          "performer" : {"name": "Evan Malthy"},
+          "role" : "Tuxedo Gary/Others"
+        },
+        {
+          "performer" : {"name": "Tara Pacheco"},
+          "role" : "Fancy Dress Mary/Twig/Dr. Gyro/Others"
+        },
+        {
+          "performer" : {"name": "Andrea Miller"},
+          "role" : "Woogli/Treeleaf/Giggle GoGo/Others"
+        },
+        {
+          "performer" : {"name": "Stephen Stout"},
+          "role" : "General President Red/Whiskers/Blammo GoGo/Others"
+        },
+        {
+          "performer" : {"name": "Colin Waitt"},
+          "role" : "General President Thunderbolt/Others"
+        },
+        {
+          "performer" : {"name": "Jeff Ronan"},
+          "role" : "King Cloudberry/Others"
+        },
+        {
+          "performer" : {"name": "Eliza Simpson"},
+          "role" : "Princess Cloudberry/Others"
+        },
+        {
+          "performer" : {"name": "Asia Kate Dillon"},
+          "role" : "Blade Gunnblade/Others"
+        },
+        {
+          "performer" : {"name": "Alex J. Gould"},
+          "role" : "Koffley/Others"
+        },
+        {
+          "performer" : {"name": "Madame Blood/Others"},
+          "role" : "Amy Jo Jackson"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Production Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Lighting Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Brian Hoes" }},
+          "job" : "Score"
+        },
+        {
+          "contributor" : {"person": {"name" : "Matt Cox" }},
+          "job" : "Sound Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Josh Boerman" }},
+          "job" : "Costumes"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joel Soren" }},
+          "job" : "Costumes"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alex J. Gould" }},
+          "job" : "Fight Choreography"
+        },
+        {
+          "contributor" : {"person": {"name" : "Madeleine Bundy" }},
+          "job" : "Graphic Design"
+        }
+      ]
+    }
+  ]
+}

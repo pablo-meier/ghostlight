@@ -1,0 +1,102 @@
+{
+  "title" : "5 Times in One Night",
+  "special_thanks" : "The Harold & Mimi Steinberg Trust for the their support of Youngblood and new play productions at EST.",
+  "dates" : ["2015-04-19T17:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood",
+        "description" : "2012 Obie Award Winners, Youngblood is EST's collective of emerging professional playwrights under the age of 30. For 21 years, Youngblood has nurtured the best new playwriting talents through regular meetings, readings, retreats, workshops, and mainstage productions. Recent Youngblood graduates include acclaimed writers Annie Baker, Amy Herzog, Lucy Alibar, Robert Askins, Qui Nguyen, Elizabeth Meriwether, Jon Kern, Michael Lew, Joshua Conkel, and Mark Schatz. Alumni including Christopher Shinn, Lucy Thurber, and Lloyd Suh continue to be produced nationwide and beyond. Today's Younblood members are the playwrights you'll be talking about tomorrow."
+      }
+    }
+  ],
+
+  "press": [
+    {
+      "link": "http://nymag.com/listings/theater/five-times-one-night/",
+      "description": "New York Magazine Critics' Pick"
+    },
+    {
+      "link": "http://www.nytimes.com/2015/02/27/theater/review-five-times-in-one-night-at-ensemble-studio-theater.html",
+      "description": "NYT writeup"
+    },
+    {
+      "link": "http://www.timeout.com/newyork/theater/five-times-in-one-night",
+      "description": "Time Out New York"
+    },
+    {
+      "link": "http://www.newyorker.com/goings-on-about-town/theatre/five-times-in-one-night",
+      "description": "The New Yorker"
+    },
+    {
+      "link": "http://www.theaterpizzazz.com/five-times-in-one-night/",
+      "description": "Theatre Pizzazz"
+    },
+    {
+      "link": "http://t2conline.com/five-times-in-one-night-or-begging-for-sex-never-works/",
+      "description": "Times Square Chronicles"
+    },
+    {
+      "link": "http://www.theaterscene.net/plays/five-times-in-one-night/daniel-j-lee/",
+      "description": "Theater Scene"
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "5 Times in One Night",
+        "authors": [{"person": {"name": "Chiara Atik"}}]
+      },
+      "directors": [{"name": "RJ Tolan"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Dylan Dawson"},
+          "role" : "Djuna/Stephen/Abelard/Tim/Adam"
+        },
+        {
+          "performer" : {"name": "Darcy Fowler"},
+          "role" : "Mel/Kacy/Heloise/Laura/Eve"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Jason Simms" }},
+          "job" : "Scenic Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Mikhaela Mahony" }},
+          "job" : "Assistant Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Dan Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Joe Lankheet" }},
+          "job" : "Production Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Audrey Nauman" }},
+          "job" : "Costume Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nicholas Ward" }},
+          "job" : "General Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jessica Jalal" }},
+          "job" : "Props Master"
+        },
+        {
+          "contributor" : {"person": {"name" : "Eileen Lalley" }},
+          "job" : "Production Stage Manager"
+        }
+      ]
+    }
+  ]
+}

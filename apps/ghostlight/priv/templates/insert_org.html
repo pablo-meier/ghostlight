@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}New Organization{% endblock %}
+
+{% block footerjs %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+    {% if editmode %}
+    {% autoescape off %}<script type="text/javascript">var toEdit = {{ editmode }};</script>{% endautoescape %}
+    {% endif %}
+    <script src="/static/js/insert_org_form.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="small-8 columns">
+      <h1>{% if editmode %}Edit{% else %}New{% endif %} Organization</h1>
+    <p>Only a <strong>Name</strong> is required to insert an organization. The rest are delightful details.</p>
+    
+    <p>The <strong>Tagline</strong> and any <strong>Description</strong> fields can be formatted with <a href="http://chrisalley.github.io/commonmark-website/">Markdown</a>, a set of rules used on sites like <a href="http://reddit.com">Reddit</a> and <a href="https://github.com">GitHub</a> to let you format your text easily. The basics are described <a href="https://help.github.com/articles/markdown-basics/">here</a>, or you can go through a 10-minute Markdown tutorial <a href="http://markdowntutorial.com/">here!</a></p>
+  </div>
+  <div class="small-4 columns">
+      <div id="submitButton" class="button large radius success right">{% if editmode %}SAVE CHANGES{% else %}SUBMIT ORG{% endif %}</div>
+  </div>
+</div>
+<!-- row -->
+
+<form data-abide name="org-form">
+  <label>Name:
+    <input type="text" name="org-name" placeholder="The Goose Lightning Collective" required autofocus /></label>
+
+  <label>Tagline:
+    <input type="text" name="org-tagline" placeholder="Destructuring the revolution, desugaring the syntax."/></label>
+
+  <label>Description:
+    <textarea name="org-description" placeholder="((restrained by cops and forced to watch a man put mustard on a bagel) nno!! you're ruining it! That's quality bakedgoods"></textarea></label>
+
+  <fieldset id="linkArray">
+    <legend>External Links</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+          <p>Web presence elsewhere (Website, Mailing List, Twitter&hellip;)</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addLinkButton" class="button small center inline more-rows-button small">Add Link&hellip;</div>
+      </div>
+    </div> <!-- row -->
+
+  </fieldset>
+
+  <fieldset id="employeeArray">
+    <legend>Org Employees</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+        <p>ghostlight thinks of 'employees' as the people who <em>run</em> the organization, under a title. They may or may not be members in the traditional sense. The org can be entirely employees, or you can have none.</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addEmployeeButton" class="button small center inline more-rows-button small">Add an Employee&hellip;</div>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset id="memberArray">
+    <legend>Org Members</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+            <p>Members are the people in the group! No fancy-shmancy <em>titles</em>, we're all just happy to be here! You can have as few or as many as you like.</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addMemberButton" class="button small center inline more-rows-button small">Add a Member&hellip;</div>
+      </div>
+    </div>
+  </fieldset>
+</form>
+{% endblock %}

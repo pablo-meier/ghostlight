@@ -144,8 +144,8 @@ get(OrgId, Format) ->
      {ok, []}] = Reply,
 
     ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
-    MemberList = [ parse_member(Member) || Member <- ghostlight_db_utils:decode_not_null(Members)],
-    EmployeeList = [ parse_employee(Employee) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
+    MemberList = [ parse_member(Member, Format) || Member <- ghostlight_db_utils:decode_not_null(Members)],
+    EmployeeList = [ parse_employee(Employee, Format) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
     ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
 
     Desc = case Format of html -> OrgDescription; markdown -> OrgDescriptionSrc end,
@@ -163,23 +163,25 @@ get(OrgId, Format) ->
       shows_produced = ShowList
     }.
 
-parse_member({Member}) ->
+parse_member({Member}, Format) ->
+    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
     #org_member{
        member = #person {
                    id = proplists:get_value(<<"person_id">>, Member),
                    name = proplists:get_value(<<"name">>, Member)
                 },
-       description = proplists:get_value(<<"description">>, Member, null)
+       description = proplists:get_value(DescType, Member, null)
     }.
 
-parse_employee({Employee}) ->
+parse_employee({Employee}, Format) ->
+    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
     #org_employee{
        person = #person {
                    id = proplists:get_value(<<"person_id">>, Employee),
                    name = proplists:get_value(<<"name">>, Employee)
                 },
        title = proplists:get_value(<<"title">>, Employee, null),
-       description = proplists:get_value(<<"description">>, Employee, null)
+       description = proplists:get_value(DescType, Employee, null)
     }.
 
 parse_show_abbrev({Show}) ->

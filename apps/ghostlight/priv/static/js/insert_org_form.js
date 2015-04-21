@@ -50,7 +50,7 @@ function makeLinkRow(linkType, linkUrl) {
 
   var linkField = $('<input />', { 'type': 'url', 'placeholder': getLinkPlaceholder(), name: 'linkLink' + externalLinks._currId });
   if (linkUrl !== undefined) {
-    linkField.value(linkUrl);
+    linkField.val(linkUrl);
   }
   var labeled = $('<label>Link:</label>').append(linkField);
   var linkTextWrapper = $('<div class="small-8 columns" />').append(labeled);
@@ -329,7 +329,9 @@ function setStartData(orgObj) {
   }
 
   if (_.has(orgObj, 'social')) {
+    console.log('We has social!');
     _.pairs(orgObj.social).forEach(function(socialPair) {
+      console.log('socialPair is', socialPair);
       externalLinks.create(socialPair[0], socialPair[1]);
     });
   }

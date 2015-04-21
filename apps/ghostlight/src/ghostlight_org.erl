@@ -144,18 +144,21 @@ record_to_json(#organization{
                   id=OrgId,
                   name=OrgName,
                   tagline=OrgTagline,
-                  parent=_OrgParent,
                   description=Description,
-                  vanity_name=_VanityName,
                   date_founded=DateFounded,
-                  visibility=_Visibility
+                  members=Members,
+                  employees=Employees,
+                  external_links=ExternalLinks
 }) ->
     ghostlight_utils:json_with_valid_values([
         {<<"id">>, OrgId},
         {<<"name">>, OrgName},
         {<<"tagline">>, OrgTagline},
         {<<"description">>, Description},
-        {<<"date_founded">>, ghostlight_utils:erl_date_to_iso8601(DateFounded)}
+        {<<"date_founded">>, ghostlight_utils:erl_date_to_iso8601(DateFounded)},
+        {<<"members">>, [ member_to_json(Member) || Member <- Members]},
+        {<<"employees">>, [ employee_to_json(Employee) || Employee <- Employees ]},
+        {<<"social">>, ghostlight_utils:external_links_record_to_json(ExternalLinks)}
     ]);
 
 record_to_json(#org_return{
@@ -209,7 +212,17 @@ decode_employee({Emp}) ->
        description=Description
     }.
 
-
+member_to_json(#org_member{member=Person, description=Desc}) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"person">>, ghostlight_people:record_to_json(Person)},
+        {<<"description">>, Desc}
+    ]).
+employee_to_json(#org_employee{person=Person, title=Title, description=Desc}) ->
+    ghostlight_utils:json_with_valid_values([
+        {<<"person">>, ghostlight_people:record_to_json(Person)},
+        {<<"title">>, Title},
+        {<<"description">>, Desc}
+    ]).
 
 org_to_json(Req, State) ->
     OrgId = cowboy_req:binding(org_id, Req),

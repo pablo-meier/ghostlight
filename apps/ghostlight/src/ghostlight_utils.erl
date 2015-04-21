@@ -6,7 +6,8 @@
          person_or_org_json_to_record/1,
          remove_null/1,
          external_links_json_to_record/1,
-         external_links_record_to_proplist/1]).
+         external_links_record_to_proplist/1,
+         external_links_record_to_json/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -65,7 +66,43 @@ external_links_record_to_proplist(
                  {patreon, Patreon},
                  {newplayx, NewPlayX}],
     lists:filter(fun({_, V}) -> V =/= null end, Candidate).
+
  
+external_links_record_to_json(null) -> [];
+external_links_record_to_json(
+    #external_links{
+        website=Website,
+        email_address=Email,
+        blog=Blog,
+        mailing_list=Newsletter,
+        facebook=Facebook,
+        twitter=Twitter,
+        instagram=Instagram,
+        vimeo=Vimeo,
+        youtube=YouTube,
+        pinterest=Pinterest,
+        tumblr=Tumblr,
+        gplus=GPlus,
+        patreon=Patreon,
+        newplayx=NewPlayX
+    }) ->
+    Candidate = [{<<"website">>, Website},
+                 {<<"email">>, Email},
+                 {<<"blog">>, Blog},
+                 {<<"newsletter">>, Newsletter},
+                 {<<"facebook">>, Facebook},
+                 {<<"twitter">>, Twitter},
+                 {<<"instagram">>, Instagram},
+                 {<<"vimeo">>, Vimeo},
+                 {<<"youtube">>, YouTube},
+                 {<<"pinterest">>, Pinterest},
+                 {<<"tumblr">>, Tumblr},
+                 {<<"gplus">>, GPlus},
+                 {<<"patreon">>, Patreon},
+                 {<<"newplayx">>, NewPlayX}],
+    Filtered = lists:filter(fun({_, V}) -> V =/= null end, Candidate),
+    json_with_valid_values(Filtered).
+
 
 person_or_org_json_to_record({Object}) ->
     case proplists:get_value(<<"person">>, Object, null) of

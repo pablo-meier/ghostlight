@@ -13,6 +13,7 @@
          code_change/3]).
 
 -export([get/1,
+         get/2,
          listings/0,
          insert/1,
          get_inserts/1,
@@ -119,7 +120,13 @@ employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=De
 %%%===================================================================
 %%% Resource callbacks.
 %%%===================================================================
+
 get(OrgId) ->
+  get(OrgId, html).
+
+%% Format parameter tells us whether we return Markdown or the Src for any
+%% fields that apply.
+get(OrgId, Format) ->
     Reply = gen_server:call(?MODULE, {get_org, OrgId}),
     [{ok, []},
      {ok,
@@ -127,6 +134,7 @@ get(OrgId) ->
         OrgId,
         OrgName,
         OrgTagline,
+        OrgDescriptionSrc,
         OrgDescription,
         Links,
         ShowsProduced,
@@ -140,12 +148,14 @@ get(OrgId) ->
     EmployeeList = [ parse_employee(Employee) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
     ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
 
+    Desc = case Format of html -> OrgDescription; markdown -> OrgDescriptionSrc end,
+
     #org_return{
       org=#organization{
              id=OrgId,
              name=OrgName,
              tagline=OrgTagline,
-             description=OrgDescription,
+             description=Desc,
              external_links=ExternalLinks,
              members=MemberList,
              employees=EmployeeList
@@ -223,6 +233,7 @@ SELECT
     o.org_id,
     o.name,
     o.tagline,
+    o.description_src,
     o.description_markdown,
     array_to_json(ARRAY(SELECT (ol.link, ol.type)::external_link
                             FROM org_links ol
@@ -241,14 +252,14 @@ SELECT
     ) AS shows_produced,
     (
         SELECT to_json(array_agg(emp))
-        FROM (SELECT oe.org_id, p.person_id, p.name, oe.title, oe.description_markdown AS description
+        FROM (SELECT oe.org_id, p.person_id, p.name, oe.title, oe.description_src, oe.description_markdown AS description
               FROM org_employees oe
               INNER JOIN people p USING (person_id)) AS emp 
         WHERE emp.org_id = o.org_id
     ) AS employees, 
     (
         SELECT to_json(array_agg(mem))
-        FROM (SELECT om.org_id, p.person_id, p.name, om.description_markdown AS description
+        FROM (SELECT om.org_id, p.person_id, p.name, om.description_src, om.description_markdown AS description
               FROM org_members om
               INNER JOIN people p USING (person_id)) AS mem
         WHERE mem.org_id = o.org_id

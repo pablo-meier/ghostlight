@@ -68,9 +68,11 @@ org_to_html(Req, State) ->
             {ok, Body} = org_template:render(ForTemplate),
             {Body, Req, State};
         {_, <<"edit">>} ->
-            OrgRecord = ghostlight_db:get_org(OrgId),
-            AsJson = jiffy:encode(record_to_json(OrgRecord)),
-            {ok, Body} = insert_org_template:render([{editmode, AsJson}]),
+            OrgRecord = ghostlight_db:get_org(OrgId, markdown),
+            {AsOuterBodyJson} = record_to_json(OrgRecord),
+            AsJson = jiffy:encode(proplists:get_value(<<"org">>, AsOuterBodyJson)),
+            {ok, Body} = insert_org_template:render([{name, OrgRecord#org_return.org#organization.name},
+                                                     {editmode, AsJson}]),
             {Body, Req, State}
     end.
 
@@ -218,7 +220,7 @@ org_to_json(Req, State) ->
             Body = jiffy:encode(ToEncode),
             {Body, Req, State};
         _ ->
-            OrgRecord = ghostlight_db:get_org(OrgId),
+            OrgRecord = ghostlight_db:get_org(OrgId, markdown),
             AsJson = jiffy:encode(record_to_json(OrgRecord)),
             {AsJson, Req, State}
     end.

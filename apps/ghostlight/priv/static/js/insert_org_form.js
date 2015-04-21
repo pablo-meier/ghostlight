@@ -1,3 +1,5 @@
+var GHOSTLIGHT_EDIT =
+
 (function(){
   'use strict';
 
@@ -15,7 +17,7 @@ var externalLinks = {
 /**
  * What happens after 'Add Link' is pressed.
  */
-function makeLinkRow() {
+function makeLinkRow(linkType, linkUrl) {
 
   var linkPairs = [ ['website', 'Website'],
                     ['email', 'Email'],
@@ -34,7 +36,12 @@ function makeLinkRow() {
 
   var linkSelectDOM = $('<select>', {'name': 'linktype' + externalLinks._currId });
   linkPairs.forEach(function(pair) {
-    var option = $('<option value="'+ pair[0] +'">'+ pair[1] +'</option>');
+    var option;
+    if (linkType !== pair[0]) {
+      option = $('<option value="'+ pair[0] +'" selected="selected">'+ pair[1] +'</option>');
+    } else {
+      option = $('<option value="'+ pair[0] +'">'+ pair[1] +'</option>');
+    }
     linkSelectDOM.append(option);
   });
 
@@ -42,6 +49,9 @@ function makeLinkRow() {
   var linkTypeWrapper = $('<div class="small-2 columns" />').append(withLabelDOM);
 
   var linkField = $('<input />', { 'type': 'url', 'placeholder': getLinkPlaceholder(), name: 'linkLink' + externalLinks._currId });
+  if (linkUrl !== undefined) {
+    linkField.value(linkUrl);
+  }
   var labeled = $('<label>Link:</label>').append(linkField);
   var linkTextWrapper = $('<div class="small-8 columns" />').append(labeled);
 
@@ -97,8 +107,7 @@ var employees = {
   '_objCreators': []
 };
 
-
-function makeEmployeeRow() {
+function makeEmployeeRow(employee) {
   var titleInput = $('<input />', {'type': 'text', 'placeholder': getTitlePlaceholder() });
   var nameInput = $('<input />', {'type': 'text', 'placeholder': getNamePlaceholder() });
   var descriptionInput = $('<textarea />', {'placeholder': getDescriptionPlaceholder() });
@@ -108,6 +117,12 @@ function makeEmployeeRow() {
   var descLabel = $('<label>Description:</label>').append(descriptionInput);
 
   var detailsCol = $('<div class="small-10 columns" />').append(titleLabel).append(nameLabel).append(descLabel);
+
+  if (employee !== undefined) {
+    valueIfHas(employee, 'person.name', nameInput);
+    valueIfHas(employee, 'title', titleInput);
+    valueIfHas(employee, 'description', descriptionInput);
+  }
 
   var removeButton = $('<div class="button round alert center less-rows-button small">Remove</div>');
   var removeCol = $('<div class="small-2 columns">').append(removeButton);
@@ -155,9 +170,14 @@ var members = {
 };
 
 
-function makeMemberRow() {
+function makeMemberRow(member) {
   var nameInput = $('<input />', {'type': 'text', 'placeholder': getNamePlaceholder() });
   var descriptionInput = $('<textarea />', {'placeholder': getDescriptionPlaceholder() });
+
+  if (member !== undefined) {
+    valueIfHas(member, 'person.name', nameInput);
+    valueIfHas(member, 'description', descriptionInput);
+  }
 
   var nameLabel = $('<label>Name:</label>').append(nameInput);
   var descLabel = $('<label>Description:</label>').append(descriptionInput);
@@ -199,6 +219,11 @@ function gatherMembers() {
 }
 
 /////////////////////////////////////////////////////////
+function valueIfHas(obj, property, domElement) {
+  if (_.has(obj, property)) {
+    domElement.val(_.get(obj, property));
+  }
+}
 
 function getTitlePlaceholder() {
   var titlePlaceHolders = [
@@ -292,5 +317,36 @@ $('#submitButton').on('click', submitForm);
 $('#addLinkButton').on('click', externalLinks.create);
 $('#addEmployeeButton').on('click', employees.create);
 $('#addMemberButton').on('click', members.create);
+
+function setStartData(orgObj) {
+  document['org-form']['org-name'].value = orgObj.name;
+
+  if (_.has(orgObj, 'tagline')) {
+    document['org-form']['org-tagline'].value = orgObj.tagline;
+  }
+  if (_.has(orgObj, 'description')) {
+    document['org-form']['org-description'].value = orgObj.description;
+  }
+
+  if (_.has(orgObj, 'social')) {
+    _.pairs(orgObj.social).forEach(function(socialPair) {
+      externalLinks.create(socialPair[0], socialPair[1]);
+    });
+  }
+
+  if (_.has(orgObj, 'employees')) {
+    orgObj.employees.forEach(function(emp) {
+      employees.create(emp);
+    });
+  }
+
+  if (_.has(orgObj, 'members')) {
+    orgObj.members.forEach(function(mem) {
+      members.create(mem);
+    });
+  }
+}
+
+return setStartData;
 
 })();

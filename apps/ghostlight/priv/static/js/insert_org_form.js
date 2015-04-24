@@ -4,8 +4,11 @@ var GHOSTLIGHT_EDIT =
   'use strict';
 
 // TODO
-//   VALIDATION
-//   TEMPLATEIFY
+//   Validation?
+//   Abstraction?
+
+var updateMode = false;
+var orgId;
 
 var externalLinks = {
     create: makeLinkRow,
@@ -34,10 +37,10 @@ function makeLinkRow(linkType, linkUrl) {
                     ['patreon', 'Patreon'],
                     ['newplayx', 'NewPlay Exchange'] ];
 
-  var linkSelectDOM = $('<select>', {'name': 'linktype' + externalLinks._currId });
+  var linkSelectDOM = $('<select>');
   linkPairs.forEach(function(pair) {
     var option;
-    if (linkType !== pair[0]) {
+    if (linkType === pair[0]) {
       option = $('<option value="'+ pair[0] +'" selected="selected">'+ pair[1] +'</option>');
     } else {
       option = $('<option value="'+ pair[0] +'">'+ pair[1] +'</option>');
@@ -277,13 +280,25 @@ function submitForm() {
     'members': members.gather()
   };
 
-  var options = {
-    'type': 'POST',
-    'url': '/organizations',
-    'data': JSON.stringify(finalObject),
-    'contentType': 'application/json',
-    'dataType': 'json'
-  };
+  var options;
+  if (updateMode) {
+    finalObject.id = orgId;
+    options = {
+      'type': 'PUT',
+      'url': '/organizations/' + orgId,
+      'data': JSON.stringify(finalObject),
+      'contentType': 'application/json',
+      'dataType': 'json'
+    };
+  } else {
+    options = {
+      'type': 'POST',
+      'url': '/organizations',
+      'data': JSON.stringify(finalObject),
+      'contentType': 'application/json',
+      'dataType': 'json'
+    };
+  }
 
   $.ajax(options)
       .done(function() {
@@ -319,8 +334,8 @@ $('#addEmployeeButton').on('click', employees.create);
 $('#addMemberButton').on('click', members.create);
 
 function setStartData(orgObj) {
+  orgId = orgObj.id;
   document['org-form']['org-name'].value = orgObj.name;
-
   if (_.has(orgObj, 'tagline')) {
     document['org-form']['org-tagline'].value = orgObj.tagline;
   }
@@ -329,7 +344,6 @@ function setStartData(orgObj) {
   }
 
   if (_.has(orgObj, 'social')) {
-    console.log('We has social!');
     _.pairs(orgObj.social).forEach(function(socialPair) {
       console.log('socialPair is', socialPair);
       externalLinks.create(socialPair[0], socialPair[1]);
@@ -347,6 +361,8 @@ function setStartData(orgObj) {
       members.create(mem);
     });
   }
+
+  updateMode = true;
 }
 
 return setStartData;

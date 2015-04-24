@@ -2,6 +2,10 @@
 
 I'm writing these in the first person as Pablo because that's who I am.
 
+**tl;dr Go to the Discourse site if you wanna hash shit out, let me teach you to
+write code, and so far this is just me doing building a thing with no Greater
+Ambitions, but I have no idea what the future holds.**
+
 ### What is the purpose of ghostlight?
 
 There's not a short answer to that -- you can read the [About page][1] for the
@@ -13,14 +17,14 @@ directory. The more I work on it the more things I realize I can do with it.
 
 Like many Made Things That Are Cool, there are a lot of feelings behind this.
 
-Every time I opened a program I saw one part of a very rich story that wasn't
-getting much further than the paper it was printed on. Virtually every artist I
-knew in the performing arts was building a career (and a life!) that was mostly
-going to exist in their head, or that of their friends'. I also feel like
-there's a lot of confusion over ideas of web presence -- _what_ should your
-website be achieving? _Who_ should that site (and your work) be reaching?
-_How_ will you answer those questions, and once you have those answers, how will
-you achieve it?
+Every time I opened the program of any show I was watching, I saw one part of a
+very rich story that wasn't getting much further than the paper it was printed
+on. Virtually every artist I knew in the performing arts was building a career
+(and a life!) that was mostly going to exist in their head, or that of their
+friends'. I also feel like there's a lot of confusion over ideas of web presence
+— _what_ should your website be achieving? _Who_ should that site (and your
+work) be reaching?  _How_ will you answer those questions, and once you have
+those answers, how will you achieve it?
 
 Given that almost all program bios are listings of a person's previous work,
 what happens if we can connect it?
@@ -67,9 +71,9 @@ people seem to 'get' immediately when I try to describe ghostlight. For the
 record, I hate the comparison since I see a few differences:
 
 * IMDb, for most of its visitors, is where we go to gawk at _other people's_
-  work, not _their own_. If you're in film or television you may have a page
+  work, not _our own_. If you're in film or television you may have a page
   and/or use it very differently, but I feel the site is very geared to
-  consumers rather than creators.<br /><br />Obviously I don't want to
+  consumers rather than creators. Obviously I don't want to
   discourage people from using ghostlight as consumers; just that its
   development is driven by the needs of professionals.
 * IMDb is ugly as sin.
@@ -84,20 +88,22 @@ your networks (if that is what you do on LinkedIn, idk).
 
 ### What are the economics of ghostlight? Who's paying for it? Is ghostlight for sale?
 
-God, I hope not. I have no intention to sell it. I'm not even a Company.
-
 I'm currently paying for this out-of-pocket. Programming is good work and I'm
 working for a great company, so they compensate me well enough that I can
 self-run this, at least for now. If this grows and The Powers That Be want to
-charge me an insane amount for this, I might not be able to keep it up, but lets
-cross that bridge when we get to it.
+charge me more than I can comfortably afford for this, I might not be able to
+keep it running, but lets cross that bridge when we get to it.
+
+### Is ghostlight for sale?
+
+God, I hope not. I have no intention to sell it. I'm not even a Company.
 
 ### Can I help work on ghostlight?
 
 I'm glad you asked! I happen to think programming and software are pretty
-awful ecosystems, with heavy gatekeeping preventing people from participating,
-especially people of underrepresented groups. Good thing theatre's not like
-that!!!!
+awful ecosystems, with heavy gatekeeping preventing enthusiastic, capable
+newbies from participating, especially if they are people of underrepresented
+groups. Good thing theatre's not like that!!!!
 
 One idea I often hear brought up as a potential solution to these issues is the
 notion of apprenticeships, and placing a greater emphasis on mentoring. I would
@@ -108,7 +114,11 @@ So **if you have an interest in learning to code and would like me to teach you,
 please contact me. _No previous experience required._** Note that I'll be giving
 preference to people of underrepresented groups: women, racial/ethic minorities,
 queer. If that bothers you significantly I'd guess we're likely to have a hard
-working relationship where I'm the boss, so you dodged a bullet!
+working relationship in an environment where I make decisions, so you dodged a
+bullet!
+
+(actually tho if that answer bothers you feel free to contact me and we can hash
+it out).
 
 ### I hate this project.
 
@@ -121,7 +131,7 @@ killed Theatre. TV killed Theatre. Literally everything is killing theatre. Can
 you kill something that's been actively getting killed by literally everything
 for the last century? Might it already be dead?
 
-I think most pearl-clutching is responded to with
+I think most pearl-clutching is easily responded to with
 
 * This, or something like it, is inevitable.
 * This is only a drop in the bucket.
@@ -129,19 +139,20 @@ I think most pearl-clutching is responded to with
   institution, has bigger problems than someone caring enough about it to try
   making a database for it.
 
-### One of my favorite things about Theatre is that it's ephemeral. After strike, the material disappears but magic remains, and the world is a little better. Our lives are a little more enriched. No detritus, no residue, but **impact** regardless; just people making things for people. _So much_ of our lives are quantified and commoditized around data, gameable metrics, and marketeable artifacts, and I love that this is an area where that isn't centered. By doing this, you'll create a theatre culture around people comparing their 'ghostlight profiles,' have yet another system to game, and otherwise make the practice of an entire art form Yet Another Thing I Have To Win. That's horseshit.
+### One of my favorite things about Theatre is that it's ephemeral. After strike, the material disappears but magic remains, and the world is a little better. Our lives are a little more enriched. No detritus, no residue, but **impact** regardless; just people making things for people. _So much_ of our lives are quantified and commoditized around data, gameable metrics, and marketeable artifacts, and I love that this is an area where that isn't centered. By doing this, you'll create a theatre culture around people comparing their 'ghostlight profiles,' have yet another system to game, and otherwise reduce making Theatre as Yet Another Product I Succumb To, And Have To Win. That's horseshit.
 
 That's... all true. I'm sensitive to this line of argument (after all, I just
 wrote it). I guess all I can say to that is
 
 * I still feel like the bullets above apply, unfortunately. But imagine me
-  saying them more sensitively this time!
-* I'll do the best I can to make the most responsible software I can given all
+  saying them more sensitively! Because I agree, much of modern life and the
+  things we build around it is horseshit.
+* I'll do the best I can to make the most responsible software I can, given all
   of this.
 
 I do hope any and all of you with concerns on this bring them up on the
-[Discourse site][10] I set up, where we can discuss what ghostlight is, be
-mindful of its impacts, and where to subsequently take it.
+[Discourse site][10] I set up, _precisely so_ we can discuss what ghostlight is,
+be mindful of its impacts, and where to subsequently take it.
 
    [1]: About page
    [2]: http://techcrunch.com/2012/08/28/cherry-san-diego/

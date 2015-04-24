@@ -16,6 +16,7 @@
          get/2,
          listings/0,
          insert/1,
+         update/1,
          get_inserts/1,
          prepare_statements/2]).
 
@@ -56,6 +57,11 @@ handle_call({insert_org, Org}, _From, State) ->
     lager:info("Postgres returned ~p for insert", [Reply]),
     {reply, Id, State};
 
+handle_call({update_org, Org}, _From, State) ->
+    {Inserts, Id} = get_update_commands(Org, State),
+    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
+    lager:info("Postgres returned ~p for update", [Reply]),
+    {reply, Id, State};
 
 handle_call({get_inserts, Org }, _From, State) ->
     Reply = get_inserts(Org, State),
@@ -115,7 +121,12 @@ employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=De
     Markdowned = ghostlight_db_utils:markdown_or_null(Description),
     [PersonInsert,
      {IE, [OrgId, PersonId, Title, Description, Markdowned, null, null]}].
-    
+
+get_update_commands(#organization{id=OrgId, name=Name, tagline=Tagline, description=DescSrc},
+                    #db_state{update_org_statement=UO}) ->
+    DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
+    [ {UO, [Name, Tagline, DescSrc, DescMarkdown, OrgId]} ].
+
 
 %%%===================================================================
 %%% Resource callbacks.
@@ -188,11 +199,12 @@ parse_show_abbrev({Show}) ->
     #show{
        id = proplists:get_value(<<"show_id">>, Show),
        title = proplists:get_value(<<"title">>, Show),
-       performances=[#performance{
-                        work=#work{ id = proplists:get_value(<<"work_id">>, Work),
-                                    title = proplists:get_value(<<"name">>, Work)}} 
-                     || {Work} <- proplists:get_value(<<"works">>, Show)
-                    ]
+       performances = [#performance{
+                           work=#work{ id = proplists:get_value(<<"work_id">>, Work),
+                                       title = proplists:get_value(<<"name">>, Work)}} 
+                       || {Work} <- proplists:get_value(<<"works">>, Show)
+                    ],
+       dates = [ iso8601:parse(Date) || Date <- proplists:get_value(<<"show_dates">>, Show) ]
     }.
 
 listings() ->
@@ -209,6 +221,8 @@ insert(Org) ->
 get_inserts(Org) ->
     gen_server:call(?MODULE, {get_inserts, Org}).
 
+update(Org) ->
+    gen_server:call(?MODULE, {update_org, Org}).
 
 prepare_statements(C, State) ->
     OrgsSql = "INSERT INTO organizations "
@@ -247,7 +261,8 @@ SELECT
                      array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
                                                 FROM works w
                                                 INNER JOIN performances p USING (work_id)
-                                                WHERE p.show_id = s.show_id ORDER BY p.performance_order)) AS works
+                                                WHERE p.show_id = s.show_id ORDER BY p.performance_order)) AS works,
+                     array_to_json(ARRAY(SELECT sd.show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY sd.show_date DESC)) AS show_dates
                FROM shows s
                INNER JOIN producers USING (show_id)
                WHERE producers.org_id = o.org_id) AS prod
@@ -274,7 +289,11 @@ WHERE o.org_id = $1
     GetOrgListingsSql = "SELECT o.org_id, o.name, o.tagline, o.description_markdown FROM organizations AS o ORDER BY o.name ASC LIMIT 50",
     {ok, GetOrgListings} = epgsql:parse(C, "get_org_listings", GetOrgListingsSql, []),
 
- 
+    UpdateOrgSql = "UPDATE organizations "
+        ++ "SET name = $1, tagline = $2, description_src = $3, description_markdown = $4 "
+        ++ " WHERE org_id = $5",
+    {ok, UpdateOrg} = epgsql:parse(C, "update_organization", UpdateOrgSql, [text, text, text, text, uuid]),
+  
     State#db_state{
        insert_org_statement=InsertOrg,
 
@@ -283,6 +302,7 @@ WHERE o.org_id = $1
 
        insert_org_employee=InsertOrgEmployee,
        insert_org_member=InsertOrgMember,
-       insert_org_external_link=OrgExternalLink
+       insert_org_external_link=OrgExternalLink,
+       update_org_statement=UpdateOrg
     }.
 

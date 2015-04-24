@@ -11,7 +11,7 @@
 -export([json_to_record/1,
          record_to_json/1,
 
-         post_json/2]).
+         to_json/2]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -46,8 +46,8 @@ content_types_provided(Req, State) ->
      ], Req, State}.
 content_types_accepted(Req, State) ->
     {[
-      {<<"application/json; charset=utf-8">>, post_json},
-      {<<"application/json">>, post_json}
+      {<<"application/json; charset=utf-8">>, to_json},
+      {<<"application/json">>, to_json}
      ], Req, State}.
 
 org_to_html(Req, State) ->
@@ -76,6 +76,7 @@ org_to_html(Req, State) ->
             {Body, Req, State}
     end.
 
+
 %% Makes the Record returned from the DB into a proplist we can feed the template.
 %% Aw hell yeah Pattern Matching.
 record_to_proplist(#org_return{
@@ -92,13 +93,13 @@ record_to_proplist(#org_return{
   ShowProplist = [ [{show_id, ShowId},
                     {show_title, ShowTitle},
                     {performances, [ [{work_id, WorkId}, {work_title, WorkTitle}] 
-                                       || #performance{work=#work{id=WorkId, title=WorkTitle}} <- Performances ]}
-%                    {first_show, lists:last(Dates)},
-%                    {last_show, lists:nth(1, Dates)}
+                                       || #performance{work=#work{id=WorkId, title=WorkTitle}} <- Performances ]},
+                    {first_show, lists:last(Dates)},
+                    {last_show, lists:nth(1, Dates)}
                    ] || #show{ id=ShowId,
                                title=ShowTitle,
-                               performances=Performances
-%                               dates=Dates
+                               performances=Performances,
+                               dates=Dates
                              } <- Shows ],
   EmployeesProplist = [ [{person_id, PersonId},
                          {person_name, PersonName},
@@ -239,19 +240,35 @@ org_to_json(Req, State) ->
     end.
 
 
-post_json(Req, State) ->
+to_json(Req, State) ->
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     AsJson = jiffy:decode(RequestBody),
     OrgRecord = json_to_record(AsJson),
-    case OrgRecord#organization.id of
-        null ->
+    {Method, Req3} = cowboy_req:method(Req2),
+    case {OrgRecord#organization.id, Method} of
+        {null, <<"POST">>} ->
             OrgId = ghostlight_db:insert_org(OrgRecord),
             Response = jiffy:encode({[{<<"status">>, ok}, {<<"id">>, list_to_binary(OrgId)}]}),
-            {true, cowboy_req:set_resp_body(Response, Req2), State};
-        _Else ->
+            {true, cowboy_req:set_resp_body(Response, Req3), State};
+        {_Else, <<"POST">>} ->
             Body = jiffy:encode({[{<<"error">>, <<"You may not insert an organization with the field 'id'.">>}]}),
-            Req3 = cowboy_req:set_resp_body(Body, Req2),
-            {false, Req3, State}
+            Req4 = cowboy_req:set_resp_body(Body, Req3),
+            {false, Req4, State};
+        {null, <<"PUT">>} ->
+            Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
+            Req4 = cowboy_req:set_resp_body(Body, Req3),
+            {false, Req4, State};
+        {_OrgId, <<"PUT">>} ->
+            Success = ghostlight_db:update_org(OrgRecord),
+            case Success of
+                true ->
+                    Response = jiffy:encode({[{<<"status">>, ok}]}),
+                    {true, cowboy_req:set_resp_body(Response, Req3), State};
+                false ->
+                    Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
+                    Req4 = cowboy_req:set_resp_body(Body, Req3),
+                    {false, Req4, State}
+            end
     end.
 
 

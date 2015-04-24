@@ -155,6 +155,7 @@
                    insert_org_external_link,
                    get_org_listings,
                    get_org_statement,
+                   update_org_statement,
 
                    %% Productions
                    insert_performance_statement,

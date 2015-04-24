@@ -35,6 +35,10 @@
           "role" : "Ernest"
         },
         {
+          "performer" : {"name": "Ronald Peet"},
+          "role" : "Da'Ran"
+        },
+        {
           "performer" : {"name": "Curran Connor"},
           "role" : "Larry"
         },

@@ -16,6 +16,7 @@
 
          get_org/1,
          get_org/2,
+         update_org/1,
          get_org_listings/0,
          insert_org/1,
 
@@ -130,6 +131,8 @@ get_org(OrgId) ->
     ghostlight_db_org:get(OrgId).
 get_org(OrgId, Form) ->
     ghostlight_db_org:get(OrgId, Form).
+update_org(Org) ->
+    ghostlight_db_org:update(Org).
 
 get_work(WorkId) ->
     ghostlight_db_work:get(WorkId).

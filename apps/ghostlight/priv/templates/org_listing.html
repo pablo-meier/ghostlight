@@ -22,7 +22,7 @@
       {% for org in orgs %}
       <tr>
           <td><a href="/organizations/{{ org.org_id }}">{{ org.name }}</a></td>
-          <td>{{ org.tagline }}</td>
+          <td>{% autoescape off %}{{ org.tagline }}{% endautoescape %}</td>
           <td>{% autoescape off %}{{ org.description }}{% endautoescape %}</td>
       </tr>
       {% endfor %}

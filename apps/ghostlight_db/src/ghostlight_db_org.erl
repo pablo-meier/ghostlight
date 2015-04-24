@@ -91,18 +91,20 @@ get_inserts(#organization {
                        {id, Valid} -> Valid
                    end,
 
+    TaglineInsert = ghostlight_db_utils:null_if_unspecified(Tagline),
+    TaglineMarkdown = ghostlight_db_utils:markdown_or_null(Tagline),
+
     DescriptionInsert = ghostlight_db_utils:null_if_unspecified(Description),
     Markdowned = ghostlight_db_utils:markdown_or_null(Description),
     
     VanityNameInsert = ghostlight_db_utils:null_if_unspecified(VanityName),
-    TaglineInsert = ghostlight_db_utils:null_if_unspecified(Tagline),
     DateFoundedInsert = ghostlight_db_utils:null_if_unspecified(DateFounded),
     MemberInserts = lists:flatten( [ member_inserts(OrgId, Member, State) || Member <- Members ]),
     EmployeeInserts = lists:flatten( [ employee_inserts(OrgId, Employee, State) || Employee <- Employees]),
     LinkInserts = ghostlight_db_utils:external_links_inserts(OrgId, OL, Links),
 
     OrgInserts = lists:append([ [{IO, [OrgId, ParentInsert, Name, 
-                                       TaglineInsert, DescriptionInsert, Markdowned, 
+                                       TaglineInsert, TaglineMarkdown, DescriptionInsert, Markdowned, 
                                        VanityNameInsert, DateFoundedInsert, Visibility]}],
                                 EmployeeInserts,
                                 MemberInserts,
@@ -122,10 +124,11 @@ employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=De
     [PersonInsert,
      {IE, [OrgId, PersonId, Title, Description, Markdowned, null, null]}].
 
-get_update_commands(#organization{id=OrgId, name=Name, tagline=Tagline, description=DescSrc},
+get_update_commands(#organization{id=OrgId, name=Name, tagline=TaglineSrc, description=DescSrc},
                     #db_state{update_org_statement=UO}) ->
     DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
-    [ {UO, [Name, Tagline, DescSrc, DescMarkdown, OrgId]} ].
+    TaglineMarkdown = ghostlight_db_utils:markdown_or_null(TaglineSrc),
+    [ {UO, [Name, TaglineSrc, TaglineMarkdown, DescSrc, DescMarkdown, OrgId]} ].
 
 
 %%%===================================================================
@@ -144,6 +147,7 @@ get(OrgId, Format) ->
       [{
         OrgId,
         OrgName,
+        OrgTaglineSrc,
         OrgTagline,
         OrgDescriptionSrc,
         OrgDescription,
@@ -160,12 +164,13 @@ get(OrgId, Format) ->
     ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
 
     Desc = case Format of html -> OrgDescription; markdown -> OrgDescriptionSrc end,
+    Tag = case Format of html -> OrgTagline; markdown -> OrgTaglineSrc end,
 
     #org_return{
       org=#organization{
              id=OrgId,
              name=OrgName,
-             tagline=OrgTagline,
+             tagline=Tag,
              description=Desc,
              external_links=ExternalLinks,
              members=MemberList,
@@ -226,9 +231,9 @@ update(Org) ->
 
 prepare_statements(C, State) ->
     OrgsSql = "INSERT INTO organizations "
-        ++ "(org_id, parent_org, name, tagline, description_src, description_markdown, vanity_name, date_founded, visibility)"
-        ++ " VALUES($1, $2, $3, $4, $5, $6, $7, $8::date, $9)",
-    {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, uuid, text, text, text, text, date, text]),
+        ++ "(org_id, parent_org, name, tagline_src, tagline_markdown, description_src, description_markdown, vanity_name, date_founded, visibility)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9::date, $10)",
+    {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, uuid, text, text, text, text, text, date, text]),
 
     OrgEmployeeSql = "INSERT INTO org_employees "
         ++ "(org_id, person_id, title, description_src, description_markdown, date_started, date_ended)"
@@ -248,7 +253,8 @@ prepare_statements(C, State) ->
 SELECT
     o.org_id,
     o.name,
-    o.tagline,
+    o.tagline_src,
+    o.tagline_markdown,
     o.description_src,
     o.description_markdown,
     array_to_json(ARRAY(SELECT (ol.link, ol.type)::external_link
@@ -286,13 +292,13 @@ WHERE o.org_id = $1
 ",
     {ok, GetOrg} = epgsql:parse(C, "get_org_statement", GetOrgSql, [uuid]),
 
-    GetOrgListingsSql = "SELECT o.org_id, o.name, o.tagline, o.description_markdown FROM organizations AS o ORDER BY o.name ASC LIMIT 50",
+    GetOrgListingsSql = "SELECT o.org_id, o.name, o.tagline_markdown, o.description_markdown FROM organizations AS o ORDER BY o.name ASC LIMIT 50",
     {ok, GetOrgListings} = epgsql:parse(C, "get_org_listings", GetOrgListingsSql, []),
 
     UpdateOrgSql = "UPDATE organizations "
-        ++ "SET name = $1, tagline = $2, description_src = $3, description_markdown = $4 "
-        ++ " WHERE org_id = $5",
-    {ok, UpdateOrg} = epgsql:parse(C, "update_organization", UpdateOrgSql, [text, text, text, text, uuid]),
+        ++ "SET name = $1, tagline_src = $2, tagline_markdown = $3, description_src = $4, description_markdown = $5 "
+        ++ " WHERE org_id = $6",
+    {ok, UpdateOrg} = epgsql:parse(C, "update_organization", UpdateOrgSql, [text, text, text, text, text, uuid]),
   
     State#db_state{
        insert_org_statement=InsertOrg,

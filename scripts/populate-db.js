@@ -14,6 +14,7 @@ resources.forEach(function(resource) {
 
   contents.forEach(function(entity) {
     var entityPath = path.join(resourcePath, entity);
+    if (entityPath.match(/^\./)) return;
     var contents = fs.readFileSync(entityPath);
     var options = {
       uri: util.format(url, resource),

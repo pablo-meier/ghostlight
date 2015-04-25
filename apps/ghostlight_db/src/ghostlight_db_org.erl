@@ -58,10 +58,10 @@ handle_call({insert_org, Org}, _From, State) ->
     {reply, Id, State};
 
 handle_call({update_org, Org}, _From, State) ->
-    {Inserts, Id} = get_update_commands(Org, State),
-    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
+    Commands = get_update_commands(Org, State),
+    Reply = ghostlight_db_utils:exec_batch(Commands, State),
     lager:info("Postgres returned ~p for update", [Reply]),
-    {reply, Id, State};
+    {reply, true, State};
 
 handle_call({get_inserts, Org }, _From, State) ->
     Reply = get_inserts(Org, State),
@@ -124,11 +124,34 @@ employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=De
     [PersonInsert,
      {IE, [OrgId, PersonId, Title, Description, Markdowned, null, null]}].
 
-get_update_commands(#organization{id=OrgId, name=Name, tagline=TaglineSrc, description=DescSrc},
-                    #db_state{update_org_statement=UO}) ->
+
+%% Updates are "as they stand" - Delete everything that's there, replace
+%% it with what you were given.
+get_update_commands(#organization{id=OrgId,
+                                  name=Name,
+                                  tagline=TaglineSrc,
+                                  description=DescSrc,
+                                  members=Members,
+                                  employees=Employees,
+                                  external_links=Links},
+                    State=#db_state{update_org_statement=UO,
+                                    delete_org_employees=DOW,
+                                    delete_org_members=DOM,
+                                    delete_org_links=DOL,
+                                    insert_org_external_link=OL}) ->
     DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
     TaglineMarkdown = ghostlight_db_utils:markdown_or_null(TaglineSrc),
-    [ {UO, [Name, TaglineSrc, TaglineMarkdown, DescSrc, DescMarkdown, OrgId]} ].
+
+    MemberInserts = lists:flatten( [ member_inserts(OrgId, Member, State) || Member <- Members ]),
+    EmployeeInserts = lists:flatten( [ employee_inserts(OrgId, Employee, State) || Employee <- Employees]),
+    LinkInserts = ghostlight_db_utils:external_links_inserts(OrgId, OL, Links),
+    lists:append([ [{UO, [Name, TaglineSrc, TaglineMarkdown, DescSrc, DescMarkdown, OrgId]},
+                    {DOW, [OrgId]},
+                    {DOM, [OrgId]},
+                    {DOL, [OrgId]}],
+                    EmployeeInserts,
+                    MemberInserts,
+                    LinkInserts ]).
 
 
 %%%===================================================================
@@ -300,6 +323,15 @@ WHERE o.org_id = $1
         ++ " WHERE org_id = $6",
     {ok, UpdateOrg} = epgsql:parse(C, "update_organization", UpdateOrgSql, [text, text, text, text, text, uuid]),
   
+    DeleteEmployeeSql = "DELETE FROM org_employees WHERE org_id = $1",
+    {ok, DeleteOrgEmployee} = epgsql:parse(C, "delete_org_employees", DeleteEmployeeSql, [uuid]),
+
+    DeleteMemberSql = "DELETE FROM org_members WHERE org_id = $1",
+    {ok, DeleteOrgMember} = epgsql:parse(C, "delete_org_members", DeleteMemberSql, [uuid]),
+
+    DeleteExternalLinkSql = "DELETE FROM org_links WHERE org_id = $1",
+    {ok, DeleteExternalLink} = epgsql:parse(C, "delete_org_external", DeleteExternalLinkSql, [uuid]),
+
     State#db_state{
        insert_org_statement=InsertOrg,
 
@@ -309,6 +341,11 @@ WHERE o.org_id = $1
        insert_org_employee=InsertOrgEmployee,
        insert_org_member=InsertOrgMember,
        insert_org_external_link=OrgExternalLink,
+
+       delete_org_employees=DeleteOrgEmployee,
+       delete_org_members=DeleteOrgMember,
+       delete_org_links=DeleteExternalLink,
+
        update_org_statement=UpdateOrg
     }.
 

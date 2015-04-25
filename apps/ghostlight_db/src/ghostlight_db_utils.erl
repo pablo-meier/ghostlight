@@ -73,7 +73,7 @@ parse_person_or_org({Entity}) ->
 
 external_links_sql_to_record(Links) ->
     lists:foldl(fun({Proplist}, Accum) ->
-                        Link = proplists:get_value(<<"link">>, Proplist, null),
+                        Link = normalize_link(proplists:get_value(<<"link">>, Proplist, null)),
                         Type = proplists:get_value(<<"type">>, Proplist, null),
                         case Link of 
                             null -> Accum;
@@ -95,6 +95,12 @@ external_links_sql_to_record(Links) ->
                             end
                         end
                 end, #external_links{}, Links).
+
+normalize_link(Link) ->
+    case re:run(Link, "^http://") of
+        nomatch -> list_to_binary("http://" ++ binary_to_list(Link));
+        _ -> Link
+    end.
 
 
 external_links_inserts(OrgId,

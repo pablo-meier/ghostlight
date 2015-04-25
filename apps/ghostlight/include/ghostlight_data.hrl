@@ -156,6 +156,9 @@
                    get_org_listings,
                    get_org_statement,
                    update_org_statement,
+                   delete_org_employees,
+                   delete_org_members,
+                   delete_org_links,
 
                    %% Productions
                    insert_performance_statement,

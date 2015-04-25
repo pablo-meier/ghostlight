@@ -15,27 +15,11 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-%% HTML
-%%
-%% GET /id         ------------- DONE
-%% GET /           ------------- DONE
-%% GET /new
-%% GET /id/delete
-%% GET /id/edit
-%%
-%% JSON
-%%
-%% GET /id         ------------- DONE
-%% GET /           ------------- DONE
-%% POST /          ------------- DONE
-%% PUT /id
-%% DELETE /id
-
 
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
 allowed_methods(Req, State) ->
-    {[<<"GET">>, <<"POST">>, <<"DELETE">>],
+    {[<<"GET">>, <<"POST">>, <<"PUT">>, <<"DELETE">>],
      Req, State}.
 charsets_provided(Req, State) ->
     {[<<"utf-8">>], Req, State}.
@@ -244,30 +228,30 @@ to_json(Req, State) ->
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     AsJson = jiffy:decode(RequestBody),
     OrgRecord = json_to_record(AsJson),
-    {Method, Req3} = cowboy_req:method(Req2),
+    Method = cowboy_req:method(Req2),
     case {OrgRecord#organization.id, Method} of
         {null, <<"POST">>} ->
             OrgId = ghostlight_db:insert_org(OrgRecord),
             Response = jiffy:encode({[{<<"status">>, ok}, {<<"id">>, list_to_binary(OrgId)}]}),
-            {true, cowboy_req:set_resp_body(Response, Req3), State};
+            {true, cowboy_req:set_resp_body(Response, Req2), State};
         {_Else, <<"POST">>} ->
             Body = jiffy:encode({[{<<"error">>, <<"You may not insert an organization with the field 'id'.">>}]}),
-            Req4 = cowboy_req:set_resp_body(Body, Req3),
-            {false, Req4, State};
+            Req3 = cowboy_req:set_resp_body(Body, Req2),
+            {false, Req3, State};
         {null, <<"PUT">>} ->
             Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
-            Req4 = cowboy_req:set_resp_body(Body, Req3),
-            {false, Req4, State};
+            Req3 = cowboy_req:set_resp_body(Body, Req2),
+            {false, Req3, State};
         {_OrgId, <<"PUT">>} ->
             Success = ghostlight_db:update_org(OrgRecord),
             case Success of
                 true ->
                     Response = jiffy:encode({[{<<"status">>, ok}]}),
-                    {true, cowboy_req:set_resp_body(Response, Req3), State};
+                    {true, cowboy_req:set_resp_body(Response, Req2), State};
                 false ->
                     Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
-                    Req4 = cowboy_req:set_resp_body(Body, Req3),
-                    {false, Req4, State}
+                    Req3 = cowboy_req:set_resp_body(Body, Req2),
+                    {false, Req3, State}
             end
     end.
 

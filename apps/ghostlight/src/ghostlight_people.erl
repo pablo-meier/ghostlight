@@ -35,7 +35,7 @@
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
 allowed_methods(Req, State) ->
-    {[<<"GET">>, <<"POST">>, <<"DELETE">>],
+    {[<<"GET">>, <<"POST">>, <<"PUT">>, <<"DELETE">>],
      Req, State}.
 charsets_provided(Req, State) ->
     {[<<"utf-8">>], Req, State}.
@@ -46,25 +46,32 @@ content_types_provided(Req, State) ->
      ], Req, State}.
 content_types_accepted(Req, State) ->
     {[
+      {<<"application/json; charset=utf-8">>, post_json},
       {<<"application/json">>, post_json}
      ], Req, State}.
 
 person_to_html(Req, State) ->
     PersonId = cowboy_req:binding(person_id, Req),
-    case PersonId of
-        undefined ->
+    Command = cowboy_req:binding(command, Req),
+    case {PersonId, Command} of
+        {undefined, undefined} ->
             PersonList = ghostlight_db:get_person_listings(),
             ForTemplate = [{people, [ record_to_proplist(Person) || Person <- PersonList ]}],
             {ok, Body} = person_listing_template:render(ForTemplate),
             {Body, Req, State};
-
-        <<"new">> ->
+        {<<"new">>, _} ->
             {ok, Body} = insert_person_template:render([]),
             {Body, Req, State};
-        _ ->
+        {_, undefined} ->
             PersonRecord = ghostlight_db:get_person(PersonId),
             ForTemplate = record_to_proplist(PersonRecord),
             {ok, Body} = person_template:render(ForTemplate),
+            {Body, Req, State};
+        {_, <<"edit">>} ->
+            PersonRecord = ghostlight_db:get_person(PersonId, markdown),
+            AsJson = jiffy:encode(record_to_json(PersonRecord)),
+            {ok, Body} = insert_person_template:render([{name, PersonRecord#person_return.person#person.name},
+                                                        {editmode, AsJson}]),
             {Body, Req, State}
     end.
 
@@ -72,6 +79,7 @@ person_to_html(Req, State) ->
 %% Aw hell yeah Pattern Matching.
 record_to_proplist(#person_return{
                      person=#person{
+                        id=PersonId,
                         name=Name,
                         description=Description,
                         external_links=ExternalLinks
@@ -94,7 +102,7 @@ record_to_proplist(#person_return{
 %                                      org=#organization{id=OrgId, name=OrgName},
                                       performances=[#performance{
                                                       work=#work{ id=WorkId, title=WorkTitle },
-                                                      onstage=#onstage{ role=Role }}]
+                                                      onstage=[#onstage{ role=Role }]}]
                                     } <- Onstage],
     OffstageProplist = [ [{show_id, ShowId}, 
                           {show_title, ShowTitle},
@@ -107,7 +115,7 @@ record_to_proplist(#person_return{
 %                                                org=#organization{id=OrgId, name=OrgName},
                                                 performances=[#performance{
                                                                 work=#work{ id=WorkId, title=WorkTitle },
-                                                                offstage=#offstage{ job=Job }
+                                                                offstage=[#offstage{ job=Job }]
                                                              }]
                                               } <- Offstage],
     AuthorshipProplist = [ [{work_id, WorkId},
@@ -129,7 +137,8 @@ record_to_proplist(#person_return{
                      {org_name, OrgName},
                      {position, Position}] || #org_work{org_id=OrgId, org_name=OrgName, title=Position} <- Orgs ],
 
-    [{name, Name},
+    [{id, PersonId},
+     {name, Name},
      {description, Description},
      {onstage_list, OnstageProplist},
      {offstage_list, OffstageProplist},
@@ -176,16 +185,19 @@ person_to_json(Req, State) ->
 
 record_to_json(#person{
                   id=PersonId,
-                  name=PersonName
+                  name=PersonName,
+                  external_links=Links
                }) ->
     ghostlight_utils:json_with_valid_values([
         {<<"person_id">>, PersonId},
-        {<<"name">>, PersonName}
+        {<<"name">>, PersonName},
+        {<<"social">>, ghostlight_utils:external_links_record_to_json(Links)}
     ]);
 record_to_json(#person_return{
                      person=#person{
                          id=PersonId,
-                         name=Name
+                         name=Name,
+                         external_links=Links
                      },
                      authored=Authored,
                      directed=Directed,
@@ -196,6 +208,7 @@ record_to_json(#person_return{
     ghostlight_utils:json_with_valid_values([
         {<<"id">>, PersonId},
         {<<"name">>, Name},
+        {<<"social">>, ghostlight_utils:external_links_record_to_json(Links)},
         {<<"authored">>, [ ghostlight_work:record_to_json(Work) || Work <- Authored ]},
         {<<"directed">>, [ ghostlight_work:record_to_json(Work) || Work <- Directed ]},
         {<<"onstage">>, [ ghostlight_show:record_to_json(Show) || Show <- Onstage ]},
@@ -208,15 +221,30 @@ post_json(Req, State) ->
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     AsJson = jiffy:decode(RequestBody),
     PersonRecord = json_to_record(AsJson),
-    case PersonRecord#person.id of
-        null ->
+    Method = cowboy_req:method(Req2),
+    case {PersonRecord#person.id, Method} of
+        {null, <<"POST">>} ->
             PersonId = ghostlight_db:insert_person(PersonRecord),
             Response = jiffy:encode({[{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(PersonId)}]}),
             {true, cowboy_req:set_resp_body(Response, Req2), State};
-        _Else ->
+        {_Else, <<"POST">>} ->
             Body = jiffy:encode({[{<<"error">>, <<"You may not insert a person with the field 'id'.">>}]}),
             Req3 = cowboy_req:set_resp_body(Body, Req2),
-            {false, Req3, State}
+            {false, Req3, State};
+        {null, <<"PUT">>} ->
+            Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
+            Req3 = cowboy_req:set_resp_body(Body, Req2),
+            {false, Req3, State};
+        {_PersonId, <<"PUT">>} ->
+            Success = ghostlight_db:update_person(PersonRecord),
+            case Success of
+                true ->
+                    Response = jiffy:encode({[{<<"status">>, ok}]}),
+                    {true, cowboy_req:set_resp_body(Response, Req2), State};
+                false ->
+                    Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
+                    Req3 = cowboy_req:set_resp_body(Body, Req2),
+                    {false, Req3, State}
+            end
     end.
-
 

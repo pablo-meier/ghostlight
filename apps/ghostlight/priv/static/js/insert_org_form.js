@@ -345,7 +345,6 @@ function setStartData(orgObj) {
 
   if (_.has(orgObj, 'social')) {
     _.pairs(orgObj.social).forEach(function(socialPair) {
-      console.log('socialPair is', socialPair);
       externalLinks.create(socialPair[0], socialPair[1]);
     });
   }

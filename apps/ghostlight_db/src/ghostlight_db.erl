@@ -21,8 +21,10 @@
          insert_org/1,
 
          get_person/1,
+         get_person/2,
          get_person_listings/0,
          insert_person/1,
+         update_person/1,
 
          get_work/1,
          get_work_listings/0,
@@ -143,10 +145,14 @@ insert_work(Work) ->
 
 get_person(PersonId) ->
     ghostlight_db_person:get(PersonId).
+get_person(PersonId, Form) ->
+    ghostlight_db_person:get(PersonId, Form).
 get_person_listings() ->
     ghostlight_db_person:listings().
 insert_person(Person) ->
     ghostlight_db_person:insert(Person).
+update_person(Person) ->
+    ghostlight_db_person:update(Person).
 
 %%%===================================================================
 %%% Internal functions

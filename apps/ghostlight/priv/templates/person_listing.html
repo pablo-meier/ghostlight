@@ -3,7 +3,14 @@
 {% block title %}Shows{% endblock %}
 
 {% block content %}
-  <h1>People</h1>
+  <div class="row">
+    <div class="small-8 columns">
+      <h1>People</h1>
+    </div>
+    <div class="small-4 columns">
+      <a href="/people/new" id="submitButton" class="button large radius success right">+ NEW PERSON</a>
+    </div>
+  </div>
 
   <table>
       {% for person in people %}

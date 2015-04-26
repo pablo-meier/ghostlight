@@ -33,7 +33,7 @@ initiate_listening_to_endpoints() ->
     Dispatch = cowboy_router:compile([
                                       {'_', [
                                              {"/shows/[:show_id]", ghostlight_show, []},
-                                             {"/people/[:person_id]", ghostlight_people, []},
+                                             {"/people/[:person_id[/:command]]", ghostlight_people, []},
                                              {"/organizations/[:org_id[/:command]]", ghostlight_org, []},
                                              {"/works/[:work_id]", ghostlight_work, []},
                                              {"/static/[...]", cowboy_static, {priv_dir, ghostlight, "static/",

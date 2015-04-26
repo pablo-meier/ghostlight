@@ -28,6 +28,7 @@
          code_change/3]).
 
 -export([get/1,
+         get/2,
          listings/0,
          insert/1,
 
@@ -98,11 +99,15 @@ get_inserts(#person{ name=Name,
 %%%===================================================================
 
 get(PersonId) ->
+  get(PersonId, html).
+
+get(PersonId, Form) ->
     Response = gen_server:call(?MODULE, {get_person, PersonId}),
     [{ok, []},
      {ok, [{
         Name,
-        Description,
+        DescriptionSrc,
+        DescriptionMarkdown,
         Authorships,
         Director,
         Onstage,
@@ -113,6 +118,8 @@ get(PersonId) ->
         Producer
        }]},
      {ok, []}] = Response,
+
+    Description = case Form of html -> DescriptionMarkdown; markdown -> DescriptionSrc end,
 
     AuthorList = [#work{
                      id = proplists:get_value(<<"work_id">>, Work),
@@ -127,9 +134,9 @@ get(PersonId) ->
                                                   id = proplists:get_value(<<"work_id">>, RoleObj),
                                                   title = proplists:get_value(<<"title">>, RoleObj)
                                                },
-                                        onstage = #onstage {
+                                        onstage = [#onstage {
                                                      role = proplists:get_value(<<"role">>, RoleObj)
-                                                  }
+                                                  }]
                                      } || {RoleObj} <- proplists:get_value(<<"roles">>, Show)],
                       producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)]
                    } || {Show} <- ghostlight_db_utils:decode_not_null(Onstage)],
@@ -142,9 +149,9 @@ get(PersonId) ->
                                                    id = proplists:get_value(<<"work_id">>, RoleObj),
                                                    title = proplists:get_value(<<"title">>, RoleObj)
                                                 },
-                                         offstage = #offstage {
+                                         offstage = [#offstage {
                                                       job = proplists:get_value(<<"job">>, RoleObj)
-                                                     }
+                                                     }]
                                       } || {RoleObj} <- proplists:get_value(<<"jobs">>, Show)],
                        producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)]
                     } || {Show} <- ghostlight_db_utils:decode_not_null(Offstage)],
@@ -224,7 +231,8 @@ prepare_statements(C, State) ->
 "
 SELECT
     p.name,
-    p.description_markdown AS description,
+    p.description_src,
+    p.description_markdown,
     array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
                         FROM works w 
                         INNER JOIN authorship a USING (work_id)

@@ -16,22 +16,6 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-%% HTML
-%%
-%% GET /id         ------------- DONE
-%% GET /           ------------- DONE
-%% GET /new
-%% GET /id/delete
-%% GET /id/edit
-%%
-%% JSON
-%%
-%% GET /id         ------------- DONE
-%% GET /           ------------- DONE
-%% POST /          ------------- DONE
-%% PUT /id
-%% DELETE /id
-
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
 allowed_methods(Req, State) ->
@@ -183,38 +167,39 @@ person_to_json(Req, State) ->
     end.
 
 
-record_to_json(#person{
-                  id=PersonId,
-                  name=PersonName,
-                  external_links=Links
-               }) ->
-    ghostlight_utils:json_with_valid_values([
-        {<<"person_id">>, PersonId},
-        {<<"name">>, PersonName},
-        {<<"social">>, ghostlight_utils:external_links_record_to_json(Links)}
-    ]);
+record_to_json(Person=#person{}) ->
+    Proplist = record_to_json_shared(Person),
+    ghostlight_utils:json_with_valid_values(Proplist);
 record_to_json(#person_return{
-                     person=#person{
-                         id=PersonId,
-                         name=Name,
-                         external_links=Links
-                     },
+                     person=Person,
                      authored=Authored,
                      directed=Directed,
                      onstage=Onstage,
                      offstage=Offstage,
                      orgs_employee=Orgs
                }) ->
-    ghostlight_utils:json_with_valid_values([
-        {<<"id">>, PersonId},
-        {<<"name">>, Name},
-        {<<"social">>, ghostlight_utils:external_links_record_to_json(Links)},
-        {<<"authored">>, [ ghostlight_work:record_to_json(Work) || Work <- Authored ]},
-        {<<"directed">>, [ ghostlight_work:record_to_json(Work) || Work <- Directed ]},
-        {<<"onstage">>, [ ghostlight_show:record_to_json(Show) || Show <- Onstage ]},
-        {<<"offstage">>, [ ghostlight_show:record_to_json(Show) || Show <- Offstage ]},
-        {<<"organizations">>, [ ghostlight_org:record_to_json(Org) || Org <- Orgs ]}
-    ]).
+    PersonArr = record_to_json_shared(Person),
+    ghostlight_utils:json_with_valid_values(lists:append([
+        PersonArr,
+        [{<<"authored">>, [ ghostlight_work:record_to_json(Work) || Work <- Authored ]},
+         {<<"directed">>, [ ghostlight_work:record_to_json(Work) || Work <- Directed ]},
+         {<<"onstage">>, [ ghostlight_show:record_to_json(Show) || Show <- Onstage ]},
+         {<<"offstage">>, [ ghostlight_show:record_to_json(Show) || Show <- Offstage ]},
+         {<<"organizations">>, [ ghostlight_org:record_to_json(Org) || Org <- Orgs ]}]
+    ])).
+
+
+record_to_json_shared(#person{
+                          id=PersonId,
+                          name=PersonName,
+                          description=Description,
+                          external_links=Links}) ->
+    [
+     {<<"person_id">>, PersonId},
+     {<<"name">>, PersonName},
+     {<<"description">>, Description},
+     {<<"social">>, ghostlight_utils:external_links_record_to_json(Links)}
+    ].
 
 
 post_json(Req, State) ->

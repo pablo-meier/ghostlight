@@ -179,5 +179,7 @@
                    insert_person_statement,
                    insert_person_links_statement,
                    get_person_listings,
-                   get_person_statement
+                   get_person_statement,
+                   update_person_statement,
+                   delete_person_links_statement
 }).

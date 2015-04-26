@@ -31,6 +31,7 @@
          get/2,
          listings/0,
          insert/1,
+         update/1,
 
          get_inserts/1,
          prepare_statements/2]).
@@ -74,6 +75,12 @@ handle_call({insert_person, Person}, _From, State) ->
     lager:info("Postgres responsed ~p for person insert", [Reply]),
     {reply, Id, State};
 
+handle_call({update_person, Person}, _From, State) ->
+    Commands = get_update_commands(Person, State),
+    Reply = ghostlight_db_utils:exec_batch(Commands, State),
+    lager:info("Postgres responsed ~p for person update", [Reply]),
+    {reply, true, State};
+
 handle_call({get_inserts, Person}, _From, State) ->
     Reply = get_inserts(Person, State),
     {reply, Reply, State};
@@ -92,6 +99,22 @@ get_inserts(#person{ name=Name,
     AllInserts = lists:append([ [{IP, [PersonId, Name, Description, Markdowned]}],
                                  LinkInserts]),
     {AllInserts, PersonId}.
+
+
+get_update_commands(#person{id=PersonId,
+                            name=Name,
+                            description=DescSrc,
+                            external_links=Links},
+                    #db_state{update_person_statement=UP,
+                              delete_person_links_statement=DL,
+                              insert_person_links_statement=PL}) ->
+
+    DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
+    LinkInserts = ghostlight_db_utils:external_links_inserts(PersonId, PL, Links),
+ 
+    lists:append([ [{UP, [Name, DescSrc, DescMarkdown, PersonId]},
+                    {DL, [PersonId]}],
+                   LinkInserts ]).
 
 
 %%%===================================================================
@@ -206,6 +229,9 @@ get(PersonId, Form) ->
        orgs_member = MemberList,
        shows_produced = ProducerList
     }.
+
+update(Person) ->
+    gen_server:call(?MODULE, {update_person, Person}).
 
 listings() ->
     Response = gen_server:call(?MODULE, get_person_listings),
@@ -352,11 +378,21 @@ WHERE p.person_id = $1
 ",
     {ok, GetPerson} = epgsql:parse(C, "get_person_statement", GetPersonSql, [uuid]),
 
+
+    DeletePersonLinksSql = "DELETE FROM people_links WHERE person_id =  $1",
+    {ok, DeletePersonLinks} = epgsql:parse(C, "delete_person_links", DeletePersonLinksSql, [uuid]),
+
+    UpdatePersonSql = "UPDATE people SET name = $1, description_src = $2, description_markdown = $3 WHERE person_id = $4", 
+    {ok, UpdatePerson} = epgsql:parse(C, "update_person", UpdatePersonSql, [text, text, text, uuid]),
+ 
     State#db_state{
        insert_person_statement=InsertPerson,
        insert_person_links_statement=PersonLinks,
        get_person_listings=GetPersonListings,
 
+       delete_person_links_statement=DeletePersonLinks,
+       update_person_statement=UpdatePerson,
+ 
        get_person_statement=GetPerson
     }.
 

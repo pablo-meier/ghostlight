@@ -1,0 +1,7 @@
+{
+  "todo": true,
+  "predef": {
+    "$": true,
+    "_": true
+  }
+}

@@ -15,7 +15,6 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
 allowed_methods(Req, State) ->

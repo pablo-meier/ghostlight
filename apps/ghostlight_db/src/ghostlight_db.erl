@@ -27,8 +27,10 @@
          update_person/1,
 
          get_work/1,
+         get_work/2,
          get_work_listings/0,
-         insert_work/1
+         insert_work/1,
+         update_work/1
         ]).
 
 -export([fix_dups/0,
@@ -125,23 +127,27 @@ get_show_listings() ->
 get_show(ShowId) ->
     ghostlight_db_show:get(ShowId).
 
-insert_org(Org) ->
-    ghostlight_db_org:insert(Org).
-get_org_listings() ->
-    ghostlight_db_org:listings().
 get_org(OrgId) ->
     ghostlight_db_org:get(OrgId).
 get_org(OrgId, Form) ->
     ghostlight_db_org:get(OrgId, Form).
+insert_org(Org) ->
+    ghostlight_db_org:insert(Org).
+get_org_listings() ->
+    ghostlight_db_org:listings().
 update_org(Org) ->
     ghostlight_db_org:update(Org).
 
 get_work(WorkId) ->
     ghostlight_db_work:get(WorkId).
+get_work(WorkId, Form) ->
+    ghostlight_db_work:get(WorkId, Form).
 get_work_listings() ->
     ghostlight_db_work:listings().
 insert_work(Work) ->
     ghostlight_db_work:insert(Work).
+update_work(Work) ->
+    ghostlight_db_work:update(Work).
 
 get_person(PersonId) ->
     ghostlight_db_person:get(PersonId).

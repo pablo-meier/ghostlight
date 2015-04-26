@@ -25,8 +25,10 @@
          code_change/3]).
 
 -export([get/1,
+         get/2,
          listings/0,
          insert/1,
+         update/1,
          
          get_inserts/1,
          prepare_statements/2]).
@@ -83,6 +85,9 @@ handle_call(_Request, _From, State) ->
 %%%===================================================================
 
 get(WorkId) ->
+  get(WorkId, html).
+
+get(WorkId, Format) ->
     Response = gen_server:call(?MODULE, {get_work, WorkId}),
     [{ok, []},
      {ok, [{
@@ -90,11 +95,14 @@ get(WorkId) ->
         Title,
         CollaboratingOrgs,
         Authors,
-        Description,
+        DescriptionSrc,
+        DescriptionMarkdown,
         MinutesLong,
         Productions
        }]},
      {ok, []}] = Response,
+
+    Description = case Format of html -> DescriptionMarkdown; markdown -> DescriptionSrc end,
 
     #work_return{
        work=#work{
@@ -147,6 +155,9 @@ insert(Work) ->
 
 get_inserts(Work) ->
     gen_server:call(?MODULE, {get_inserts, Work}).
+
+update(Work) ->
+    gen_server:call(?MODULE, {update_work, Work}).
 
 get_inserts(#work{title=Title,
                   authors=Authors,
@@ -201,6 +212,7 @@ SELECT
                         LEFT OUTER JOIN people p USING (person_id)
                         LEFT OUTER JOIN organizations o USING (org_id)
                         WHERE a.work_id = w.work_id)) AS authors,
+    w.description_src,
     w.description_markdown,
     w.minutes_long,
     array_to_json(ARRAY(SELECT (s.show_id,

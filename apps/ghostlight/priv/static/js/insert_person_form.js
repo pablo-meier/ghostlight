@@ -166,8 +166,12 @@ function submitForm() {
 }
 
 
+function noArgThunkify(fun) {
+  return function() { fun(); };
+}
+
 $('#submitButton').on('click', submitForm);
-$('#addLinkButton').on('click', externalLinks.create);
+$('#addLinkButton').on('click', noArgThunkify(externalLinks.create));
 
 function setStartData(personObj) {
   personId = personObj.id;

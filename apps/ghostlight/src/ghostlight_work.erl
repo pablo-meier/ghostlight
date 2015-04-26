@@ -33,7 +33,7 @@
 init(Req, Opts) ->
     {cowboy_rest, Req, Opts}.
 allowed_methods(Req, State) ->
-    {[<<"GET">>, <<"POST">>, <<"DELETE">>],
+    {[<<"GET">>, <<"POST">>, <<"PUT">>, <<"DELETE">>],
      Req, State}.
 charsets_provided(Req, State) ->
     {[<<"utf-8">>], Req, State}.
@@ -44,30 +44,40 @@ content_types_provided(Req, State) ->
      ], Req, State}.
 content_types_accepted(Req, State) ->
     {[
+      {<<"application/json; charset=utf-8">>, post_json},
       {<<"application/json">>, post_json}
      ], Req, State}.
 
 work_to_html(Req, State) ->
     WorkId = cowboy_req:binding(work_id, Req),
-    case WorkId of
-        undefined ->
+    Command = cowboy_req:binding(command, Req),
+    case {WorkId, Command} of
+        {undefined, undefined} ->
             Listings = ghostlight_db:get_work_listings(),
             ForTemplate = [{<<"works">>, [ record_to_proplist(Work) || Work <- Listings ]}],
             {ok, Body} = work_listing_template:render(ForTemplate),
             {Body, Req, State};
-        <<"new">> ->
+        {<<"new">>, _} ->
             {ok, Body} = insert_work_template:render([]),
             {Body, Req, State};
-        _ ->
-            WorkRecord = ghostlight_db:get_work(WorkId),
+        {_, undefined} ->
+            WorkRecord = ghostlight_db:get_work(WorkId, html),
             ForTemplate = record_to_proplist(WorkRecord),
             {ok, Body} = work_template:render(ForTemplate),
+            {Body, Req, State};
+        {_, <<"edit">>} ->
+            WorkRecord = ghostlight_db:get_work(WorkId, markdown),
+            {AsJsonProplist} = record_to_json(WorkRecord),
+            AsJson = jiffy:encode(proplists:get_value(<<"work">>, AsJsonProplist)),
+            {ok, Body} = insert_work_template:render([{title, WorkRecord#work_return.work#work.title},
+                                                      {editmode, AsJson}]),
             {Body, Req, State}
     end.
 
 
 record_to_proplist(#work_return{
                        work=#work{
+                               id = WorkId,
                                title = WorkTitle,
                                authors = Authors,
                                description = Description,
@@ -99,7 +109,8 @@ record_to_proplist(#work_return{
                       end,
 
 
-  [{title, WorkTitle},
+  [{id, WorkId},
+   {title, WorkTitle},
    {authors, AuthorsProplist},
    {description, Description},
    {minutes_long, MinutesLong},
@@ -133,7 +144,7 @@ work_to_json(Req, State) ->
             Body = jiffy:encode(Wrapped),
             {Body, Req, State};
         _ ->
-            WorkRecord = ghostlight_db:get_work(WorkId),
+            WorkRecord = ghostlight_db:get_work(WorkId, markdown),
             WorkJson = record_to_json(WorkRecord),
             Body = jiffy:encode(WorkJson),
             {Body, Req, State}
@@ -152,7 +163,7 @@ record_to_json(#work{
         {<<"title">>, WorkTitle},
         {<<"description">>, Description},
         {<<"minutes_long">>, MinutesLong},
-        {<<"authors">>, [ ghostlight_people:record_to_json(Author) || Author <- WorkAuthors ]}
+        {<<"authors">>, [ ghostlight_utils:person_or_org_record_to_json(Author) || Author <- WorkAuthors ]}
     ]);
 
 record_to_json(#work_return{
@@ -164,15 +175,6 @@ record_to_json(#work_return{
         {<<"shows">>, [ ghostlight_show:record_to_json(Show) || Show <- Shows ]}
     ]).
 
-
-post_json(Req, State) ->
-    % upload the body, return yes or no
-    {ok, RequestBody, Req2} = cowboy_req:body(Req),
-    WorkJson = jiffy:decode(RequestBody),
-    WorkRecord = json_to_record(WorkJson),
-    WorkId = ghostlight_db:insert_work(WorkRecord),
-    Response = jiffy:encode({[{<<"id">>, list_to_binary(WorkId)}, {<<"status">>, <<"ok">>}]}),
-    {true, cowboy_req:set_resp_body(Response, Req2), State}.
 
 json_to_record({Proplist}) ->
     CollabOrg = case proplists:get_value(<<"collaborating_org">>, Proplist, null) of
@@ -187,3 +189,36 @@ json_to_record({Proplist}) ->
        minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null),
        collaborating_org = CollabOrg
     }.
+
+
+post_json(Req, State) ->
+    {ok, RequestBody, Req2} = cowboy_req:body(Req),
+    WorkJson = jiffy:decode(RequestBody),
+    WorkRecord = json_to_record(WorkJson),
+    Method = cowboy_req:method(Req2),
+    case {WorkRecord#work.id, Method} of
+        {null, <<"POST">>} ->
+            WorkId = ghostlight_db:insert_work(WorkRecord),
+            Response = jiffy:encode({[{<<"id">>, list_to_binary(WorkId)}, {<<"status">>, <<"ok">>}]}),
+            {true, cowboy_req:set_resp_body(Response, Req2), State};
+        {_Else, <<"POST">>} ->
+            Body = jiffy:encode({[{<<"error">>, <<"You may not insert a work with the field 'id'.">>}]}),
+            Req3 = cowboy_req:set_resp_body(Body, Req2),
+            {false, Req3, State};
+        {null, <<"PUT">>} ->
+            Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
+            Req3 = cowboy_req:set_resp_body(Body, Req2),
+            {false, Req3, State};
+        {_WorkId, <<"PUT">>} ->
+            Success = ghostlight_db:update_work(WorkRecord),
+            case Success of
+                true ->
+                    Response = jiffy:encode({[{<<"status">>, ok}]}),
+                    {true, cowboy_req:set_resp_body(Response, Req2), State};
+                false ->
+                    Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
+                    Req3 = cowboy_req:set_resp_body(Body, Req2),
+                    {false, Req3, State}
+            end
+    end.
+

@@ -327,11 +327,15 @@ function submitForm() {
   console.log('Submitting:', JSON.stringify(finalObject)); 
 }
 
+function noArgThunkify(fun) {
+  return function() { fun(); };
+}
+
 
 $('#submitButton').on('click', submitForm);
-$('#addLinkButton').on('click', externalLinks.create);
-$('#addEmployeeButton').on('click', employees.create);
-$('#addMemberButton').on('click', members.create);
+$('#addLinkButton').on('click', noArgThunkify(externalLinks.create));
+$('#addEmployeeButton').on('click', noArgThunkify(employees.create));
+$('#addMemberButton').on('click', noArgThunkify(members.create));
 
 function setStartData(orgObj) {
   orgId = orgObj.id;

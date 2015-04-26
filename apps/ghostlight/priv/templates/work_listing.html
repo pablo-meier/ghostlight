@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Shows{% endblock %}
+{% block title %}Pieces{% endblock %}
 
 {% block content %}
-  <h1>Works</h1>
+  <div class="row">
+    <div class="small-8 columns">
+      <h1>Pieces</h1>
+    </div>
+    <div class="small-4 columns">
+      <a href="/works/new" id="submitButton" class="button large radius success right">+ NEW PIECE</a>
+    </div>
+  </div>
 
   <table>
       <tr>

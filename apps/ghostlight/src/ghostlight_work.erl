@@ -159,7 +159,7 @@ record_to_json(#work{
                   minutes_long=MinutesLong
                }) ->
     ghostlight_utils:json_with_valid_values([
-        {<<"work_id">>, WorkId},
+        {<<"id">>, WorkId},
         {<<"title">>, WorkTitle},
         {<<"description">>, Description},
         {<<"minutes_long">>, MinutesLong},
@@ -182,6 +182,7 @@ json_to_record({Proplist}) ->
                     Org -> ghostlight_org:json_to_record(Org)
                 end,
     #work {
+       id = proplists:get_value(<<"id">>, Proplist, null),
        title = proplists:get_value(<<"title">>, Proplist),
        authors = [ ghostlight_utils:person_or_org_json_to_record(Author)
                    || Author <- proplists:get_value(<<"authors">>, Proplist) ],

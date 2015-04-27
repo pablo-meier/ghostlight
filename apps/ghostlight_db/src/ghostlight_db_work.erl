@@ -70,6 +70,12 @@ handle_call({insert_work, Work}, _From, State) ->
     lager:info("Postgres responded to insert with ~p~n", [Reply]),
     {reply, WorkId, State};
 
+handle_call({update_work, Work}, _From, State) ->
+    Commands  = get_update_commands(Work, State),
+    Reply = ghostlight_db_utils:exec_batch(Commands, State),
+    lager:info("Postgres responded to update with ~p~n", [Reply]),
+    {reply, true, State};
+
 handle_call({get_inserts, Work}, _From, State) ->
     Reply = get_inserts(Work, State),
     {reply, Reply, State};
@@ -78,6 +84,32 @@ handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
 
+
+get_update_commands(#work{id=WorkId,
+                          title=Title,
+                          description=DescSrc,
+                          collaborating_org=CollabOrg,
+                          minutes_long=MinutesLong,
+                          authors=Authors},
+                    #db_state{update_work_statement=UW,
+                              delete_authors_statement=DA,
+                              insert_authorship_statement=IA}) ->
+
+    DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
+    AuthorshipInserts = lists:flatten([ get_author_inserts(WorkId, Author, IA) || Author <- Authors ]),
+
+    {CollabOrgInserts, CollabOrgId} = case CollabOrg of
+                                          null -> {[], null};
+                                          #organization{} -> ghostlight_db_org:get_inserts(CollabOrg)
+                                      end,
+
+    lager:info("WorkId is ~p~n", [WorkId]),
+    lager:info("CInserts ~p~n, OrgId ~p~n", [CollabOrgInserts, CollabOrgId]),
+
+    lists:append([ CollabOrgInserts,
+                   [{UW, [Title, DescSrc, DescMarkdown, CollabOrgId, MinutesLong, WorkId]},
+                    {DA, [WorkId]}],
+                   AuthorshipInserts]).
 
 
 %%%===================================================================
@@ -237,12 +269,20 @@ FROM works w WHERE work_id = $1;
         ++ "INNER JOIN authorship AS a using (work_id) INNER JOIN people AS p USING (person_id) ORDER BY w.title ASC LIMIT 50",
     {ok, GetWorkListings} = epgsql:parse(C, "get_work_listings", GetWorkListingsSql, []),
 
+    UpdateWorkSql = "UPDATE works SET title = $1, description_src = $2, description_markdown = $3, collaborating_org_id = $4, minutes_long = $5 WHERE work_id = $6",
+    {ok, UpdateWork} = epgsql:parse(C, "update_work", UpdateWorkSql, [text, text, text, uuid, int8, uuid]),
+    DeleteAuthorsSql = "DELETE FROM authorship WHERE work_id = $1",
+    {ok, DeleteAuthors} = epgsql:parse(C, "delete_authorship", DeleteAuthorsSql, [uuid]),
+
 
     State#db_state{
        insert_work_statement=InsertWork,
        insert_authorship_statement=InsertAuthorship,
 
        get_work_statement=GetWork,
+
+       update_work_statement=UpdateWork,
+       delete_authors_statement=DeleteAuthors,
 
        get_work_listings=GetWorkListings
     }.

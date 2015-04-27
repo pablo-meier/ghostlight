@@ -147,6 +147,8 @@
                    insert_authorship_statement,
                    get_work_listings,
                    get_work_statement,
+                   update_work_statement,
+                   delete_authors_statement,
 
                    %% Orgs
                    insert_org_statement,

@@ -29,7 +29,7 @@
   <h3>Production History:</h3>
   <ul>
     {% for show in shows %}
-    <li><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a>, produced by 
+    <li><a href="/shows/{{ show.id }}">{{ show.show_title }}</a>, produced by 
         {% for producer in show.producers %}
           {% if producer.type == "org" %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}.</li>
     {% endfor %}

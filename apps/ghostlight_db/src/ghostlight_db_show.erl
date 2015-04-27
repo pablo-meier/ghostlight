@@ -234,6 +234,7 @@ get(ShowId) ->
     lager:info("External is ~p~n", [jiffy:decode(External)]),
 
     #show{
+        id = ShowId,
         title = Title,
         special_thanks = SpecialThanks,
         dates = [ iso8601:parse(Date) || Date <- jiffy:decode(Dates) ],

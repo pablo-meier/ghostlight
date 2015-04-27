@@ -1,313 +1,120 @@
 {% extends "base.html" %}
 
-{% block title %}New Production{% endblock %}
+{% block title %}{% if editmode %}Edit {{ title }}{% else %}New Production{% endif %}{% endblock %}
 
-{% block head %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
-    <script src="/static/js/vendor/jsonform.js"></script>
+{% block footerjs %}
+    <script src="/static/js/vendor/lodash.min.js"></script>
+    <script src="/static/js/insert_show_form.js"></script>
+    {% if editmode %}
+    {% autoescape off %}<script type="text/javascript">(function() { var toEdit = {{ editmode }}; GHOSTLIGHT_EDIT(toEdit); })();</script>{% endautoescape %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-<h1>New Show</h1>
-<form></form>
-<script type="text/javascript">
-    $('form').jsonForm({
-  "$schema": "http://json-schema.org/draft-03/schema#",
-   "type": "object",
-  "title": "Schema defining a show.",
-  "description": "Also known as a production, a show is a collection of performances that are presented on a planned series of dates. \"If it's got a program, it's a show.\"",
+<div class="row">
+  <div class="small-8 columns">
+      <h1>{% if editmode %}Edit {{ title }}{% else %}New Production{% endif %}</h1>
+      <p>A <strong>Title</strong> and <strong>at least one Performance</strong> is all that's required to have a production.</p>
+      <p>Productions are the backbone of ghostlight (and people are the heart!), but they can be a little complicated. If you're having trouble with Productions, Pieces, and Performances, check out the Glossary.
+  </div>
+  <div class="small-4 columns">
+      <div id="submitButton" class="button large radius success right">{% if editmode %}SAVE CHANGES{% else %}SUBMIT PRODUCTION{% endif %}</div>
+  </div>
+</div>
+<!-- row -->
 
-  "definitions": {
-    "person": {
-      "title": "Person schema",
-      "description": "The bread and butter of Ghostlight, a person is also one of our trickiest.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "id" : {
-          "type": "string"
-        },
-        "social": {
-          "$ref": "#/definitions/socialBlock"
-        }
-      }
-    },
+<form data-abide name="show-form">
+  <label>Title:
+    <input type="text" name="show-title" placeholder="The Wrapes of Grath" required autofocus /></label>
 
-    "work": {
-      "title": "Schema defining a work",
-      "description": "Any piece that is performed is known as a work. \"If it has a script, it's a work.\"",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "title": {
-          "type": "string",
-          "minLength": 1
-        },
-        "authors":{
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "!/definitions/person_or_org"
-          }
-        },
-        "description": {
-          "type": "string",
-          "minLength": 1
-        },
-        "minutes_long": {
-          "type": "integer",
-          "minimum": 1,
-          "exclusiveMinimum": false
-        },
-        "collaborating_org":{
-          "$ref": "#/definitions/org"
-        }
-      }
-    },
+  <label>Description:
+    <textarea name="work-description" placeholder="chaplain era silent motion pictures where basically the first subbed anime . click to read more"></textarea></label>
+ 
+  <fieldset id="producerArray">
+    <legend>Producers</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+          <p>Who produced this show? Each can be either <strong>a person</strong> <em>or</em> <strong>an organization</strong>. Most shows are just produced by a single organization.</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addProducerButton" class="button small center inline more-rows-button small">Add Producer&hellip;</div>
+      </div>
+    </div> <!-- row -->
+  </fieldset>
 
-    "org": {
-      "title": "Schema defining an organization",
-      "description": "Any collection of people who work together to produce shows. Can have employees (who have titles, are generally considered Leadership) and members (who don't).",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["name"],
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "description": {
-          "type": "string",
-          "minLength": 1
-        },
-        "tagline": {
-          "type": "string",
-          "minLength": 1
-        },
-        "social": {
-          "$ref": "#/definitions/socialBlock"
-        },
-        "employees": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["person"],
-            "properties": {
-              "title": {
-                "type": "string",
-                "minLength": 1
-              },
-              "person": {
-                "$ref": "#/definitions/person"
-              }
-            }
-          }
-        },
-        "members": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["person"],
-            "properties": {
-              "person": {
-                "$ref": "#/definitions/person"
-              }
-            }
-          }
-        }
-      }
-    },
+  <fieldset id="performancesArray">
+    <legend>Performances</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+          <p><strong>Performances</strong> are a thing you watched in a show: a piece, with a cast, director(s), often with a creative team. The <strong>Description</strong> and <strong>Director's Note</strong> can use Markdown.</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addPerformanceButton" class="button small center inline more-rows-button small">Add Performance&hellip;</div>
+      </div>
+    </div> <!-- row -->
+  </fieldset>
 
-    "person_or_org": {
-      "type": "object",
-      "patternProperties": {
-        "org":{
-          "$ref": "#/definitions/org"
-        },
-        "person":{
-          "$ref": "#/definitions/person"
-        }
-      }
-    },
+  <fieldset id="datesArray">
+    <legend>Show Dates</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+          <p>When did/does this show go up?</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addDateButton" class="button small center inline more-rows-button small">Add Date&hellip;</div>
+      </div>
+    </div> <!-- row -->
+  </fieldset>
 
-    "socialBlock": {
-      "title": "A block of links that points to various outside sources, by category, i.e. Website, newsletter, Facebook, etc.",
-      "description": "Since virtually all theatre entities currently manage their online spaces with these providers, we just have an easy way to link into them.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "website": { "type": "string", "minLength": 1 },
-        "email": { "type": "string", "minLength": 1 },
-        "blog": { "type": "string", "minLength": 1 },
-        "newsletter": { "type": "string", "minLength": 1 },
-        "facebook": { "type": "string", "minLength": 1 },
-        "twitter": { "type": "string", "minLength": 1 },
-        "instagram": { "type": "string", "minLength": 1 },
-        "vimeo": { "type": "string", "minLength": 1 },
-        "youtube": { "type": "string", "minLength": 1 },
-        "pinterest": { "type": "string", "minLength": 1 },
-        "tumblr": { "type": "string", "minLength": 1 },
-        "gplus": { "type": "string", "minLength": 1 },
-        "patreon": { "type": "string", "minLength": 1 },
-        "newplayx": { "type": "string", "minLength": 1 }
-      }
-    }
-  },
+  <fieldset id="linkArray">
+    <legend>Social Media</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+          <p>Web presence elsewhere (Website, Mailing List, Twitter&hellip;)</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addLinkButton" class="button small center inline more-rows-button small">Add Link&hellip;</div>
+      </div>
+    </div> <!-- row -->
+  </fieldset>
 
-  "type": "object",
-  "required": ["title", "dates", "producers", "performances"],
-  "additionalProperties": false,
+  <fieldset id="pressArray">
+    <legend>Press Links</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+          <p>Did this show get coverage? Reviews? Previews? Put'em here!</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addPressButton" class="button small center inline more-rows-button small">Add Link&hellip;</div>
+      </div>
+    </div> <!-- row -->
+  </fieldset>
 
-  "properties": {
-    "title": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 300
-    },
+  <label>Special Thanks:
+    <textarea name="work-description" placeholder="chaplain era silent motion pictures where basically the first subbed anime . click to read more"></textarea></label>
 
-    "dates": {
-      "type": "array",
-      "minItems": 1,
-      "items" : {
-        "type": "string",
-        "pattern": "(^ongoing$|\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z)"
-      }
-    },
-
-    "hosts": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "$ref": "#/definitions/person"
-      }
-    },
-
-    "producers": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "$ref": "#/definitions/person_or_org"
-      }
-    },
-
-    "performances": {
-      "type": "array",
-      "items" : {
-        "title": "Schema defining a performance.",
-        "description": "A rare entity in that it isn't represented by a resource and only exists in a show, it's the output of a creative team, like the performance of a 10-minute play, a full-length, or showing a video. \"If it's got a cast, it's a performance.\"",
-        "type": "object",
-        "additionalProperties": false,
-
-        "properties": {
-          "work": {
-            "$ref": "#/definitions/work"
-          },
-
-          "onstage": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["performer"],
-              "properties": {
-                "role": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "performer": {
-                  "$ref": "#/definitions/person"
-                }
-              }
-            }
-          },
-          "offstage": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "type": "array",
-              "minItems": 1,
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["contributor", "job"],
-                "properties": {
-                  "job": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "contributor": {
-                    "$ref": "#/definitions/person_or_org"
-                  }
-                }
-              }
-            }
-          },
-          "directors": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "$ref": "#/definitions/person"
-            }
-          },
-          "directors_note": {
-            "type": "string",
-            "minLength": 1
-          },
-          "description": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": ["work"]
-      },
-      "minItems": 1
-    },
-
-    "special_thanks": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1500
-    },
-
-    "press": {
-      "type": "array",
-      "minLength": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "link": {
-            "type": "string",
-            "minLength": 1
-          },
-          "description": {
-            "type": "string",
-            "minLength": 1
-          }
-        }
-      }
-    },
-
-    "social": {
-      "$ref": "#/definitions/socialBlock"
-    }
-  }
-
-    });
-</script>
+  <fieldset id="hostsArray">
+    <legend>Hosts</legend>
+    <div class="row">
+      <div class="small-10 columns">
+        <div class="panel">
+          <p>Did this show have hosts or emcees? Most don't, but we love to accomodate.</p>
+        </div>
+      </div>
+      <div class="small-2 columns">
+        <div id="addPressButton" class="button small center inline more-rows-button small">Add Host&hellip;</div>
+      </div>
+    </div> <!-- row -->
+  </fieldset>
+</form>
 {% endblock %}
-

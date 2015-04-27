@@ -2,70 +2,49 @@
 
 {% block title %}{{ title }}{% endblock %}
 
-{% block head %}
-    <script type="text/javascript" src="//d3js.org/d3.v3.min.js"> </script>
-    <script type="text/javascript" src="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.min.js"> </script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"> </script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment-range/1.0.7/moment-range.min.js"> </script>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css" />
+{% block footerjs %}
+    <script type="text/javascript" src="/static/js/vendor/d3.v3.min.js"> </script>
+    <script type="text/javascript" src="/static/js/vendor/cal-heatmap.min.js"> </script>
+    <script type="text/javascript" src="/static/js/vendor/moment.min.js"> </script>
+    <script type="text/javascript" src="/static/js/vendor/moment-range.min.js"> </script>
+
+    <script type="text/javascript" src="/static/js/view_show.js"> </script>
+    <script type="text/javascript">
+      (function () {
+      var dates = [
+          {% autoescape off %}{% for date in dates %}
+            new Date({{ date|date:"Y, n - 1, j"}}){% if not forloop.last %},{% endif %}
+          {% endfor %}{% endautoescape %}
+      ];
+      GHOSTLIGHT_VIEW(dates);
+      })();
+    </script>
+
+    <link rel="stylesheet" href="/static/css/cal-heatmap.css" />
 {% endblock %}
 
 {% block content %}
-  <h1><em>{{ title }}</em></h1>
-    <!-- If only one performance, author(s) here -->
-    <h3>Presented by 
-        {% for producer in producers %}
-          {% if forloop.last and not forloop.first %} and {% endif %}
-          {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last %},  {% endif %}
-        {% endfor %}</h3>
+  <div class="row">
+    <div class="small-8 columns">
+      <h1><em>{{ title }}</em></h1>
+        <!-- If only one performance, author(s) here -->
+        <h3>Presented by
+            {% for producer in producers %}
+              {% if forloop.last and not forloop.first %} and {% endif %}
+              {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last %},  {% endif %}
+            {% endfor %}</h3>
+    </div>
+    <div class="small-4 columns">
+      <a href="/shows/{{ id }}/edit" id="submitButton" class="button large radius success right">EDIT</a>
+    </div>
+  </div>
 
   {% include "social_media.html" %}
 
   <div id="dateview"></div>
-  <script type="text/javascript">
-    (function () {
-    var dates = [
-        {% autoescape off %}{% for date in dates %}
-          new Date({{ date|date:"Y, n - 1, j"}}){% if not forloop.last %},{% endif %}
-        {% endfor %}{% endautoescape %}
-    ];
-
-    var data = {};
-    dates.forEach(function(d) { data[ (d.getTime() / 1000).toString() ] = 10 });
-
-    var first = dates[0];
-    var last = dates[dates.length - 1];
-    var monthsApart = moment.range(first, last).diff('months') + 1;
-
-    console.log('data is', data);
-
-    var options = {
-      itemSelector: '#dateview',
-      domain: 'month',
-      subDomain: 'x_day',
-      domainLabelFormat: '%B %Y',
-      subDomainTitleFormat: {
-        empty: '{date}',
-        filled: '{date}'
-      },
-      tooltip: true,
-      cellSize: 15,
-      weekStartOnMonday: false,
-      domainGutter: 8,
-      displayLegend: false,
-      range: monthsApart,
-      legend: [10],
-      start: dates[0],
-      dataType: 'json',
-      data: data
-    };
-    var cal = new CalHeatMap();
-    cal.init(options);
-    })();
-  </script>
 
   {% if hosts %}
-    <p>Hosted by  {% for host in hosts %}
+    <p>Hosted by {% for host in hosts %}
     <a href="{{ host.host_id }}">{{ host.host_name }}</a>&nbsp;
     {% endfor %}</p>
   {% endif %}

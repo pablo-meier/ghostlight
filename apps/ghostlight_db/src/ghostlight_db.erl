@@ -11,6 +11,8 @@
 
 -export([
          get_show/1,
+         get_show/2,
+         update_show/1,
          get_show_listings/0,
          insert_show/1,
 
@@ -126,6 +128,10 @@ get_show_listings() ->
     ghostlight_db_show:listings().
 get_show(ShowId) ->
     ghostlight_db_show:get(ShowId).
+get_show(ShowId, Form) ->
+    ghostlight_db_show:get(ShowId, Form).
+update_show(ShowId) ->
+    ghostlight_db_show:update(ShowId).
 
 get_org(OrgId) ->
     ghostlight_db_org:get(OrgId).

@@ -3,18 +3,25 @@
 {% block title %}Productions{% endblock %}
 
 {% block content %}
-  <h1>Productions</h1>
+  <div class="row">
+    <div class="small-8 columns">
+      <h1>Productions</h1>
+    </div>
+    <div class="small-4 columns">
+      <a href="/shows/new" id="submitButton" class="button large radius success right">+ NEW PRODUCTION</a>
+    </div>
+  </div>
 
   <table>
-      <tr>
-          <th>Production</th>
-      </tr>
+    <tr>
+      <th>Production</th>
+    </tr>
 
-      {% for show in shows %}
-      <tr>
-          <td><a href="/shows/{{ show.show_id }}">{{ show.title }}</a></td>
-      </tr>
-      {% endfor %}
+    {% for show in shows %}
+    <tr>
+      <td><a href="/shows/{{ show.id }}">{{ show.title }}</a></td>
+    </tr>
+    {% endfor %}
   </table>
   
 {% endblock %}

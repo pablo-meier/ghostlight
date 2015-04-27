@@ -1,6 +1,6 @@
 {
   "title" : "Beatrice",
-  "special_thanks" : "",
+  "special_thanks" : "Daria Miyeko Marinelli, Freddie at the Producers' Club, Marie Christine Case, Bent Pilates Studio",
   "dates" : ["2015-04-11T19:00:00.000Z",
              "2015-04-12T15:00:00.000Z",
              "2015-04-12T19:00:00.000Z"],
@@ -31,66 +31,62 @@
       "directors": [{"name": "Ria T. DiLullo"}],
       "onstage": [
         {
-          "performer" : {"name": "Alex Herrald"},
-          "role" : "Harry"
+          "performer" : {"name": "Marisa Fratto"},
+          "role" : "Beatrice"
         },
         {
-          "performer" : {"name": "Abby Rosebrock"},
-          "role" : "Martina"
+          "performer" : {"name": "Troy Peckham"},
+          "role" : "Portinari"
         },
         {
-          "performer" : {"name": "Diana Oh"},
-          "role" : "Carrie"
+          "performer" : {"name": "Chelsea Unzner"},
+          "role" : "Carlotta"
         },
         {
-          "performer" : {"name": "Lilli Stein"},
-          "role" : "Tori"
+          "performer" : {"name": "Emily Olcott"},
+          "role" : "Vanna"
         },
         {
-          "performer" : {"name": "Brian Quijada"},
-          "role" : "Daniel"
+          "performer" : {"name": "Bruce Jones"},
+          "role" : "Dante"
+        },
+        {
+          "performer" : {"name": "William John Austin"},
+          "role" : "Simone"
+        },
+        {
+          "performer" : {"name": "Olivia Jampol"},
+          "role" : "Dulcina"
+        },
+        {
+          "performer" : {"name": "Peter John Gallagher"},
+          "role" : "Father Giovanni/Marco"
+        },
+        {
+          "performer" : {"name": "Kelly Higgins"},
+          "role" : "Love"
         }
       ],
       "offstage" : [
         {
-          "contributor" : {"person": {"name" : "Mikhaela Mahony" }},
-          "job" : "Assistant Director"
+          "contributor" : {"person": {"name" : "Daniela Hart" }},
+          "job" : "Sound Design"
         },
         {
-          "contributor" : {"person": {"name" : "Jason Simms" }},
-          "job" : "Scenic Designer"
+          "contributor" : {"person": {"name" : "Matsy Stinson" }},
+          "job" : "Costume Design"
         },
         {
-          "contributor" : {"person": {"name" : "Mark van Hare" }},
-          "job" : "Sound Designer"
+          "contributor" : {"person": {"name" : "Paul Notice" }},
+          "job" : "Rehearsal Photography"
         },
         {
-          "contributor" : {"person": {"name" : "Joe Lankheet" }},
-          "job" : "Production Manager"
+          "contributor" : {"person": {"name" : "Miranda Poett" }},
+          "job" : "Lighting Design"
         },
         {
-          "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Plot Designer"
-        },
-        {
-          "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
-        },
-        {
-          "contributor" : {"person": {"name" : "Nicholas Ward" }},
-          "job" : "General Manager"
-        },
-        {
-          "contributor" : {"person": {"name" : "Joshua Langman" }},
-          "job" : "Lighting Designer"
-        },
-        {
-          "contributor" : {"person": {"name" : "Chelsea Collins" }},
-          "job" : "Assistant Props Master"
-        },
-        {
-          "contributor" : {"person": {"name" : "Eileen Lalley" }},
-          "job" : "Production Stage Manager"
+          "contributor" : {"person": {"name" : "Milica Bogetic" }},
+          "job" : "Stage Manager"
         }
       ]
     }

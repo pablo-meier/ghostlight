@@ -4,77 +4,169 @@ var GHOSTLIGHT_EDIT =
   'use strict';
 
 var updateMode = false;
-var workId;
+var showId;
 
-var authors = {
-    create: makeAuthorRow,
-    gather: gatherAuthors,
+var externalLinks = {
+    create: makeLinkRow,
+    gather: gatherLinks,
     _currId: 0,
     _objCreators: []
 };
 
-function makeAuthorRow(author) {
+/**
+ * What happens after 'Add Link' is pressed.
+ */
+function makeLinkRow(linkType, linkUrl) {
 
-  var authorTypePerson = $('<input type="radio" name="authorType' + authors._currId + '"/><label for="">Person</label>');
-  var authorTypeOrg = $('<input type="radio" name="authorType' + authors._currId + '"/><label for="">Organization</label>');
-  if (author && _.has(author, 'org')) {
-    authorTypeOrg.attr('checked', 'checked'); 
-  } else {
-    authorTypePerson.attr('checked', 'checked'); 
-  }
+  var linkPairs = [ ['website', 'Website'],
+                    ['email', 'Email'],
+                    ['blog', 'Blog'],
+                    ['newsletter', 'Newsletter'],
+                    ['facebook', 'Facebook'],
+                    ['twitter', 'Twitter'],
+                    ['instagram', 'Instagram'],
+                    ['vimeo', 'Vimeo'],
+                    ['youtube', 'YouTube'],
+                    ['pinterest', 'Pinterest'],
+                    ['tumblr', 'Tumblr'],
+                    ['gplus', 'Google+ (lol)'],
+                    ['patreon', 'Patreon'],
+                    ['newplayx', 'NewPlay Exchange'] ];
 
-  var typeLabelDOM = $('<label>Type:</label>');
-  var linkTypeWrapper = $('<div class="small-3 columns" />').append(typeLabelDOM).append(authorTypePerson).append(authorTypeOrg);
-
-  var nameField = $('<input />', { 'type': 'text', 'placeholder': getNamePlaceholder() /*, name: 'linkLink' + externalLinks._currId */ });
-
-  if (author !== undefined) {
-    if (_.has(author, 'person')) {
-      nameField.val(author.person.name);
+  var linkSelectDOM = $('<select>');
+  linkPairs.forEach(function(pair) {
+    var option;
+    if (linkType === pair[0]) {
+      option = $('<option value="'+ pair[0] +'" selected="selected">'+ pair[1] +'</option>');
     } else {
-      nameField.val(author.org.name);
+      option = $('<option value="'+ pair[0] +'">'+ pair[1] +'</option>');
     }
-  }
+    linkSelectDOM.append(option);
+  });
 
-  var labeled = $('<label>Name:</label>').append(nameField);
-  var linkTextWrapper = $('<div class="small-7 columns" />').append(labeled);
+  var withLabelDOM = $('<label>Type:</label>').append(linkSelectDOM);
+  var linkTypeWrapper = $('<div class="small-2 columns" />').append(withLabelDOM);
+
+  var linkField = $('<input />', { 'type': 'url', 'placeholder': getLinkPlaceholder(), name: 'linkLink' + externalLinks._currId });
+  if (linkUrl !== undefined) {
+    linkField.val(linkUrl);
+  }
+  var labeled = $('<label>Link:</label>').append(linkField);
+  var linkTextWrapper = $('<div class="small-8 columns" />').append(labeled);
 
   var removeButton = $('<div class="small-2 columns"><div class="button round alert center less-rows-button small">Remove</div></div>');
   var rowToAdd = $('<div class="row" />').append(linkTypeWrapper).append(linkTextWrapper).append(removeButton);
 
-  var index = authors._currId;
+  var index = externalLinks._currId;
 
-  authors._objCreators.push(
+  externalLinks._objCreators.push(
           {'id': index,
            'valueFunction' : function() {
-                               var fieldType = authorTypeOrg.is(':checked') ? 'org' : 'person';
-                               var returnObj = {};
-                               var personOrOrg = { 'name' : nameField.val() };
-                               returnObj[fieldType] = personOrOrg;
-                               return returnObj;
+                               return [linkSelectDOM.val(), linkField.val()];
                              }
           });
 
   removeButton.on('click', function() {
     rowToAdd.remove();
-    var newCreators = _.filter(authors._objCreators, function(fnPair){
+    var newCreators = _.filter(externalLinks._objCreators, function(fnPair){
        return index !== fnPair.id; 
     });
-    authors._objCreators = newCreators;
+    externalLinks._objCreators = newCreators;
   });
 
   $('#linkArray').append(rowToAdd);
-  authors._currId++;
+  externalLinks._currId++;
 }
 
-function gatherAuthors() {
-  return _.map(authors._objCreators, function(fnPair) {
+function gatherLinks() {
+  return _.reduce(externalLinks._objCreators, function(accum, fnPair) {
+    var pair = fnPair.valueFunction();
+    accum[pair[0]] = pair[1];
+    return accum;
+  }, {});
+}
+
+/////////////////////////////////////////////////////////
+var pressLinks = {
+    create: makePressLinkRow,
+    gather: gatherPress,
+    _currId: 0,
+    _objCreators: []
+};
+
+/**
+ * What happens after 'Add Link' is pressed.
+ */
+function makePressLinkRow(linkDesc, linkUrl) {
+
+  var descField = $('<input />', { 'type': 'url', 'placeholder': getPressLinkDescPlaceholder() });
+  if (linkDesc !== undefined) {
+    descField.val(linkDesc);
+  }
+  var descLabeled = $('<label>Press Description:</label>').append(descField);
+  var linkDescWrapper = $('<div class="small-5 columns" />').append(descLabeled);
+
+  var linkField = $('<input />', { 'type': 'url', 'placeholder': getLinkPlaceholder(), name: 'linkLink' + pressLinks._currId });
+  if (linkUrl !== undefined) {
+    linkField.val(linkUrl);
+  }
+  var labeled = $('<label>Link:</label>').append(linkField);
+  var linkTextWrapper = $('<div class="small-5 columns" />').append(labeled);
+
+  var removeButton = $('<div class="small-2 columns"><div class="button round alert center less-rows-button small">Remove</div></div>');
+  var rowToAdd = $('<div class="row" />').append(linkDescWrapper).append(linkTextWrapper).append(removeButton);
+
+  var index = pressLinks._currId;
+
+  pressLinks._objCreators.push(
+          {'id': index,
+           'valueFunction' : function() {
+                               return {
+                                 'description': descField.val(),
+                                 'link': linkField.val()
+                               };
+                             }
+          });
+
+  removeButton.on('click', function() {
+    rowToAdd.remove();
+    var newCreators = _.filter(pressLinks._objCreators, function(fnPair){
+       return index !== fnPair.id; 
+    });
+    pressLinks._objCreators = newCreators;
+  });
+
+  $('#pressArray').append(rowToAdd);
+  pressLinks._currId++;
+}
+
+function gatherPress() {
+  return _.map(pressLinks._objCreators, function(fnPair) {
     return fnPair.valueFunction();
   });
 }
 
 
 /////////////////////////////////////////////////////////
+function getLinkPlaceholder() {
+  var linkPlaceHolders = [
+    'http://zombo.com',
+    'https://www.youtube.com/watch?v=ygI-2F8ApUM',
+    'https://twitter.com/dril'
+  ];
+
+  return randomElementFrom(linkPlaceHolders);
+}
+
+function getPressLinkDescPlaceholder() {
+  var pressDescPlaceholders = [
+    'New York Post Expose',
+    'Conservapedia Article'
+  ];
+
+  return randomElementFrom(pressDescPlaceholders);
+}
+
 function getNamePlaceholder() {
   var namePlaceHolders = [
     'Bilbo McSwaggins',
@@ -83,7 +175,6 @@ function getNamePlaceholder() {
  
   return randomElementFrom(namePlaceHolders);
 }
-
 
 function randomElementFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -96,22 +187,19 @@ function randomElementFrom(arr) {
  */
 function submitForm() {
 
-  var title = document['work-form']['work-title'].value;
-  var desc = document['work-form']['work-description'].value;
-  var collabOrg = document['work-form']['collab-org'].value;
+  var title = document['show-form']['show-title'].value;
+  var desc = document['show-form']['show-description'].value;
+  var specialThanks = document['show-form']['show-special-thanks'].value;
 
   var finalObject = {
-    'id': workId,
     'title': title,
     'description': desc,
-    'authors': authors.gather()
+    'social': externalLinks.gather(),
+    'press': pressLinks.gather(),
+    'special_thanks': specialThanks
   };
 
-  if (collabOrg !== '' && collabOrg !== undefined) {
-    finalObject.collaborating_org = { 'name' : collabOrg};
-  }
-
-  if (updateMode) finalObject.id = workId;
+  if (updateMode) finalObject.id = showId;
 
   var options = {
     'data': JSON.stringify(finalObject),
@@ -121,16 +209,16 @@ function submitForm() {
 
   if (updateMode) {
     options.type= 'PUT';
-    options.url = '/works/' + workId;
+    options.url = '/shows/' + showId;
   } else {
     options.type = 'POST';
-    options.url = '/works/';
+    options.url = '/shows/';
   }
 
   $.ajax(options)
       .done(function() {
         var closeButton = $('<button href="#" tabindex="0" class="close" aria-label="Close Alert">&times;</button>');
-        var alertBox = $('<div id="mainAlert1" data-alert class="alert-box success radius" tabindex="0" aria-live="assertive" role="dialogalert">Work submitted! Yay!</div>');
+        var alertBox = $('<div id="mainAlert1" data-alert class="alert-box success radius" tabindex="0" aria-live="assertive" role="dialogalert">Show submitted! Yay!</div>');
         alertBox.append(closeButton);
         closeButton.on('click', function() {
           alertBox.fadeOut(500, function() {
@@ -159,17 +247,15 @@ function noArgThunkify(fun) {
 }
 
 $('#submitButton').on('click', submitForm);
-$('#addAuthorButton').on('click', noArgThunkify(authors.create));
+$('#addLinkButton').on('click', noArgThunkify(externalLinks.create));
+$('#addPressButton').on('click', noArgThunkify(pressLinks.create));
 
-function setStartData(workObj) {
-  workId = workObj.id;
-  document['work-form']['work-title'].value = workObj.title;
+function setStartData(showObj) {
+  showId = showObj.id;
+  document['show-form']['show-title'].value = showObj.title;
 
-  if (_.has(workObj, 'collaborating_org')) {
-    document['work-form']['collab-org'].value = workObj.collaborating_org;
-  }
   if (_.has(workObj, 'description')) {
-    document['work-form']['work-description'].value = workObj.description;
+    document['show-form']['show-description'].value = showObj.description;
   }
 
   if (_.has(workObj, 'authors')) {

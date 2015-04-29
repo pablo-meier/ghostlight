@@ -6,16 +6,87 @@ var GHOSTLIGHT_EDIT =
 var updateMode = false;
 var showId;
 
-var externalLinks = {
-    create: makeLinkRow,
-    gather: gatherLinks,
-    _currId: 0,
-    _objCreators: []
-};
-
-/**
- * What happens after 'Add Link' is pressed.
+/*
+ * Allows constructor use for a type that will be attached to an array in a form.
+ * Handles much of the boilerplate. The options object has a few mandatory fields:
+ *
+ * * 'rowCreate': Returns an object with two properties:
+ *      'elements': a list DOM element that are <div class="column">s adding up to 10.
+ *                  We'll attach to a row later.
+ *      'gatherFun': A function we can call without arguments to gather its values.
+ * * 'addButtonSelector': Selector for the add button.
+ * * 'arrayRowsSelector': Selector for where to add the rows.
+ * * 'gatherType' : Either 'object' or 'array'. Tells us how to use the values
+ *    we get back.
+ *
+ * Calling new on this with those options returns an object that has two methods:
+ *
+ * * 'create': Call this function to add a row to the form's array. Note that you
+ *    if called with an argument, it get passed to rowCreate to set values in the
+ *    fields (useful for editMode).
+ * * 'gather': Call without arguments to get whatever this form requires (array of
+ *    things, an object like the 'social' block, etc.).
  */
+function makeArrayable(options) {
+  var currId = 0;
+  var objCreators = [];
+
+  var rowCreate = options.rowCreate;
+  var arrayRowsSelector = options.arrayRowsSelector;
+  var addButtonSelector = options.addButtonSelector;
+  var gatherType = options.gatherType;
+
+  var createFunction = function() {
+    var rowCreated = rowCreate.apply(this, arguments);
+    var colsToAdd = rowCreated.elements;
+
+    var removeButton = $('<div class="small-2 columns"><div class="button round alert center less-rows-button small">Remove</div></div>');
+    var rowToAdd = $('<div class="row" />');
+    colsToAdd.forEach(function(col) {
+      rowToAdd.append(col);
+    });
+    rowToAdd.append(removeButton);
+
+    var index = currId;
+    objCreators.push({
+      'id': index,
+      'valueFunction' : rowCreated.gatherFun
+    });
+    removeButton.on('click', function() {
+      rowToAdd.remove();
+      var newCreators = _.filter(objCreators, function(fnPair){
+         return index !== fnPair.id;
+      });
+      objCreators = newCreators;
+    });
+
+    $(arrayRowsSelector).append(rowToAdd);
+    currId++;
+  };
+
+  var gatherFunction = function() {
+    if (gatherType === 'object') {
+      return _.reduce(objCreators, function(accum, fnPair) {
+        var pair = fnPair.valueFunction();
+        accum[pair[0]] = pair[1];
+        return accum;
+      }, {});
+    } else if (gatherType === 'array') {
+      return _.map(objCreators, function(fnPair) {
+        return fnPair.valueFunction();
+      });
+    }
+  };
+
+  $(addButtonSelector).on('click', noArgThunkify(createFunction));
+
+  return {
+    'create': createFunction,
+    'gather': gatherFunction,
+  };
+}
+
+
 function makeLinkRow(linkType, linkUrl) {
 
   var linkPairs = [ ['website', 'Website'],
@@ -54,49 +125,29 @@ function makeLinkRow(linkType, linkUrl) {
   var labeled = $('<label>Link:</label>').append(linkField);
   var linkTextWrapper = $('<div class="small-8 columns" />').append(labeled);
 
-  var removeButton = $('<div class="small-2 columns"><div class="button round alert center less-rows-button small">Remove</div></div>');
-  var rowToAdd = $('<div class="row" />').append(linkTypeWrapper).append(linkTextWrapper).append(removeButton);
-
-  var index = externalLinks._currId;
-
-  externalLinks._objCreators.push(
-          {'id': index,
-           'valueFunction' : function() {
-                               return [linkSelectDOM.val(), linkField.val()];
-                             }
-          });
-
-  removeButton.on('click', function() {
-    rowToAdd.remove();
-    var newCreators = _.filter(externalLinks._objCreators, function(fnPair){
-       return index !== fnPair.id; 
-    });
-    externalLinks._objCreators = newCreators;
-  });
-
-  $('#linkArray').append(rowToAdd);
-  externalLinks._currId++;
+  var elements = [linkTypeWrapper, linkTextWrapper];
+  var gatherFun = function() {
+    return [linkSelectDOM.val(), linkField.val()];
+  };
+  return {
+    'elements': elements,
+    'gatherFun': gatherFun
+  };
 }
 
-function gatherLinks() {
-  return _.reduce(externalLinks._objCreators, function(accum, fnPair) {
-    var pair = fnPair.valueFunction();
-    accum[pair[0]] = pair[1];
-    return accum;
-  }, {});
-}
+
+
+var externalLinkOptions = {
+  'rowCreate': makeLinkRow,
+  'addButtonSelector': '#addLinkButton',
+  'arrayRowsSelector': '#linkArray',
+  'gatherType': 'object'
+};
+var externalLinks = makeArrayable(externalLinkOptions);
+
 
 /////////////////////////////////////////////////////////
-var pressLinks = {
-    create: makePressLinkRow,
-    gather: gatherPress,
-    _currId: 0,
-    _objCreators: []
-};
 
-/**
- * What happens after 'Add Link' is pressed.
- */
 function makePressLinkRow(linkDesc, linkUrl) {
 
   var descField = $('<input />', { 'type': 'url', 'placeholder': getPressLinkDescPlaceholder() });
@@ -113,38 +164,28 @@ function makePressLinkRow(linkDesc, linkUrl) {
   var labeled = $('<label>Link:</label>').append(linkField);
   var linkTextWrapper = $('<div class="small-5 columns" />').append(labeled);
 
-  var removeButton = $('<div class="small-2 columns"><div class="button round alert center less-rows-button small">Remove</div></div>');
-  var rowToAdd = $('<div class="row" />').append(linkDescWrapper).append(linkTextWrapper).append(removeButton);
+  var elements = [linkDescWrapper, linkTextWrapper];
+  var gatherFun = function() {
+    return {
+      'description': descField.val(),
+      'link': linkField.val()
+    };
+  };
 
-  var index = pressLinks._currId;
-
-  pressLinks._objCreators.push(
-          {'id': index,
-           'valueFunction' : function() {
-                               return {
-                                 'description': descField.val(),
-                                 'link': linkField.val()
-                               };
-                             }
-          });
-
-  removeButton.on('click', function() {
-    rowToAdd.remove();
-    var newCreators = _.filter(pressLinks._objCreators, function(fnPair){
-       return index !== fnPair.id; 
-    });
-    pressLinks._objCreators = newCreators;
-  });
-
-  $('#pressArray').append(rowToAdd);
-  pressLinks._currId++;
+  return {
+    'elements': elements,
+    'gatherFun': gatherFun
+  };
 }
 
-function gatherPress() {
-  return _.map(pressLinks._objCreators, function(fnPair) {
-    return fnPair.valueFunction();
-  });
-}
+var pressLinkOptions = {
+  'rowCreate': makePressLinkRow,
+  'addButtonSelector': '#addPressButton',
+  'arrayRowsSelector': '#pressArray',
+  'gatherType': 'array'
+};
+
+var pressLinks = makeArrayable(pressLinkOptions);
 
 
 /////////////////////////////////////////////////////////
@@ -247,8 +288,7 @@ function noArgThunkify(fun) {
 }
 
 $('#submitButton').on('click', submitForm);
-$('#addLinkButton').on('click', noArgThunkify(externalLinks.create));
-$('#addPressButton').on('click', noArgThunkify(pressLinks.create));
+// $('#addHostButton').on('click', noArgThunkify(hosts.create));
 
 function setStartData(showObj) {
   showId = showObj.id;

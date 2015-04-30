@@ -86,6 +86,59 @@ function makeArrayable(options) {
   };
 }
 
+//////////////////////////////////////////
+
+function makeProducerRow(producer) {
+
+  var hackId = new Date().getTime();
+  var producerTypePerson = $('<input type="radio" name="authorType' + hackId + '"/><label for="">Person</label>');
+  var producerTypeOrg = $('<input type="radio" name="authorType' + hackId + '"/><label for="">Organization</label>');
+  if (producer && _.has(producer, 'org')) {
+    producerTypeOrg.attr('checked', 'checked'); 
+  } else {
+    producerTypePerson.attr('checked', 'checked'); 
+  }
+  var typeLabelDOM = $('<label>Type:</label>');
+  var producerTypeWrapper = $('<div class="small-3 columns" />').append(typeLabelDOM).append(producerTypePerson).append(producerTypeOrg);
+
+  var nameField = $('<input />', { 'type': 'text', 'placeholder': getNamePlaceholder() });
+
+  if (producer !== undefined) {
+    if (_.has(producer, 'person')) {
+      nameField.val(producer.person.name);
+    } else {
+      nameField.val(producer.org.name);
+    }
+  }
+
+  var labeled = $('<label>Name:</label>').append(nameField);
+  var producerNameWrapper = $('<div class="small-7 columns" />').append(labeled);
+
+  var elements = [producerTypeWrapper, producerNameWrapper];
+  var gatherFun = function() {
+                 var fieldType = producerTypeOrg.is(':checked') ? 'org' : 'person';
+                 var returnObj = {};
+                 var personOrOrg = { 'name' : nameField.val() };
+                 returnObj[fieldType] = personOrOrg;
+                 return returnObj;
+  };
+  return {
+    'elements' : elements,
+    'gatherFun' : gatherFun
+  };
+}
+
+
+var producerOptions = {
+  'rowCreate': makeProducerRow,
+  'addButtonSelector': '#addProducerButton',
+  'arrayRowsSelector': '#producerArray',
+  'gatherType': 'array'
+};
+var producers = makeArrayable(producerOptions);
+
+
+////////////////////////////////////////////// 
 
 function makeLinkRow(linkType, linkUrl) {
 
@@ -189,6 +242,39 @@ var pressLinks = makeArrayable(pressLinkOptions);
 
 
 /////////////////////////////////////////////////////////
+
+function makeHostRow(name) {
+
+  var nameField = $('<input />', { 'type': 'text', 'placeholder': getNamePlaceholder() });
+  if (name !== undefined) {
+    nameField.val(linkDesc);
+  }
+  var nameLabeled = $('<label>Host:</label>').append(nameField);
+  var nameWrapper = $('<div class="small-10 columns" />').append(nameLabeled);
+
+  var elements = [nameWrapper];
+  var gatherFun = function() {
+    return {
+      'name': nameField.val()
+    };
+  };
+
+  return {
+    'elements': elements,
+    'gatherFun': gatherFun
+  };
+}
+
+var hostOptions = {
+  'rowCreate': makeHostRow,
+  'addButtonSelector': '#addHostButton',
+  'arrayRowsSelector': '#hostsArray',
+  'gatherType': 'array'
+};
+
+var hosts = makeArrayable(hostOptions);
+
+/////////////////////////////////////////////////////////
 function getLinkPlaceholder() {
   var linkPlaceHolders = [
     'http://zombo.com',
@@ -237,6 +323,8 @@ function submitForm() {
     'description': desc,
     'social': externalLinks.gather(),
     'press': pressLinks.gather(),
+    'hosts': hosts.gather(),
+    'producers' : producers.gather(),
     'special_thanks': specialThanks
   };
 
@@ -288,7 +376,6 @@ function noArgThunkify(fun) {
 }
 
 $('#submitButton').on('click', submitForm);
-// $('#addHostButton').on('click', noArgThunkify(hosts.create));
 
 function setStartData(showObj) {
   showId = showObj.id;

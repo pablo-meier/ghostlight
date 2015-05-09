@@ -8,6 +8,7 @@
     cowboy,
     erlydtl,
     ghostlight_db,
+    ghostlight_devtools,
     ghostlight_markdown,
     iso8601,
     jiffy,

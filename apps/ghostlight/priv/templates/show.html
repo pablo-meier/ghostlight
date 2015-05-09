@@ -2,6 +2,10 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{% block head %}
+    <link rel="stylesheet" href="/static/css/vendor/cal-heatmap.css" />
+{% endblock %}
+
 {% block footerjs %}
     <script type="text/javascript" src="/static/js/vendor/d3.v3.min.js"> </script>
     <script type="text/javascript" src="/static/js/vendor/cal-heatmap.min.js"> </script>
@@ -19,8 +23,6 @@
       GHOSTLIGHT_VIEW(dates);
       })();
     </script>
-
-    <link rel="stylesheet" href="/static/css/cal-heatmap.css" />
 {% endblock %}
 
 {% block content %}

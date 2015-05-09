@@ -1,0 +1,103 @@
+{
+  "title" : "Serials @ The Flea, Cycle 28, Part 2",
+  "special_thanks" : "",
+  "dates" : ["2015-04-30T23:00:00.000Z",
+             "2015-05-01T23:00:00.000Z",
+             "2015-05-02T23:00:00.000Z"],
+  "producers": [
+    { "person" : { "name": "Crystal Arnette" } },
+    { "person" : { "name": "Cleo Gray" } },
+    {
+      "org" : {
+        "name": "The Flea Theater",
+        "tagline" : "raising a joyful hell in a small space",
+        "description" : "#Why & What\n\nFounded in 1996 by three of New York’s most acclaimed downtown theater artists—director Jim Simpson, designer Kyle Chepulis and playwright Mac Wellman—the award-winning Flea Theater was originally formed out of the purely artistic impulse to create \"a joyful hell in a small space\". Brash, energetic and dedicated, we quickly became a downtown beacon for creative artists of every discipline, and for audiences seeking bold and inventive work.\n\nSoon a more formal mission was born: _to present distinctive work that raises the standards of Off-Off-Broadway for artists & audiences alike._ Comfortable seats and decent dressing rooms became as much a part of our goal as our commitment to supporting talented artists with big ideas.\n\nNon-institutional and resolutely noncommercial, The Flea embodies the spirit of adventure and experiment that has defined Off-Off-Broadway since its inception. We are one of the only professional theaters in the city that maintains an open-door policy for artists—a policy that we believe is crucial to keeping New York theater vital. Part playground, part laboratory, part training ground, The Flea has been home to established artists taking new risks, emerging artists developing their ideas, and mid-career artists building sustained audiences.\n\nEach year The Flea presents and produces dozens of new works in an environment that is professional, welcoming, and intimate. As a testament to our success, Flea artists have been honored with two OBIE Awards, an Otto Award and, in May 2004, The Flea was given a Drama Desk Award for Distinguished Achievement commending our dedication to adventurous theater. With the continued participation of our founders and an ever-growing community of diverse and creative talents, The Flea strives to represent the wide range of what is possible Off-Off-Broadway."
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Y2K Time Bomb (Episode 1)",
+        "authors": [{"person": {"name": "Jenny Morris"}}]
+      },
+      "directors": [{"name": "Alex Keegan"}],
+      "onstage": [
+        { "performer" : {"name": "Jack Dellatorri"} },
+        { "performer" : {"name": "Brett Epstein"} },
+        { "performer" : {"name": "Ben Shrager"} },
+        { "performer" : {"name": "Catherine Woodard"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Sing For Your Life: A Karaoke Serial (Episode 2)",
+        "authors": [{"person": {"name": "Ryan Andrew Gaffney"}},
+                    {"person": {"name": "Sarah Einspanier"}}]
+      },
+      "directors": [{"name": "Lila Rachel Becker"}],
+      "onstage": [
+        { "performer" : {"name": "Alex Campbell"} },
+        { "performer" : {"name": "Jordan Carey"} },
+        { "performer" : {"name": "John Paul Harkins"} },
+        { "performer" : {"name": "Marlowe Holden"} },
+        { "performer" : {"name": "Jeremy Rafal"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Should Have Gone To Mexico (Episode 2)",
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
+      },
+      "directors": [{"name": "Ashley Brooke Monroe"}],
+      "onstage": [
+        { "performer" : {"name": "Mike Axelrod"} },
+        { "performer" : {"name": "Sam Garber"} },
+        { "performer" : {"name": "Alex J. Gould"} },
+        { "performer" : {"name": "Kerry Ipema"} },
+        { "performer" : {"name": "Edan Jacob Levy"} },
+        { "performer" : {"name": "Cristina Pitter"} },
+        { "performer" : {"name": "Neil Redfield"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Dane & Zane & Jane vs. The Metal Overlord!!!!!!!! (Episode 1)",
+        "authors": [{"person": {"name": "Dominic Finocchiaro"}}]
+      },
+      "directors": [{"name": "Anna Loyd Bradshaw"}],
+      "onstage": [
+        { "performer" : {"name": "Miles Butler"} },
+        { "performer" : {"name": "Brandon Johnson"} },
+        { "performer" : {"name": "Karsten Otto"} },
+        { "performer" : {"name": "Rachel Yong"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Locked Up Bitches (Episode 6: Blood and Placenta or, Tom Cruise vs. Pusiris — The Penultimate Episode)",
+        "authors": [{"person": {"name": "Catya McMullen"}}]
+      },
+      "directors": [{"name": "Michael Raine"}],
+      "onstage": [
+        { "performer" : {"name": "Crystal Arnette"} },
+        { "performer" : {"name": "Mike Axelrod"} },
+        { "performer" : {"name": "Alex J. Gould"} },
+        { "performer" : {"name": "Cameran Hebb"} },
+        { "performer" : {"name": "Shane Hall"} },
+        { "performer" : {"name": "Alexander Haynes"} },
+        { "performer" : {"name": "Maia Henkin"} },
+        { "performer" : {"name": "Kerry Ipema"} },
+        { "performer" : {"name": "Artem Kreimer"} },
+        { "performer" : {"name": "Edan Jacob Levy"} },
+        { "performer" : {"name": "Rachel Lin"} },
+        { "performer" : {"name": "Leemore Malka"} },
+        { "performer" : {"name": "Eleanor Philips"} },
+        { "performer" : {"name": "Cristina Pitter"} },
+        { "performer" : {"name": "Peter Sansbury"} },
+        { "performer" : {"name": "Bonnie White"} }
+      ]
+    }
+  ]
+}

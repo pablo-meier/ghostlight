@@ -90,7 +90,7 @@
 }).
 
 -record(show, {
-    id = <<"">>             :: binary(),
+    id = null               :: binary(),
     title = <<"">>          :: binary(),
     producers = []          :: list(#person{} | #organization{}),
     performances = []       :: list(#performance{}),

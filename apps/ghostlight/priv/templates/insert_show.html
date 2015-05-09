@@ -2,8 +2,17 @@
 
 {% block title %}{% if editmode %}Edit {{ title }}{% else %}New Production{% endif %}{% endblock %}
 
+{% block head %}
+    <link href="/static/css/vendor/pickadate.css" rel="stylesheet" />
+    <link href="/static/css/vendor/pickadate.date.css" rel="stylesheet" />
+    <link href="/static/css/vendor/pickadate.time.css" rel="stylesheet" />
+{% endblock %}
+
 {% block footerjs %}
     <script src="/static/js/vendor/lodash.min.js"></script>
+    <script src="/static/js/vendor/picker.js"></script>
+    <script src="/static/js/vendor/picker.date.js"></script>
+    <script src="/static/js/vendor/picker.time.js"></script>
     <script src="/static/js/insert_show_form.js"></script>
     {% if editmode %}
     {% autoescape off %}<script type="text/javascript">(function() { var toEdit = {{ editmode }}; GHOSTLIGHT_EDIT(toEdit); })();</script>{% endautoescape %}
@@ -15,7 +24,7 @@
   <div class="small-8 columns">
       <h1>{% if editmode %}Edit {{ title }}{% else %}New Production{% endif %}</h1>
       <p>A <strong>Title</strong> and <strong>at least one Performance</strong> is all that's required to have a production.</p>
-      <p>Productions are the backbone of ghostlight (and people are the heart!), but they can be a little complicated. If you're having trouble with Productions, Pieces, and Performances, check out the Glossary.
+      <p>Productions are the backbone of ghostlight (and people are the heart!), but they can be a little complicated. If you're having trouble with Productions, Pieces, and Performances, check out the Glossary.</p>
   </div>
   <div class="small-4 columns">
       <div id="submitButton" class="button large radius success right">{% if editmode %}SAVE CHANGES{% else %}SUBMIT PRODUCTION{% endif %}</div>
@@ -24,11 +33,8 @@
 <!-- row -->
 
 <form data-abide name="show-form">
-  <label>Title:
-    <input type="text" name="show-title" placeholder="The Wrapes of Grath" required autofocus /></label>
-
-  <label>Description:
-    <textarea name="show-description" placeholder="chaplain era silent motion pictures where basically the first subbed anime . click to read more"></textarea></label>
+  <label>Title:<input type="text" name="show-title" placeholder="The Wrapes of Grath" required autofocus /></label>
+  <label>Description:<textarea name="show-description" placeholder="chaplain era silent motion pictures where basically the first subbed anime . click to read more"></textarea></label>
  
   <fieldset id="producerArray">
     <legend>Producers</legend>
@@ -100,8 +106,7 @@
     </div> <!-- row -->
   </fieldset>
 
-  <label>Special Thanks:
-    <textarea name="show-special-thanks" placeholder="chaplain era silent motion pictures where basically the first subbed anime . click to read more"></textarea></label>
+  <label>Special Thanks:<textarea name="show-special-thanks" placeholder="chaplain era silent motion pictures where basically the first subbed anime . click to read more"></textarea></label>
 
   <fieldset id="hostsArray">
     <legend>Hosts</legend>

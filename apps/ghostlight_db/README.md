@@ -1,6 +1,6 @@
 # ghostlight_db
 
-So Ghostlight hit monolight status... uh, very early. By that I mean, it was
+So Ghostlight hit monolith status... uh, very early. By that I mean, it was
 clear that Postgres and all its baggage either had to be a) spread out
 everywhere, or b) all in one file, both of which were unacceptable.
 
@@ -29,14 +29,17 @@ and b) is the interface to the app itself, most of a) gets handled here!
 Here is the high-level on the database:
 * It exposes a number of API functions to the app that are mostly wrappers
   to `gen\_server:call/cast`. Technically speaking, we can change everything
-  about this module EXCEPT this -- we could change DB engines, ditch
+  about this module EXCEPT this — we could change DB engines, ditch
   gen\_server, whatever. Highly unlikely, but that's the hard module
   boundary for the rest of the app.
 * We make it a gen\_server for the well-known obvious reasons: we can restart
   it, supervise it, etc., and it's a solid way to maintain the state that
   we'll need (parsed queries, PSQL connections).
 * We use Postgres because it's actually Free Free, unlike Neo4j, relies on
-  SQL which we and the world know, and is rock-rock-steady.
+  SQL which we and the world know, and is rock-rock-steady. This doesn't
+  preclude the use of other data-stores as needs arise (say, an ElasticSearch
+  cluster for fuzzy-text seaching, and/or Mnesia for a cache) but Postgres is
+  the Source Of Truth.
 
 Some ground rules for the application:
 
@@ -64,8 +67,6 @@ get_show_inserts(#show{}) -> {[Inserts], ShowId}
 Here's where it gets interesting: given than a show contains performances, _it_
 will call `get_performance_inserts`, and bundle THOSE inserts into its own. So it
 really becomes something like Russian Nesting Dolls.
-
-
 
 # Build
 

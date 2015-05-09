@@ -240,6 +240,93 @@ var pressLinkOptions = {
 
 var pressLinks = makeArrayable(pressLinkOptions);
 
+/////////////////////////////////////////////////////////
+function makeDateRow(date, time) {
+
+  var dateField = $('<input />', { 'class': 'picker__input', 'placeholder': 'Date…' }).pickadate();
+  if (date !== undefined) {
+    dateField.val(date);
+  }
+  var dateLabeled = $('<label>Date:</label>').append(dateField);
+  var dateWrapper = $('<div class="small-5 columns" />').append(dateLabeled);
+
+  var timeField = $('<input />', { 'class': 'picker__input', 'placeholder': 'Time…' }).pickatime();
+  if (time !== undefined) {
+    timeField.val(time);
+  }
+  var timeLabeled = $('<label>Time:</label>').append(timeField);
+  var timeWrapper = $('<div class="small-5 columns" />').append(timeLabeled);
+ 
+  var elements = [dateWrapper, timeWrapper];
+  var gatherFun = function() {
+    return {
+      'name': nameField.val()
+    };
+  };
+
+  return {
+    'elements': elements,
+    'gatherFun': gatherFun
+  };
+}
+
+var dateOptions = {
+  'rowCreate': makeDateRow,
+  'addButtonSelector': '#addDateButton',
+  'arrayRowsSelector': '#datesArray',
+  'gatherType': 'array'
+};
+
+var dates = makeArrayable(dateOptions);
+
+/////////////////////////////////////////////////////////
+function makePerformanceRow() {
+
+  // One work
+  //   with [1,several] person-or-org-authors
+  //   an optional description if its new.
+  //
+  // [1,several] people as directors
+  // Performance description
+  // Director's Note
+  // Onstage: [1,several] {role, person}
+  // Offstage: [1,several] {job, person}
+  //
+  var workField = $('<input />', { 'type' : 'text', 'placeholder': '…' }).pickadate();
+  if (date !== undefined) {
+    dateField.val(date);
+  }
+  var dateLabeled = $('<label>Date:</label>').append(dateField);
+  var dateWrapper = $('<div class="small-5 columns" />').append(dateLabeled);
+
+  var timeField = $('<input />', { 'class': 'picker__input', 'placeholder': 'Time…' }).pickatime();
+  if (time !== undefined) {
+    timeField.val(time);
+  }
+  var timeLabeled = $('<label>Time:</label>').append(timeField);
+  var timeWrapper = $('<div class="small-5 columns" />').append(timeLabeled);
+ 
+  var elements = [dateWrapper, timeWrapper];
+  var gatherFun = function() {
+    return {
+      'name': nameField.val()
+    };
+  };
+
+  return {
+    'elements': elements,
+    'gatherFun': gatherFun
+  };
+}
+
+var performanceOptions = {
+  'rowCreate': makePerformanceRow,
+  'addButtonSelector': '#addPerformanceButton',
+  'arrayRowsSelector': '#performancesArray',
+  'gatherType': 'array'
+};
+
+var performances = makeArrayable(performanceOptions);
 
 /////////////////////////////////////////////////////////
 
@@ -247,7 +334,7 @@ function makeHostRow(name) {
 
   var nameField = $('<input />', { 'type': 'text', 'placeholder': getNamePlaceholder() });
   if (name !== undefined) {
-    nameField.val(linkDesc);
+    nameField.val(name);
   }
   var nameLabeled = $('<label>Host:</label>').append(nameField);
   var nameWrapper = $('<div class="small-10 columns" />').append(nameLabeled);
@@ -321,6 +408,7 @@ function submitForm() {
   var finalObject = {
     'title': title,
     'description': desc,
+    'performances': performances.gather(),
     'social': externalLinks.gather(),
     'press': pressLinks.gather(),
     'hosts': hosts.gather(),

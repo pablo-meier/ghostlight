@@ -1,0 +1,82 @@
+{
+  "title" : "Cotton Candy & Cocaine",
+  "special_thanks" : "",
+  "dates" : ["2015-04-29T19:30:00.000Z",
+             "2015-04-30T19:30:00.000Z"],
+
+  "producers": [
+    {
+      "person" : { "name": "John Lant" }
+    },
+    {
+      "person" : { "name": "Tamra Pica" }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Cotton Candy & Cocaine",
+        "authors" : [{"person": {"name": "EllaRose Chary"}},
+                     {"person": {"name": "Brandon James Gwinn"}}],
+        "description": "_Cotton Candy and Cocaine_ is a new immersive, electro-pop musical/dance party about gentrification in Las Vegas."
+      },
+      "directors": [{"name": "Melissa Crespo"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Dana Aber"}
+        },
+        {
+          "performer" : {"name": "Ty Defoe"},
+          "role" : "Blazer"
+        },
+        {
+          "performer" : {"name": "Hanna Rose DeFlumeri"},
+          "role" : "Ensemble"
+        },
+        {
+          "performer" : {"name": "Jennifer Fouche"},
+          "role" : "Val"
+        },
+        {
+          "performer" : {"name": "Alexa Green"},
+          "role" : "Tits"
+        },
+        {
+          "performer" : {"name": "Dylan H. Thompson"},
+          "role" : "Brad"
+        },
+        {
+          "performer" : {"name": "Anne Troup"},
+          "role" : "Meegan"
+        },
+        {
+          "performer" : {"name": "Gama Valle"},
+          "role" : "Minnie"
+        },
+        {
+          "performer" : {"name": "Allen Lucky Weaver"},
+          "role" : "Tad Park"
+        },
+        {
+          "performer" : {"name": "Chris Weaver"},
+          "role" : "Michael"
+        }
+      ],
+      "offstage" : [
+        {
+            "contributor" : {"person": {"name" : "EllaRose Chary" }},
+            "job" : "Book/Lyrics"
+        },
+        {
+            "contributor" : {"person": {"name" : "Brandon James Gwinn" }},
+            "job" : "Music/Lyrics"
+        },
+        {
+            "contributor" : {"person": {"name" : "Elizabeth Radabaugh" }},
+            "job" : "Production Stage Manager"
+        }
+      ]
+    }
+  ]
+}

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+{% spaceless %}
 <html>
     <head>
         <title>ghostlight | {% block title %} {% endblock %}</title>
         <script src="/static/js/vendor/modernizr.js"></script>
         <script src="/static/js/ghostlight.js"></script>
-        <link href="/static/css/foundation.css" rel="stylesheet" />
+        <link href="/static/css/vendor/foundation.css" rel="stylesheet" />
         <link href="/static/css/ghostlight.css" media="all" rel="stylesheet" />
         {% block head %}
         {% endblock %}
@@ -76,3 +77,4 @@
     {% endblock %}
     </body>
 </html>
+{% endspaceless %}

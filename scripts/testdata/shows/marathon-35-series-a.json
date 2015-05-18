@@ -1,0 +1,126 @@
+{
+  "title" : "35th Marathon of One-Act Plays, Series A",
+  "special_thanks" : "The Professional Performing Arts School",
+  "dates" : ["2015-05-13T19:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "Ensemble Studio Theatre"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "I Battled Lenny Ross",
+        "authors": [{"person": {"name": "Anna Ziegler"}}]
+      },
+      "directors": [{"name": "Daniella Topol"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Jake Kitchin"},
+          "role" : "Lenny"
+        },
+        {
+          "performer" : {"name": "Aaron Serotsky"},
+          "role" : "Mike Wallace"
+        },
+        {
+          "performer" : {"name": "Olli Haaskivin"},
+          "role" : "Man"
+        },
+        {
+          "performer" : {"name": "Julie Fitzpatrick"},
+          "role" : "Woman"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Assaf Gleizner"}},
+          "job": "Musical Director"
+        },
+        {
+          "contributor": {"person": {"name": "Matt Schatz"}},
+          "job": "Music & Lyrics"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "52nd to Bowery to Cobble Hill, In Brooklyn",
+        "authors": [{"person": {"name": "Chiara Atik"}}]
+      },
+      "directors": [{"name": "Adrienne Campbell-Holt"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Megan Tusing"},
+          "role" : "Halle"
+        },
+        {
+          "performer" : {"name": "Molly Carden"},
+          "role" : "Alison"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Silver Men",
+        "authors": [{"person": {"name": "Amy Fox"}}]
+      },
+      "directors": [{"name": "Matt Dickson"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Catherine Curtin"},
+          "role" : "Marjorie"
+        },
+        {
+          "performer" : {"name": "Tommy Heleringer"},
+          "role" : "Matthew"
+        },
+        {
+          "performer" : {"name": "David Margulies"},
+          "role" : "Wilson"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Big Man",
+        "authors": [{"person": {"name": "Will Snider"}}]
+      },
+      "directors": [{"name": "Matt Penn"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Gianmarco Soresi"},
+          "role" : "Gabe"
+        },
+        {
+          "performer" : {"name": "Brian D. Coats"},
+          "role" : "Okech"
+        },
+        {
+          "performer" : {"name": "Ray Anthony Thomas"},
+          "role" : "Okeyo"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Until She Claws Her Way Out",
+        "authors": [{"person": {"name": "Mariah MacCarthy"}}]
+      },
+      "directors": [{"name": "Sidney Erik Wright"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Naomi Kakuk"},
+          "role" : "Elissa"
+        },
+        {
+          "performer" : {"name": "Kit Treece"},
+          "role" : "Max"
+        }
+      ]
+    }
+  ]
+}

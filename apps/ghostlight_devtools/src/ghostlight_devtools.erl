@@ -39,8 +39,15 @@ handle_cast({css, File}, State=#state{}) ->
     {devtools_java_server, ?DEVTOOLS_JAVA_NODE} ! {self(), Ref, css, Dependencies, "/Users/pablo/projects/ghostlight/minified.css"},
     {noreply, State};
 
-handle_cast({erl, _File}, State=#state{}) ->
+handle_cast({erl, File}, State=#state{}) ->
     %% Copy sync: recompile, reload.
+    case compile:file(File, [verbose, report_errors, report_warnings, binary]) of
+        {ok, ModuleName, Binary} ->
+            Result = code:load_binary(ModuleName, File, Binary),
+            lager:info("Compiled/Loaded file ~p, return on load is ~p~n", [Result]);
+        {error, Errors, Warnings} ->
+            lager:error("Error compiling ~p: ~p~nWarnings:~p~n", [File, Errors, Warnings])
+    end,
     {noreply, State};
 
 handle_cast({erlydtl, _File}, State=#state{}) ->

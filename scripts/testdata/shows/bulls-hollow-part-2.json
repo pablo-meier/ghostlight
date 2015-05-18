@@ -1,0 +1,125 @@
+{
+  "title" : "Bull's Hollow Part II: The Princess Alaska",
+  "special_thanks" : "Justin Levine, Aaron Phillips, Mark Lindberg, Stephanie Hsu, Kim Blanck, Kelley Rae O'Donnell, Jeigh Madjus, Cyndi Perczek, Ronald Peet, Teddy Bergman, the 2014-2015 Civilians R&D Group, Jason Eagan, Emily Shooltz and the whole team at Ars Nova.",
+  "dates" : ["2015-05-07T20:00:00.000Z",
+             "2015-05-08T20:00:00.000Z",
+             "2015-05-09T20:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "Ars Nova",
+        "tagline": "**NYC’S PREMIER HUB FOR NEW TALENT**",
+        "description" : "Ars Nova is committed to developing and producing **theater, comedy and music artists** in the early stages of their professional careers. Our unique development programs are designed to support **outside-the-box thinking** and encourage **innovative, genre-bending work.** By providing a safe environment where **risk-taking and collaboration are paramount,** Ars Nova gives voice to a new generation of artists and audiences, pushing the boundaries of live entertainment by nurturing creative ideas into **smart, surprising new work.**\n\nArs Nova provides an artistic home for emerging talent by cultivating a hive of creative activity, both on stage—through developmental programs and performances—and off—through the support and cultivation of a thriving artist community. Read up on our various programs below!\n\n_Ars Nova is a 501(C)(3) Not-For-Profit Organization and was founded in memory of Gabe Wiener._"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Bull's Hollow Part II: The Princess Alaska",
+        "authors": [{"person": {"name": "Jaclyn Backhaus"}},
+                    {"person": {"name": "Mike Brun"}}],
+        "description": ""
+      },
+      "directors": [{"name": "Andrew Neisler"}],
+      "directors_note": "We are so excited to be sharing _Bull's Hollow_ with all of you. A little context: You are at a developmental workshop of Part Two of an epic, three-part story — that's right, a trilogy! And, don't worry, we have not shared Part One yet, so you haven't missed anything. Our plan is that the three parts can, eventually, be seen in any order. Thank you for coming out to support big, brand new, crazy ideas. We wish you and yours endless Beast-given blessings.",
+      "onstage": [
+        {
+          "performer" : {"name": "Mikey Barringer"},
+          "role" : "James Mosquito"
+        },
+        {
+          "performer" : {"name": "Mike Brun"},
+          "role" : "The Whale"
+        },
+        {
+          "performer" : {"name": "Andrew Butler"},
+          "role" : "Lord \"Jeff\" Braly/Under Taylor"
+        },
+        {
+          "performer" : {"name": "Sam Corbin"},
+          "role" : "Fern Mosquito/Michigan Clark"
+        },
+        {
+          "performer" : {"name": "Andrew Farmer"},
+          "role" : "Clearwater Thursby/Alice Barn Taylor/Dr. Georgis Alexander Krins"
+        },
+        {
+          "performer" : {"name": "Alex Fast"},
+          "role" : "Hapless Burton Hartley"
+        },
+        {
+          "performer" : {"name": "Jessica Frey"},
+          "role" : "Susan Mosquito/Kerstoon Braly"
+        },
+        {
+          "performer" : {"name": "Daniel Johnsen"},
+          "role" : "Bryce/Dillweed Clark"
+        },
+        {
+          "performer" : {"name": "Claire Rothrock"},
+          "role" : "Mayor Ginger"
+        },
+        {
+          "performer" : {"name": "Kelly Rogers"},
+          "role" : "Old Spectacles Taylor/Marianne Hartley"
+        },
+        {
+          "performer" : {"name": "Blake Allen"},
+          "role" : "Barnacle"
+        },
+        {
+          "performer" : {"name": "Michael Hunter"},
+          "role" : "Barnacle"
+        },
+        {
+          "performer" : {"name": "Susan Mandel"},
+          "role" : "Barnacle"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Jaclyn Backhaus" }},
+          "job" : "Book"
+        },
+        {
+          "contributor" : {"person": {"name" : "Mike Brun" }},
+          "job" : "Music/Lyrics"
+        },
+        {
+          "contributor" : {"person": {"name" : "Carolyn Mraz" }},
+          "job" : "Scenic Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Christopher Bowser" }},
+          "job" : "Lighting Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Toby Algya" }},
+          "job" : "Sound Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Charlotte Murray" }},
+          "job" : "Assistant Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Chris D'Angelo" }},
+          "job" : "Assistant Lighting Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jimmy Brenner" }},
+          "job" : "Production Assistant"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alex Rozansky" }},
+          "job" : "Props Assistant"
+        },
+        {
+          "contributor" : {"person": {"name" : "Kristy Bodall" }},
+          "job" : "Stage Manager"
+        }
+      ]
+    }
+  ]
+}

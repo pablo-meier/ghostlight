@@ -6,7 +6,7 @@
 %%% * Doesn't do certain fancy things like Growl:
 %%%
 %%% https://github.com/rustyio/sync/blob/master/src/sync_scanner.erl
--module(ghostlight_devtools_scanner).
+-module(ghostlight_devtools_watcher).
 -behaviour(gen_server).
 
 %% gen_server callbacks

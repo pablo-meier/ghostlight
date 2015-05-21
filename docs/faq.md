@@ -8,7 +8,7 @@ Ambitions, but I have no idea what the future holds.**
 
 ### What is the purpose of ghostlight?
 
-There's not a short answer to that -- you can read the [About page][1] for the
+There's not a short answer to that — you can read the [About page][1] for the
 sales-pitchey angle at it. _But_ if I abandon the sales pitchey angle, here's
 the short version: **I'm applying Computers to Theatre as best I can, and seeing
 what happens next.** ghostlight was originally conceived as an archiving tool,
@@ -55,7 +55,7 @@ had taken off. Now's my chance!
 
 ##### **GitHub**
 
-[GitHub](https://github.com) was the first major inspiration -- for most working
+[GitHub](https://github.com) was the first major inspiration — for most working
 programmers, this is a household name, whereas for non-programmers it's never
 been heard of. GitHub offers tools to make it easier for individual programmers 
 to store and share their work, and for groups of programmers to work together on
@@ -154,7 +154,7 @@ I do hope any and all of you with concerns on this bring them up on the
 [Discourse site][10] I set up, _precisely so_ we can discuss what ghostlight is,
 be mindful of its impacts, and where to subsequently take it.
 
-   [1]: About page
+   [1]: /about
    [2]: http://techcrunch.com/2012/08/28/cherry-san-diego/
    [3]: https://www.youtube.com/watch?v=LMmdl4VltD4
    [4]: http://pw.brown.edu/
@@ -163,4 +163,4 @@ be mindful of its impacts, and where to subsequently take it.
    [7]: http://pw.brown.edu/wiki/shows/the_verge
    [8]: http://pw.brown.edu/wiki/people/greenbook
    [9]: http://techcrunch.com/2010/08/26/facebook-placebook-teachbook/
-   [10]: Discourse site
+   [10]: https://discourse.ghostlight.io

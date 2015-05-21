@@ -37,7 +37,10 @@ initiate_listening_to_endpoints() ->
                                              {"/organizations/[:org_id[/:command]]", ghostlight_org, []},
                                              {"/works/[:work_id[/:command]]", ghostlight_work, []},
                                              {"/static/[...]", cowboy_static, {priv_dir, ghostlight, "static/",
-                                                                               [{mimetypes, cow_mimetypes, all}]}}
+                                                                               [{mimetypes, cow_mimetypes, all}]}},
+                                             {"/faq", cowboy_static, {priv_file, ghostlight, "static/faq.html"}},
+                                             {"/index.html", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},
+                                             {"/", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}}
                                       ]}
     ]),
     {ok, _} = cowboy:start_http(http, 100, [{port, Port}], [

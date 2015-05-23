@@ -283,8 +283,51 @@ listings() ->
     Response = gen_server:call(?MODULE, get_show_listings),
     [ #show{
          id=ShowId,
-         title=ShowName
-      } || {ShowId, ShowName} <- Response ].
+         title=ShowTitle,
+         description=ShowDescription,
+         producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
+                    || Producer <- jiffy:decode(ShowProducers) ],
+         dates = [ iso8601:parse(Date) || Date <- jiffy:decode(ShowDates) ],
+         performances=[ performance_from_work_json(Work)
+                        || Work <- jiffy:decode(WorksJson) ]
+        }
+     || {
+        ShowId,
+        ShowTitle,
+        ShowDescription,
+        ShowProducers,
+        ShowDates,
+        WorksJson,
+        _OpeningNight
+     } <- Response ].
+
+performance_from_work_json({WorkJson}) ->
+    Id = proplists:get_value(<<"work_id">>, WorkJson),
+    Title = proplists:get_value(<<"title">>, WorkJson),
+    Authors = proplists:get_value(<<"authors">>, WorkJson),
+    #performance{
+       work=#work{
+               id=Id,
+               title=Title,
+               authors=[ author_from_json(Author) || Author <- Authors ]
+              }
+    }.
+
+%% Very odd, but this row in an object keyed on 'row'? FIXME.
+author_from_json({Author}) ->
+    {Info} = proplists:get_value(<<"row">>, Author),
+    case proplists:get_value(<<"type">>, Info) of
+        <<"person">> ->
+            #person{
+                id=proplists:get_value(<<"id">>, Info),
+                name=proplists:get_value(<<"name">>, Info)
+              };
+        <<"org">> ->
+            #organization {
+                id=proplists:get_value(<<"id">>, Info),
+                name=proplists:get_value(<<"name">>, Info)
+            }
+    end.
 
 insert(Show) ->
     gen_server:call(?MODULE, {insert_show, Show}).
@@ -385,8 +428,47 @@ SELECT
 FROM shows AS s where s.show_id = $1",
     {ok, GetShowStatement} = epgsql:parse(C, "get_show_statement", GetShowSql, [uuid]),
   
-    %% For show listings -- much like the meta of a single one.
-    GetShowListingsSql = "SELECT s.show_id, s.title FROM shows AS s LIMIT 30",
+    %% Show listings -- get the id title, description, works presented, producers, run, ordered by date.
+    GetShowListingsSql =
+"
+SELECT
+    s.show_id,
+    s.title,
+    s.description_markdown,
+    array_to_json(ARRAY(SELECT (CASE WHEN prod.person_id IS NULL
+                      THEN ('org'::person_or_org_label, prod.org_id, o.name)::person_or_org
+                      ELSE ('person'::person_or_org_label, prod.person_id, p.name)::person_or_org
+                 END)
+             FROM producers prod
+             LEFT OUTER JOIN people p USING (person_id)
+             LEFT OUTER JOIN organizations o USING (org_id)
+             WHERE prod.show_id = s.show_id ORDER BY prod.listed_order ASC)) AS producers,
+     array_to_json(ARRAY(SELECT sd.show_date from show_dates sd WHERE sd.show_id = s.show_id ORDER BY sd.show_date ASC)) AS dates,
+     (
+        SELECT to_json(array_agg(s_works))
+        FROM (SELECT
+          w.work_id, 
+          w.title, 
+          (SELECT to_json(array_agg(s_authors))
+              FROM 
+              (SELECT (CASE WHEN a.person_id IS NULL 
+                            THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
+                            ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
+                       END)
+                FROM authorship a
+                LEFT OUTER JOIN people p USING (person_id)
+                LEFT OUTER JOIN organizations o USING (org_id)
+                WHERE a.work_id = w.work_id) AS s_authors) AS authors
+          FROM works AS w
+          INNER JOIN performances perf USING (work_id)
+          WHERE perf.show_id = s.show_id ORDER BY perf.performance_order ASC) AS s_works
+     ) AS show_works,
+     (
+        SELECT show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY show_date ASC LIMIT 1
+     ) AS opening_night
+FROM
+    shows AS s
+ORDER BY opening_night DESC",
     {ok, GetShowListings} = epgsql:parse(C, "show_listings_meta", GetShowListingsSql, []),
 
  

@@ -99,11 +99,17 @@ record_to_proplist(#show{
                      external_links=ExternalLinks,
                      performances=Performances,
                      dates=Dates}) ->
+
+    FirstDate = lists:nth(1, Dates),
+    LastDate = lists:last(Dates),
+
     [{id, ShowId},
      {title, Title},
      {producers, [ producer_to_proplist(Producer) || Producer <- Producers ]},
      {special_thanks, SpecialThanks},
      {dates, Dates},
+     {opening, FirstDate},
+     {closing, LastDate},
      {hosts, [ [{<<"host_id">>, HostId}, {<<"host_name">>, HostName}] || #person{id=HostId, name=HostName} <- Hosts]},
      {press, [ [{<<"link">>, Url}, {<<"description">>, LinkDesc}] || #press_link{link=Url, description=LinkDesc} <- PressLinks]},
      {description, ghostlight_utils:remove_null(Description)},

@@ -76,7 +76,7 @@
       },
       "directors": [{"name": "Nick Leavens"}],
       "onstage": [
-        { "performer" : {"name": "Mike Smith Riviera"} },
+        { "performer" : {"name": "Mike Smith Rivera"} },
         { "performer" : {"name": "Rachel Lin"} },
         { "performer" : {"name": "Merissa Czyz"} },
         { "performer" : {"name": "Diana Ruppe"} },

@@ -15,7 +15,7 @@
   {% for show in shows %}
   <div class="row text-center">
     <div class="small-6 columns">
-      <a href="/shows/{{ show.id }}">{{ show.title }}</a>
+      <h3><a href="/shows/{{ show.id }}">{{ show.title }}</a></h3>
     </div>
     <div class="small-4 columns">
       Presented by: {% for producer in show.producers %} 
@@ -40,19 +40,10 @@
   {% endif %}
   <div class="row">
     <div class="small-12 columns">
-      <ul class="tabs" data-tab>
       {% for performance in show.performances %} 
-      <li class="tab-title{% if forloop.first %} active{% endif %}"><a href="#panel{{show.id}}{{performance.work.work_id}}">{{performance.work.title}}</a></li>
-      {% endfor %}
-      </ul>
-      <div class="tabs-content">
-      {% for performance in show.performances %} 
-        <div class="content{% if forloop.first %} active{% endif %}" id="panel{{show.id}}{{performance.work.work_id}}">
         <p><a href="/works/{{ performance.work.work_id }}"><em>{{ performance.work.title }}</em></a>, by {% for author in performance.work.authors %}
           {% if forloop.last and not forloop.first %} and {% endif %}<a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% if not forloop.last %},  {% endif %}{% endfor %}</p>
-        </div>
       {% endfor %}
-      </div>
     </div>
   </div>
   {% endfor %}

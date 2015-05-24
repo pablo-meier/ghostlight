@@ -108,7 +108,7 @@ record_to_proplist(#work{
                      }) ->
     [{<<"work_id">>, WorkId},
      {<<"title">>, WorkTitle},
-     {<<"authors">>, [ ghostlight_people:record_to_proplist(Author) || Author <- Authors ]}].
+     {<<"authors">>, [ org_or_person_to_proplist(Author) || Author <- Authors ]}].
 
 org_or_person_to_proplist(#organization{id=Id, name=Name}) ->
     [{<<"type">>, <<"org">>},

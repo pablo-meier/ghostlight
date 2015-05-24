@@ -23,7 +23,11 @@
           <td><a href="/works/{{ work.work_id }}">{{ work.title }}</a></td>
           <td>
           {% for author in work.authors %}
-          <a href="/people/{{ author.person_id }}">{{ author.person_name }}</a><br />
+            {% if author.type == "person" %}
+                <a href="/people/{{ author.id }}">{{ author.name }}</a><br />
+            {% else %}
+                <a href="/organizations/{{ author.id }}">{{ author.name }}</a><br />
+            {% endif %}
           {% endfor %}
           </td>
       </tr>

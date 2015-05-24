@@ -164,23 +164,11 @@ parse_show({Show}) ->
 
 listings() ->
     Response = gen_server:call(?MODULE, get_work_listings),
-    AuthorMap = lists:foldl(fun({Id, Title, AuthorId, AuthorName}, Accum) ->
-                                Author = #person{
-                                            id=AuthorId,
-                                            name=AuthorName
-                                         },
-                                case maps:get({Id, Title}, Accum, undefined) of
-                                    undefined ->
-                                        maps:put({Id, Title}, [Author], Accum);
-                                    AuthorList ->
-                                        maps:put({Id, Title}, [Author|AuthorList], Accum)
-                                end
-                            end, maps:new(), Response),
     [ #work{
           id=WorkId,
           title=WorkTitle,
-          authors=maps:get({WorkId, WorkTitle}, AuthorMap)
-      } || {WorkId, WorkTitle} <- maps:keys(AuthorMap)].
+          authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jiffy:decode(Authors) ]
+      } || {WorkId, WorkTitle, Authors} <- Response].
 
 insert(Work) ->
     gen_server:call(?MODULE, {insert_work, Work}).
@@ -265,8 +253,20 @@ FROM works w WHERE work_id = $1;
     {ok, GetWork} = epgsql:parse(C, "get_work_statement", GetWorkSql, [uuid]),
 
     %% For work listings -- much like the meta of a single one.
-    GetWorkListingsSql = "SELECT w.work_id, w.title, p.person_id, p.name FROM works AS w "
-        ++ "INNER JOIN authorship AS a using (work_id) INNER JOIN people AS p USING (person_id) ORDER BY w.title ASC LIMIT 50",
+    GetWorkListingsSql = "
+SELECT 
+    w.work_id,
+    w.title,
+    array_to_json(ARRAY(SELECT (CASE WHEN a.person_id IS NULL
+                                   THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
+                                   ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
+                               END)
+                        FROM authorship a
+                        LEFT OUTER JOIN people p USING (person_id)
+                        LEFT OUTER JOIN organizations o USING (org_id)
+                        WHERE a.work_id = w.work_id)) AS authors
+FROM works AS w
+ORDER BY w.title ASC",
     {ok, GetWorkListings} = epgsql:parse(C, "get_work_listings", GetWorkListingsSql, []),
 
     UpdateWorkSql = "UPDATE works SET title = $1, description_src = $2, description_markdown = $3, collaborating_org_id = $4, minutes_long = $5 WHERE work_id = $6",

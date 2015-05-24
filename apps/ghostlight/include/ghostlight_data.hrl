@@ -81,6 +81,7 @@
 }).
 
 -record(performance, {
+    id = null               :: null | binary(),
     work = #work{}          :: #work{},
     onstage = []            :: list(#onstage{}),
     offstage = []           :: list(#offstage{}),

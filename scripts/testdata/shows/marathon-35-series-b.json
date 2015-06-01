@@ -1,0 +1,371 @@
+{
+  "title" : "35th Marathon of One-Act Plays, Series B",
+  "special_thanks" : "The Professional Performing Arts School",
+  "dates" : ["2015-05-30T14:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "Ensemble Studio Theatre"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "We Can All Agree To Pretend This Never Happened",
+        "authors": [{"person": {"name": "Emma Goidel"}}]
+      },
+      "directors": [{"name": "Abigail Zealey Bess"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Jonathan Randell Silver"},
+          "role" : "Andrew"
+        },
+        {
+          "performer" : {"name": "Polly Lee"},
+          "role" : "Liz"
+        },
+        {
+          "performer" : {"name": "Shyko Amos"},
+          "role" : "Maya"
+        },
+        {
+          "performer" : {"name": "Mike Smith Rivera"},
+          "role" : "Lincoln"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor" : {"person": {"name" : "Nick Francone" }},
+          "job" : "Scenic Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Audrey Nauman" }},
+          "job" : "Costume Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Julian Evans" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Justin Cox" }},
+          "job" : "Props Master"
+        },
+        {
+          "contributor" : {"person": {"name" : "Josh Langman" }},
+          "job" : "Assistant Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Eileen Lalley" }},
+          "job" : "Production Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Courtney Butt" }},
+          "job" : "Wardrobe Supervisor"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Assistant Production Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alexander Gilbey" }},
+          "job" : "House Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Sara Morgan" }},
+          "job" : "Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alison Loretta" }},
+          "job" : "Tech Intern"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jon Huggins" }},
+          "job" : "Assistant Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Artem Kreimer" }},
+          "job" : "Master Electrician"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jack Plowe" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "John, Who's Here From Cambridge",
+        "authors": [{"person": {"name": "Martyna Majok"}}]
+      },
+      "directors": [{"name": "Nick Leavens"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Paola Lázaro-Muñoz"},
+          "role" : "Jess"
+        },
+        {
+          "performer" : {"name": "Gregg Mozgala"},
+          "role" : "John"
+        }
+      ],
+      "offstage": [
+        {
+            "contributor" : {"person": {"name" : "Corinne Hastings" }},
+            "job" : "Assistant Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nick Francone" }},
+          "job" : "Scenic Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Audrey Nauman" }},
+          "job" : "Costume Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Julian Evans" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Justin Cox" }},
+          "job" : "Props Master"
+        },
+        {
+          "contributor" : {"person": {"name" : "Josh Langman" }},
+          "job" : "Assistant Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Eileen Lalley" }},
+          "job" : "Production Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Courtney Butt" }},
+          "job" : "Wardrobe Supervisor"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Assistant Production Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alexander Gilbey" }},
+          "job" : "House Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Sara Morgan" }},
+          "job" : "Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alison Loretta" }},
+          "job" : "Tech Intern"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jon Huggins" }},
+          "job" : "Assistant Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Artem Kreimer" }},
+          "job" : "Master Electrician"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jack Plowe" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Hour Of All Things",
+        "authors": [{"person": {"name": "Caridad Svich"}}]
+      },
+      "directors": [{"name": "William Carden"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Miriam Silverman"},
+          "role" : "Nic"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor" : {"person": {"name" : "Nick Francone" }},
+          "job" : "Scenic Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Audrey Nauman" }},
+          "job" : "Costume Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Julian Evans" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Justin Cox" }},
+          "job" : "Props Master"
+        },
+        {
+          "contributor" : {"person": {"name" : "Josh Langman" }},
+          "job" : "Assistant Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Eileen Lalley" }},
+          "job" : "Production Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Courtney Butt" }},
+          "job" : "Wardrobe Supervisor"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Assistant Production Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alexander Gilbey" }},
+          "job" : "House Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Sara Morgan" }},
+          "job" : "Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alison Loretta" }},
+          "job" : "Tech Intern"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jon Huggins" }},
+          "job" : "Assistant Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Artem Kreimer" }},
+          "job" : "Master Electrician"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jack Plowe" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Cora And Dave Are Getting Older",
+        "authors": [{"person": {"name": "Julia Cho"}}]
+      },
+      "directors": [{"name": "Marcia Jean Kurtz"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Dawn McGee"},
+          "role" : "Cory"
+        },
+        {
+          "performer" : {"name": "Jack Sochet"},
+          "role" : "Dave"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor" : {"person": {"name" : "Nick Francone" }},
+          "job" : "Scenic Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Audrey Nauman" }},
+          "job" : "Costume Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Julian Evans" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Justin Cox" }},
+          "job" : "Props Master"
+        },
+        {
+          "contributor" : {"person": {"name" : "Josh Langman" }},
+          "job" : "Assistant Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Eileen Lalley" }},
+          "job" : "Production Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Courtney Butt" }},
+          "job" : "Wardrobe Supervisor"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Assistant Production Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alexander Gilbey" }},
+          "job" : "House Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Sara Morgan" }},
+          "job" : "Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alison Loretta" }},
+          "job" : "Tech Intern"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jon Huggins" }},
+          "job" : "Assistant Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Artem Kreimer" }},
+          "job" : "Master Electrician"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jack Plowe" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
+          "job" : "Run Crew"
+        }
+      ]
+    }
+  ]
+}

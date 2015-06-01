@@ -15,7 +15,7 @@ I've been thinking about this on-and-off for a few years now, and working on
 pretty hard on nights and weekends for the past month or two, on top of my
 full-time job. While I would love to keep going with it stubbornly knowing I Am
 Right And It Is Perfect, the fact is I don't work full-time in the arts and am
-only one person -- I can't really know what large numbers of artists like or
+only one person — I can't really know what large numbers of artists like or
 need. I also need some feedback to break out of any tunnelvision before it gets
 super solidified.
 
@@ -32,16 +32,16 @@ Another is
 
 What the app actually _is_:
 
-* You take the information in a program you'd get at a show: what the piece was,
-  who produced the show, who acted in it, who did the designs, and you add it to
-  the app.
+* You take the information in a program you'd get at a show: what piece was
+  being performed, who produced the show, who acted in it, who did the designs,
+  and you add it to the app.
 * Every person, organization, and piece is linked with every time they've been 
   entered. This means, when you're looking at a show's page, you can click any
   actor (or Lighting Designer, or the producing organization, or the author of
-  the work, or the work itself...) and get taken to _their_ page, which lists
+  the work, or the work itself…) and get taken to _their_ page, which lists
   all the other work they're connected with.  Which you can click, which takes
-  you to another page...
-* If you're the person in question, you can naturally manage parts of your
+  you to another page…
+* If you are the person in question, you can naturally manage parts of your
   page to include photos, a Bio, links to your social media, etc.
 
 So this is a bit like IMDb: you click the page for [Fast &
@@ -50,11 +50,11 @@ cast, &c. From there, I can click [Vin Diesel's
 page](http://www.imdb.com/name/nm0004874/) and learn everything he's ever done.
 
 If you are one of my Brown buddies, there is a _very small chance_ this looks
-familiar to you. That's because this was a system that happened slightly ad-hoc
-using the [PW wiki!](http://pw.brown.edu/wiki/start). During my time there, I
-uploaded the information in some of the show programs to wiki pages ([here's one I
-did](http://pw.brown.edu/wiki/shows/accidental_death_of_an_anarchist), and
-[another](http://pw.brown.edu/wiki/shows/a_doll_house)) that got listed in the
+familiar to you. That's because this was a system that appeared in a slightly
+ad-hoc way using the [PW wiki!](http://pw.brown.edu/wiki/start). During my time
+there, I uploaded the information in some of the show programs to wiki pages
+([here's one I did](http://pw.brown.edu/wiki/shows/accidental_death_of_an_anarchist),
+and [another](http://pw.brown.edu/wiki/shows/a_doll_house)) that got listed in the
 [past shows](http://pw.brown.edu/wiki/shows/index) page). If I could, I'd link
 anybody to a person page they made for themselves ([here's
 one](http://pw.brown.edu/wiki/people/alex_lubensky_09),
@@ -112,50 +112,60 @@ Ghostlight page").
 
 ### Networking!
 
-Lastly -- networking! If you have a searchable, up-to-date database of _everyone
+Lastly — networking! If you have a searchable, up-to-date database of _everyone
 you've worked with_ and _everyone they've ever worked with_, well, I think
 that'd be pretty cool. Not just for the person using the product, but for me
 and what I could build on it, too.
 
 Here's a funny story: I went to the wedding of the most marvelous person in my
 high school with my girlfriend Charly, where we ran into -- [Andrew
-Neisler](http://freshgroundpeppernyc.com/andrew-neisler/)! Who interviewed
-Charly for [Fresh Ground Pepper's _brb_ retreat](http://freshgroundpeppernyc.com/brb/)!
-After a few "lol so crazy"s, Andrew chuckled and said something to the effect of
-"heh, and we were trying to branch out by getting a Philly artist."
+Scoville](http://freshgroundpeppernyc.com/andrew-scoville/)! Who interviewed
+[Charly](http://www.charlyevonsimpson.com/) for [Fresh Ground Pepper's _brb_
+retreat](http://freshgroundpeppernyc.com/brb/)! After a few "lol so crazy"s,
+Andrew chuckled and said something to the effect of "heh, and we were trying to
+branch out by getting a Philly artist."
 
 These networks are there, and how cool if we had a database we could both see
 the links we wouldn't otherwise, or avoid them! I was thinking it'd be fun to
 organize a Ghostlight retreat like _brb_, but find "islands" from the data (the
-"NYU alum mafia" island, the "Brown alum proletariat" island...) get a few groups
-together from people of different islands expressly for the purposes of
-cross-pollination.
+"NYU alum mafia" island, the "Brown alum proletariat" island, the
+"YoungBlooders"…) get a few groups together from people of different islands
+expressly for the purposes of cross-pollination.
 
-(Charly and I saw something like that happen in a lovely way -- we saw [Stevo
+(Charly and I saw something like that happen in a lovely way — we saw [Stevo
 Arnoczy](http://www.harunalee.com/stevo.html) and [Trevor Salter](http://www.uniqueboard.com/trevorfsalter)
 perform a collaboration called _mothertongue_ at the [FGP Birthday
 Party](https://www.facebook.com/events/1691968014363395/) after meeting for the
 first time, and getting along swimmingly, at Charly's _brb_).
 
-((bee tee dubs the links in that last paragraph all required separate Google
+((bee tee dubs all the links in this entire sections lall required separate Google
 searches, and would have been easier... _**with Ghostlight!!!!**_
 <small><em>vaudeville hook...</em></small>))
 
 ## What can I do?
 
-Use it! Add a program or two if you have one I missed, edit your page, and let
-me know things like
+Use it! A **lot** is unfinished:
+
+* There's no sense of users yet (everyone is God).
+* Adding/changing Productions doesn't work (the forms for People, Pieces, and
+  Organizations should, tho).
+* The search bar doesn't do anything.
+
+**BUT** still browse around and tell me thinks like
 
 * Is this something you'd even do?
 * What's good about it? What sucks about it?
 
 **Please remember this is, like, 40% done.** I'm showing it off to a few of you
 early in the spirit of ["30%
-feedback"](https://42floors.com/blog/startups/thirty-percent-feedback) -- it's
+feedback"](https://42floors.com/blog/startups/thirty-percent-feedback) — it's
 probably too early to _really_ show, but this also allows you to give me the
 most valuable, impactful feedback. That means _spare no courtesy_ and please be
 brutal, and feel free to comment on broad issues with it too, not just "it's
 ugly" (oy, it is ugly).
+
+_Since its the same username/password for everyone, I probably won't notice or
+care if you show it to friends or forward this email around._
 
 ## How can I give you feedback?
 
@@ -193,9 +203,9 @@ page ([_or what she
 will_](https://newplayexchange.org/plays/20713/or-what-she-will)) which link up
 like Ghostlight does. But again, the whole thing feels corporate, and requires
 you to pay to search it effectively. There was a lot of talk that it would
-"change the game" but I haven't seen it yet. And Ghostlight is more about
-productions, people, and organizations: the works of art themselves just come
-as a byproduct.
+"change the game" but I have doubts. And Ghostlight is more about productions,
+people, and organizations: the pieces themselves are a 'nice-to-have' byproduct
+I might be able to build on later.
 
 Another notable app is [NewPlayMap](http://newplaymap.org/). Some days its a
 ghost town, others it's got a fair bit of activity. The poor thing hasn't
@@ -204,9 +214,9 @@ years](https://github.com/newplaymap/newplaymap). Radically different than what
 I'm doing.
 
 If you know of others, let me know! I was going to tweet a photo at
-NewPlayExchange wearing aviators and smoking from a vape pen, with "I'M COMING
-FOR YOU, NEWPLAYX" but figured that might be in poor taste. In my mind it's
-friendly competition, but I'd also like to work together with whoever's out
-there: one of the links a person, organization, or play can add, aside from the
+NewPlayExchange wearing aviator sunglasses, smoking from a vape pen, with
+"I'M COMING FOR YOU, NEWPLAYX" but figured that might be in poor taste. In my
+mind it's friendly competition, but I'd also like to work together with whoever's
+out there: one of the links a person, organization, or play can add, aside from the
 usual Tumblr/Facebook/Twitter types is their NewPlayExchange link.
 

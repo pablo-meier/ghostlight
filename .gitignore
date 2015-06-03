@@ -1,3 +1,4 @@
+sys.config
 .rebar3
 _*
 .eunit

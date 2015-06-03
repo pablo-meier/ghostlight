@@ -12,9 +12,12 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-
 connect_to_postgres() ->
-    {ok, C} = epgsql:connect("localhost", "pablo", "", [{database, "ghostlight-dev"}]),
+    Host = ghostlight_config:get('PGHOST'),
+    User = ghostlight_config:get('PGUSER'),
+    Password = ghostlight_config:get('PGPASSWORD'),
+    Database = ghostlight_config:get('PGDATABASE'),
+    {ok, C} = epgsql:connect(Host, User, Password, [{database, Database}]),
     C.
 
 fresh_uuid() ->

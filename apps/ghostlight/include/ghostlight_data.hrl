@@ -142,6 +142,7 @@
 -record(db_state, {connection,
                    begin_statement,
                    commit_statement,
+                   rollback_statement,
 
                    %% Works
                    insert_work_statement,

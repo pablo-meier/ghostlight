@@ -3,10 +3,15 @@
 ## Things to make better
 
 * Env vars for the various pieces like PGHOST, PGPASSWORD, etc.
+* Analytics.
 * Logging to a file, better log viewer.
 * Ship pre-built JARs for the owasp-sanitizer, devtools (if I ever finish them).
 * pre-built binaries for cmark\_wrapper?
 * Database durability (rollback transactions in case of failure).
+
+Goal is 1-button deploys!
+* First to existing system.
+* Then make it easy to build an image from scratch.
 
 # Old World is New Again: SmartOS, basic steps, scriptable
 

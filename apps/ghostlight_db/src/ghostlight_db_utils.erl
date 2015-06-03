@@ -42,22 +42,36 @@ get_state(Connection) ->
                                                fun ghostlight_db_person:prepare_statements/2]),
     {ok, BeginStmt} = epgsql:parse(Connection, "begin_statement", "BEGIN", []),
     {ok, CommitStmt} = epgsql:parse(Connection, "commit_statement", "COMMIT", []),
+    {ok, RollbackStmt} = epgsql:parse(Connection, "rollback_statement", "ROLLBACK", []),
 
     Specifics#db_state{
       connection=Connection,
       begin_statement=BeginStmt,
-      commit_statement=CommitStmt
+      commit_statement=CommitStmt,
+      rollback_statement=RollbackStmt
     }.
 
 
 exec_batch(Batch, #db_state{connection=C,
                             commit_statement=COMMIT,
-                            begin_statement=BEGIN}) ->
+                            begin_statement=BEGIN,
+                            rollback_statement=ROLLBACK}) ->
     AsTransaction = lists:append([ [{BEGIN, []}],
                                    Batch,
                                    [{COMMIT, []}] ]),
     Results = epgsql:execute_batch(C, AsTransaction),
-    Results.
+    case all_succeeded(Results) of
+        true -> Results;
+        false ->
+            lager:error("Transaction Failed! Rolling back~n"),
+            epgsql:execute_batch(C, [{ROLLBACK, []}])
+    end.
+
+all_succeeded(Results) ->
+    lists:all(fun good_result/1, Results).
+
+good_result({ok, _}) -> true;
+good_result(_Else) -> false.
 
 
 parse_person_or_org({Entity}) ->

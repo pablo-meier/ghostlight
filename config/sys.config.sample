@@ -1,10 +1,11 @@
 [
-  {'ghostlight', [
+  {ghostlight_db, [
     {'PGHOST', "where to find Postgres"},
     {'PGUSER', "who is logging in"},
     {'PGPASSWORD', "credentials for whom is logging in"},
-    {'PGDATABASE', "name of the DB"},
-
+    {'PGDATABASE', "name of the DB"}
+  ]},
+  {ghostlight, [
     {sanitizer_node_name, "Name of node running the HTML sanitizer"},
     {ghostlight_port, "Port to run on"}
   ]

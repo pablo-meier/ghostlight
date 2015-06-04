@@ -45,7 +45,8 @@ initiate_listening_to_endpoints() ->
     ]),
     {ok, _} = cowboy:start_http(http, 100, [{port, Port}], [
                                                             {env, [{dispatch, Dispatch}]},
-                                                            {middlewares, [cowboy_router, ghostlight_logging, cowboy_handler]}
+                                                            {middlewares, [cowboy_router, ghostlight_logging, cowboy_handler]},
+                                                            {onresponse, fun ghostlight_utils:handle_errors/4}
     ]),
     lager:info("Started the Cowboy server on Port ~p~n", [Port]).
 

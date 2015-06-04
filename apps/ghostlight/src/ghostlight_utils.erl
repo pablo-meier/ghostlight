@@ -1,14 +1,16 @@
 -module(ghostlight_utils).
 
 -export([erl_date_to_iso8601/1,
+         external_links_json_to_record/1,
+         external_links_record_to_proplist/1,
+         external_links_record_to_json/1,
          json_with_valid_values/1,
+         handle_errors/4,
+         make_error/1,
          proplist_with_valid_values/1,
          person_or_org_json_to_record/1,
          person_or_org_record_to_json/1,
-         remove_null/1,
-         external_links_json_to_record/1,
-         external_links_record_to_proplist/1,
-         external_links_record_to_json/1]).
+         remove_null/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -151,8 +153,41 @@ suitable_to_show(null) -> false;
 suitable_to_show(undefined) -> false;
 suitable_to_show(_) -> true.
 
-
 remove_null(null) -> <<"">>;
 remove_null(E) -> E.
 
+make_error(resource_missing) ->
+    ok;
+make_error(invalid_data) ->
+    ok;
+make_error(not_authorized) ->
+    ok.
 
+handle_errors(400, Headers, _Body, Req) ->
+    Req;
+handle_errors(401, Headers, _Body, Req) ->  %% Unauthorized
+    Req;
+handle_errors(403, Headers, _Body, Req) ->  %% Forbidden
+    Req;
+handle_errors(404, Headers, _Body, Req) ->
+    Type = cowboy_req:meta(response_type, Req, html),
+    case Type of
+        html ->
+            {ok, NewBody} = ghostlight_404_template:render(), 
+            Headers2 = lists:keyreplace(<<"content-length">>, 1, Headers,
+                           {<<"content-length">>, integer_to_list(iolist_size(NewBody))}),
+            cowboy_req:reply(404, Headers2, NewBody, Req);
+        json ->
+            Req
+    end;
+handle_errors(500, Headers, _Body, Req) ->  %% Internal Server Error
+    Req;
+handle_errors(_, _, _, Req) ->
+    Req.
+
+
+make_error_response(html, Req, Module) ->
+    {ok, NewBody} = Module:render(),
+    cowboy_req:set_resp_body(NewBody, Req);
+make_error_response(json, Req, _Module) ->
+    Req.

@@ -5,7 +5,8 @@
     {'PGPASSWORD', "credentials for whom is logging in"},
     {'PGDATABASE', "name of the DB"},
 
-    {sanitizer_node_name, "Name of node running the HTML sanitizer"}
+    {sanitizer_node_name, "Name of node running the HTML sanitizer"},
+    {ghostlight_port, "Port to run on"}
   ]
   }
 ].

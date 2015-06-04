@@ -1,4 +1,5 @@
 sys.config
+cmark_wrapper
 .rebar3
 _*
 .eunit

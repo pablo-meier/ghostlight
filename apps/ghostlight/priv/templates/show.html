@@ -33,7 +33,7 @@
         <h3>Presented by
             {% for producer in producers %}
               {% if forloop.last and not forloop.first %} and {% endif %}
-              {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last %},  {% endif %}
+              {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last and producers|length != 2 %},  {% endif %}
             {% endfor %}</h3>
     </div>
     <div class="small-4 columns">

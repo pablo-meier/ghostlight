@@ -29,7 +29,7 @@ stop(_State) ->
 
 
 initiate_listening_to_endpoints() ->
-    Port = 8080,
+    Port = ghostlight_config:get(ghostlight_port),
     Dispatch = cowboy_router:compile([
                                       {'_', [
                                              {"/shows/[:show_id[/:command]]", ghostlight_show, []},
@@ -48,7 +48,7 @@ initiate_listening_to_endpoints() ->
                                                             {middlewares, [cowboy_router, ghostlight_logging, cowboy_handler]},
                                                             {onresponse, fun ghostlight_utils:handle_errors/4}
     ]),
-    lager:info("Started the Cowboy server on Port ~p~n", [Port]).
+    lager:info("Started the Ghostlight server on Port ~p~n", [Port]).
 
 
 %% Compiles ErlyDtl templates the other modules will use. If it fails, better

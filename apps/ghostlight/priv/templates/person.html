@@ -21,18 +21,23 @@
   {% endif %}
 
   {% if onstage_list %}
-    <h3>Performances!</h3>
+    <h3>Performer in…</h3>
     <table>
       <tr>
         <th><strong>Production</strong></th>
-        <th><strong>Producing Organization</strong></th>
+        <th><strong>Producers</strong></th>
         <th><strong>Piece</strong></th>
         <th><strong>Role</strong></th>
       </tr>
     {% for onstage in onstage_list %}
       <tr>
         <td><a href="/shows/{{ onstage.show_id }}">{{ onstage.show_title }}</a></td>
-        <td><a href="/organizations/{{ onstage.org_id }}">{{ onstage.org_name }}</a></td>
+        <td>
+          {% for producer in onstage.producers %}
+            {% if forloop.last and not forloop.first %} and {% endif %}
+            {% if producer.is_org %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last and not onstage.producers|length == 2 %},  {% endif %}
+          {% endfor %}
+        </td>
         <td><a href="/works/{{ onstage.work_id }}">{{ onstage.work_title }}</a></td>
         <td><strong>{{ onstage.role }}</strong></td>
       </tr>
@@ -41,7 +46,7 @@
   {% endif %}
 
   {% if director %}
-    <h3>Director</h3>
+    <h3>Director of…</h3>
     <table>
       <tr>
         <th><strong>Production</strong></th>
@@ -58,8 +63,29 @@
     </table>
   {% endif %}
 
+  {% if producer %}
+    <h3>Producer of…</h3>
+    <table>
+      <tr>
+        <th><strong>Production</strong></th>
+        <th><strong>Piece(s)</strong></th>
+      </tr>
+      {% for show in producer %}
+      <tr>
+          <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>
+          <td>{% for work in show.performances %}
+                  <a href="/works/{{ work.work_id }}">{{ work.work_title }}</a>
+                  {% if not forloop.last %}<br />{% endif %}
+              {% endfor %}
+          </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+  {% endif %}
+
   {% if offstage_list %}
-    <h3>Production Work!</h3>
+    <h3>Worked on…</h3>
     <table>
       <tr>
         <th><strong>Production</strong></th>
@@ -77,7 +103,7 @@
   {% endif %}
 
   {% if authorship %}
-    <h3>Works created!</h3>
+    <h3>Author of…</h3>
     <ul>
     {% for piece in authorship %}
       <li><a href="/works/{{ piece.work_id }}">{{ piece.title }}</a></li>
@@ -86,7 +112,7 @@
   {% endif %}
 
   {% if organizations %}
-    <h3>Organizations!</h3>
+    <h3>Staff of…</h3>
     <table>
       <tr>
         <th><strong>Organization</strong></th>
@@ -100,6 +126,4 @@
     {% endfor %}
     </table>
   {% endif %}
-
-
 {% endblock %}

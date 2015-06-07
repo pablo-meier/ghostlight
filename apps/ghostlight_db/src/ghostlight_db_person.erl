@@ -207,7 +207,7 @@ get(PersonId, Form) ->
                        performances = [#performance{
                                          work = #work {
                                                    id = proplists:get_value(<<"work_id">>, RoleObj),
-                                                   title = proplists:get_value(<<"title">>, RoleObj)
+                                                   title = proplists:get_value(<<"name">>, RoleObj)
                                                 }
                                       } || {RoleObj} <- proplists:get_value(<<"works">>, Show)]
                     } || {Show} <- ghostlight_db_utils:decode_not_null(Producer)],
@@ -262,7 +262,8 @@ SELECT
     array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
                         FROM works w 
                         INNER JOIN authorship a USING (work_id)
-                        where a.person_id = p.person_id)) AS authorships,
+                        where a.person_id = p.person_id
+                        ORDER BY w.title ASC)) AS authorships,
     -- Director
     (
         SELECT to_json(array_agg(directed))
@@ -368,7 +369,8 @@ SELECT
                      array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
                                                 FROM works w
                                                 INNER JOIN performances p USING (work_id)
-                                                WHERE p.show_id = s.show_id)) AS works
+                                                WHERE p.show_id = s.show_id
+                                                ORDER BY p.performance_order ASC)) AS works
                FROM shows s
                INNER JOIN producers USING (show_id)
                WHERE producers.person_id = p.person_id) AS prod

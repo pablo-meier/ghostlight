@@ -73,7 +73,8 @@ record_to_proplist(#person_return{
                      directed=Directed,
                      onstage=Onstage,
                      offstage=Offstage,
-                     orgs_employee=Orgs}) ->
+                     orgs_employee=OrgsEmp,
+                     orgs_member=OrgsMem}) ->
 
     OnstageProplist = [ make_onstage_proplist(OnstageShow) || OnstageShow <- Onstage ],
     OffstageProplist = [ make_offstage_proplist(OffstageShow) || OffstageShow <- Offstage ],
@@ -84,7 +85,12 @@ record_to_proplist(#person_return{
 
     OrgProplist = [ [{org_id, OrgId},
                      {org_name, OrgName},
-                     {position, Position}] || #org_work{org_id=OrgId, org_name=OrgName, title=Position} <- Orgs ],
+                     {position, Position}] || #org_work{org_id=OrgId,
+                                                        org_name=OrgName,
+                                                        title=Position} <- OrgsEmp ],
+    MemProplist = [ [{org_id, OrgId},
+                     {org_name, OrgName} ] || #organization{id=OrgId,
+                                                            name=OrgName } <- OrgsMem ],
 
     [{id, PersonId},
      {name, Name},
@@ -94,7 +100,8 @@ record_to_proplist(#person_return{
      {authorship, AuthorshipProplist},
      {director, DirectorProplist},
      {producer, ProducedProplist},
-     {organizations, OrgProplist},
+     {org_employee, OrgProplist},
+     {org_member, MemProplist},
      {links, ghostlight_utils:external_links_record_to_proplist(ExternalLinks)}];
 
 record_to_proplist(#person{

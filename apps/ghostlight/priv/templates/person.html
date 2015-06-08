@@ -129,17 +129,31 @@
     </ul>
   {% endif %}
 
-  {% if organizations %}
+  {% if org_employee %}
     <h3>Staff of…</h3>
     <table>
       <tr>
         <th><strong>Organization</strong></th>
         <th><strong>Role</strong></th>
       </tr>
-    {% for position in organizations %}
+    {% for org in org_employee %}
       <tr>
-        <td><a href="/organizations/{{ position.org_id }}">{{ position.org_name }}</a></td>
-        <td>{{ position.job }}</td>
+        <td><a href="/organizations/{{ org.org_id }}">{{ org.org_name }}</a></td>
+        <td>{{ org.position }}</td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endif %}
+
+  {% if org_member %}
+    <h3>Member of…</h3>
+    <table>
+      <tr>
+        <th><strong>Organization</strong></th>
+      </tr>
+    {% for member in org_member %}
+      <tr>
+        <td><a href="/organizations/{{ member.org_id }}">{{ member.org_name }}</a></td>
       </tr>
     {% endfor %}
     </table>

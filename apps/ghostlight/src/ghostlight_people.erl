@@ -76,35 +76,11 @@ record_to_proplist(#person_return{
                      orgs_employee=Orgs}) ->
 
     OnstageProplist = [ make_onstage_proplist(OnstageShow) || OnstageShow <- Onstage ],
+    OffstageProplist = [ make_offstage_proplist(OffstageShow) || OffstageShow <- Offstage ],
     ProducedProplist = [ make_producer_proplist(ProducedShow) || ProducedShow <- Produced ],
-    OffstageProplist = [ [{show_id, ShowId}, 
-                          {show_title, ShowTitle},
-%                          {org_id, OrgId},
-%                          {org_name, OrgName},
-                          {work_id, WorkId},
-                          {work_title, WorkTitle},
-                          {job, Job}] || #show{ title=ShowTitle,
-                                                id=ShowId,
-%                                                org=#organization{id=OrgId, name=OrgName},
-                                                performances=[#performance{
-                                                                work=#work{ id=WorkId, title=WorkTitle },
-                                                                offstage=[#offstage{ job=Job }]
-                                                             }]
-                                              } <- Offstage],
+    DirectorProplist = [ make_director_proplist(DirectedShow) || DirectedShow <- Directed ],
     AuthorshipProplist = [ [{work_id, WorkId},
                             {title, Title}] || #work{id=WorkId, title=Title} <- Authored],
-
-    DirectorProplist = [[{show_id, ShowId},
-                         {show_title, ShowTitle},
-%                         {org_id, OrgId},
-%                         {org_name, OrgName},
-                         {work_id, WorkId},
-                         {work_title, WorkTitle}] || #show{ title=ShowTitle,
-                                                            id=ShowId,
-                                                            % org=#organization{id=OrgId, name=OrgName},
-                                                            performances=[#performance{
-                                                                            work=#work{ id=WorkId, title=WorkTitle }
-                                                                         }]} <- Directed ],
 
     OrgProplist = [ [{org_id, OrgId},
                      {org_name, OrgName},
@@ -132,6 +108,7 @@ record_to_proplist(#person{
 make_onstage_proplist( #show{ title=ShowTitle,
                               id=ShowId,
                               producers=Producers,
+                              dates=[Opening],
                               performances=[#performance{
                                                 work=#work{ id=WorkId, title=WorkTitle },
                                                 onstage=[#onstage{ role=Role }]
@@ -141,15 +118,54 @@ make_onstage_proplist( #show{ title=ShowTitle,
      {producers, [ person_or_org_to_proplist(Producer) || Producer <- Producers ]},
      {work_id, WorkId},
      {work_title, WorkTitle},
+     {opening, Opening},
      {role, ghostlight_utils:remove_null(Role)}].
+
+
+make_offstage_proplist( #show{ title=ShowTitle,
+                               id=ShowId,
+                               producers=Producers,
+                               dates=[Opening],
+                               performances=[#performance{
+                                                 work=#work{ id=WorkId, title=WorkTitle },
+                                                 offstage=[#offstage{ job=Job }]
+                                             }]}) ->
+    [{show_id, ShowId},
+     {show_title, ShowTitle},
+     {producers, [ person_or_org_to_proplist(Producer) || Producer <- Producers ]},
+     {work_id, WorkId},
+     {work_title, WorkTitle},
+     {opening, Opening},
+     {job, ghostlight_utils:remove_null(Job)}].
+
 
 make_producer_proplist(#show{
                           id=ShowId,
                           title=ShowTitle,
+                          dates=[Opening],
                           performances=Performances}) ->
     [{show_id, ShowId},
      {show_title, ShowTitle},
+     {opening, Opening},
      {performances, [ work_proplist_from_performance(Performance) || Performance <- Performances ]} ].
+
+
+make_director_proplist(#show{
+                          id=ShowId,
+                          title=ShowTitle,
+                          producers=Producers,
+                          dates=[Opening],
+                          performances=[#performance{
+                                            work=#work{ id=WorkId,
+                                                        title=WorkTitle }
+                                        }]}) ->
+    [{show_id, ShowId},
+     {show_title, ShowTitle},
+     {work_id, WorkId},
+     {work_title, WorkTitle},
+     {opening, Opening},
+     {producers, [ person_or_org_to_proplist(Producer) || Producer <- Producers ]} ].
+
 
 work_proplist_from_performance(#performance {
                                     work=#work{

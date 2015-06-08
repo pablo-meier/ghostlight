@@ -161,7 +161,8 @@ get(PersonId, Form) ->
                                                      role = proplists:get_value(<<"role">>, RoleObj)
                                                   }]
                                      } || {RoleObj} <- proplists:get_value(<<"roles">>, Show)],
-                      producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)]
+                      producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)],
+                      dates=[ iso8601:parse(proplists:get_value(<<"opening_night">>, Show)) ]
                    } || {Show} <- ghostlight_db_utils:decode_not_null(Onstage)],
 
     OffstageList = [#show{
@@ -176,7 +177,8 @@ get(PersonId, Form) ->
                                                       job = proplists:get_value(<<"job">>, RoleObj)
                                                      }]
                                       } || {RoleObj} <- proplists:get_value(<<"jobs">>, Show)],
-                       producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)]
+                       producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)],
+                       dates=[ iso8601:parse(proplists:get_value(<<"opening_night">>, Show)) ]
                     } || {Show} <- ghostlight_db_utils:decode_not_null(Offstage)],
 
     DirectorList = [#show{
@@ -185,10 +187,11 @@ get(PersonId, Form) ->
                        performances = [#performance{
                                          work = #work {
                                                    id = proplists:get_value(<<"work_id">>, RoleObj),
-                                                   title = proplists:get_value(<<"title">>, RoleObj)
+                                                   title = proplists:get_value(<<"name">>, RoleObj)
                                                 }
                                       } || {RoleObj} <- proplists:get_value(<<"works">>, Show)],
-                       producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)]
+                       producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)],
+                       dates=[ iso8601:parse(proplists:get_value(<<"opening_night">>, Show)) ]
                     } || {Show} <- ghostlight_db_utils:decode_not_null(Director)],
 
     EmployeeList = [ #org_work {
@@ -204,6 +207,7 @@ get(PersonId, Form) ->
     ProducerList = [#show{
                        id = proplists:get_value(<<"show_id">>, Show),
                        title = proplists:get_value(<<"title">>, Show),
+                       dates=[ iso8601:parse(proplists:get_value(<<"opening_night">>, Show)) ],
                        performances = [#performance{
                                          work = #work {
                                                    id = proplists:get_value(<<"work_id">>, RoleObj),
@@ -283,11 +287,15 @@ SELECT
                                             FROM producers prod
                                             LEFT OUTER JOIN people p USING (person_id)
                                             LEFT OUTER JOIN organizations o USING (org_id)
-                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers
+                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers,
+                     (
+                        SELECT show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY show_date ASC LIMIT 1
+                     ) AS opening_night
                FROM shows s
                INNER JOIN performances perf USING (show_id)
                INNER JOIN performance_directors pd USING (performance_id)
-               WHERE pd.director_id = p.person_id) AS directed
+               WHERE pd.director_id = p.person_id
+               ORDER BY opening_night DESC) AS directed
     ) AS directorships,
     -- Onstage
     (
@@ -309,11 +317,15 @@ SELECT
                                             FROM producers prod
                                             LEFT OUTER JOIN people p USING (person_id)
                                             LEFT OUTER JOIN organizations o USING (org_id)
-                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers
+                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers,
+                     (
+                        SELECT show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY show_date ASC LIMIT 1
+                     ) AS opening_night
                FROM shows s
                INNER JOIN performances perf USING (show_id)
                INNER JOIN performance_onstage po USING (performance_id)
-               WHERE po.performer_id = p.person_id) AS onstaged
+               WHERE po.performer_id = p.person_id
+               ORDER BY opening_night DESC, perf.performance_order ASC) AS onstaged
     ) AS onstage,
     -- Offstage
     (
@@ -335,11 +347,15 @@ SELECT
                                             FROM producers prod
                                             LEFT OUTER JOIN people p USING (person_id)
                                             LEFT OUTER JOIN organizations o USING (org_id)
-                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers
+                                            WHERE prod.show_id = s.show_id ORDER BY prod.listed_order DESC)) AS producers,
+                     (
+                        SELECT show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY show_date ASC LIMIT 1
+                     ) AS opening_night
                FROM shows s
                INNER JOIN performances perf USING (show_id)
                INNER JOIN performance_offstage po USING (performance_id)
-               WHERE po.person_id = p.person_id) AS offstaged
+               WHERE po.person_id = p.person_id
+               ORDER BY opening_night DESC, perf.performance_order ASC) AS offstaged
     ) AS offstage,
     -- Links
     array_to_json(ARRAY(SELECT (pl.link, pl.type)::external_link
@@ -370,10 +386,14 @@ SELECT
                                                 FROM works w
                                                 INNER JOIN performances p USING (work_id)
                                                 WHERE p.show_id = s.show_id
-                                                ORDER BY p.performance_order ASC)) AS works
+                                                ORDER BY p.performance_order ASC)) AS works,
+                     (
+                        SELECT show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY show_date ASC LIMIT 1
+                     ) AS opening_night
                FROM shows s
                INNER JOIN producers USING (show_id)
-               WHERE producers.person_id = p.person_id) AS prod
+               WHERE producers.person_id = p.person_id
+               ORDER BY opening_night DESC) AS prod
     ) AS shows_produced
 FROM people p
 WHERE p.person_id = $1

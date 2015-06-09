@@ -35,9 +35,7 @@ register_resources() ->
         [
          [{resource_name, "people"},
           {module, ghostlight_people},
-          {get_listing_template, person_listing_template},
-          {get_template, person_template},
-          {update_template, insert_person_template}]
+          {template_base, person}]
         ],
     lists:foreach(fun ghostlight_resource:register/1, Resources),
     ok.

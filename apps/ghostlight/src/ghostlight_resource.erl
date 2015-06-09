@@ -200,9 +200,11 @@ post_resource(Req, State) ->
 register(Options) ->
     Name = ensure_binary(proplists:get_value(resource_name, Options)),
     Module = proplists:get_value(module, Options),
-    GetHtml = proplists:get_value(get_template, Options),
-    ListingsHtml = proplists:get_value(get_listing_template, Options),
-    UpdateHtml = proplists:get_value(update_template, Options),
+    [
+     {get_template, GetHtml},
+     {get_listing_template, ListingsHtml},
+     {update_template, UpdateHtml}
+    ] = make_template_names(proplists:get_value(template_base, Options)),
 
     Pack = #render_pack {
         module = Module,
@@ -216,3 +218,10 @@ register(Options) ->
 ensure_binary(Bin) when is_list(Bin) -> list_to_binary(Bin);
 ensure_binary(Bin) when is_binary(Bin) -> Bin.
 
+make_template_names(Basename) ->
+    AsString = atom_to_list(Basename),
+    [
+     {get_template, list_to_atom(AsString ++ "_template")},
+     {get_listing_template, list_to_atom(AsString ++ "_listing_template")},
+     {update_template, list_to_atom("insert_" ++ AsString ++ "_template")}
+    ].

@@ -3,14 +3,7 @@
 {% block title %}{{ name }}{% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="small-8 columns">
-      <h1>{{ name }}</h1>
-    </div>
-    <div class="small-4 columns">
-      <a href="/people/{{ id }}/edit" id="submitButton" class="button large radius success right">EDIT</a>
-    </div>
-  </div>
+  <h1>{{ name }}</h1>
 
   {% include "social_media.html" %}
 

@@ -26,20 +26,13 @@
 {% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="small-8 columns">
-      <h1><em>{{ title }}</em></h1>
-        <!-- If only one performance, author(s) here -->
-        <h3>Presented by
-            {% for producer in producers %}
-              {% if forloop.last and not forloop.first %} and {% endif %}
-              {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last and producers|length != 2 %},  {% endif %}
-            {% endfor %}</h3>
-    </div>
-    <div class="small-4 columns">
-      <a href="/shows/{{ id }}/edit" id="submitButton" class="button large radius success right">EDIT</a>
-    </div>
-  </div>
+  <h1><em>{{ title }}</em></h1>
+    <!-- If only one performance, author(s) here -->
+    <h3>Presented by
+        {% for producer in producers %}
+          {% if forloop.last and not forloop.first %} and {% endif %}
+          {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last and producers|length != 2 %},  {% endif %}
+        {% endfor %}</h3>
 
   {% include "social_media.html" %}
 

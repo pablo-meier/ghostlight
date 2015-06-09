@@ -35,7 +35,11 @@ register_resources() ->
         [
          [{resource_name, "people"},
           {module, ghostlight_people},
-          {template_base, person}]
+          {template_base, person}],
+
+         [{resource_name, "shows"},
+          {module, ghostlight_show},
+          {template_base, show}]
         ],
     lists:foreach(fun ghostlight_resource:register/1, Resources),
     ok.
@@ -52,7 +56,6 @@ initiate_listening_to_endpoints() ->
                                              {"/index.html", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},
                                              {"/", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},
                                              {"/works/[:work_id[/:command]]", ghostlight_work, []},
-                                             {"/shows/[:show_id[/:command]]", ghostlight_show, []},
                                              {"/organizations/[:org_id[/:command]]", ghostlight_org, []},
                                              {"/:resource[/:resource_id[/:command]]", ghostlight_resource, []}
                                       ]}

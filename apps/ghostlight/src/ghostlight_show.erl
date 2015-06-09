@@ -1,92 +1,54 @@
 -module(ghostlight_show).
--export([init/2]).
--export([content_types_provided/2,
-         content_types_accepted/2,
-         charsets_provided/2,
-         allowed_methods/2]).
--export([show_to_html/2,
-         show_to_json/2,
-         post_json/2,
-         record_to_json/1]).
+
+-export([get_html/1,
+         get_listings_html/0,
+         edit_html/1,
+
+         get_listings_json/0,
+         get_json/1,
+
+         get_id/1,
+         post_json/1,
+         edit_json/1,
+         json_to_record/1
+        ]).
+
+-export([record_to_json/1,
+         record_to_proplist/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-%% HTML
-%%
-%% GET /id         ------------- DONE
-%% GET /           ------------- DONE
-%% GET /new
-%% GET /id/delete
-%% GET /id/edit
-%%
-%% JSON
-%%
-%% GET /id         ------------- DONE
-%% GET /           ------------- DONE
-%% POST /          ------------- DONE
-%% PUT /id
-%% DELETE /id
+get_html(ShowId) ->
+    ShowRecord = ghostlight_db:get_show(ShowId),
+    record_to_proplist(ShowRecord).
 
-init(Req, Opts) ->
-    {cowboy_rest, Req, Opts}.
-allowed_methods(Req, State) ->
-    {[<<"GET">>, <<"POST">>, <<"PUT">>, <<"DELETE">>],
-     Req, State}.
-charsets_provided(Req, State) ->
-    {[<<"utf-8">>], Req, State}.
-content_types_provided(Req, State) ->
-    {[
-      {<<"text/html">>, show_to_html},
-      {<<"application/json">>, show_to_json}
-     ], Req, State}.
-content_types_accepted(Req, State) ->
-    {[
-      {<<"application/json; charset=utf-8">>, post_json},
-      {<<"application/json">>, post_json}
-     ], Req, State}.
+get_listings_html() ->
+    ShowList = ghostlight_db:get_show_listings(),
+    [{shows, [ record_to_proplist(Show) || Show <- ShowList ]}].
+
+edit_html(ShowId) ->
+    ShowRecord = ghostlight_db:get_show(ShowId, markdown),
+    AsJson = jiffy:encode(record_to_json(ShowRecord)),
+    [{name, ShowRecord#show.title},
+     {editmode, AsJson}].
 
 
-show_to_html(Req, State) ->
-    ShowId = cowboy_req:binding(show_id, Req),
-    Command = cowboy_req:binding(command, Req),
-    case {ShowId, Command} of
-        {undefined, undefined} ->
-            ShowList = ghostlight_db:get_show_listings(),
-            ForTemplate = [{shows, [ record_to_proplist(Show) || Show <- ShowList ]}],
-            {ok, Body} = show_listing_template:render(ForTemplate),
-            {Body, Req, State};
-        {<<"new">>, undefined} ->
-            {ok, Body} = insert_show_template:render([]),
-            {Body, Req, State};
-        {_, undefined} ->
-            ShowRecord = ghostlight_db:get_show(ShowId),
-            ForTemplate = record_to_proplist(ShowRecord),
-            {ok, Body} = show_template:render(ForTemplate),
-            {Body, Req, State};
-        {_, <<"edit">>} ->
-            ShowRecord = ghostlight_db:get_show(ShowId, markdown),
-            AsJson = jiffy:encode(record_to_json(ShowRecord)),
-            {ok, Body} = insert_show_template:render([{name, ShowRecord#show.title},
-                                                      {editmode, AsJson}]),
-            {Body, Req, State}
-    end.
+get_listings_json() ->
+    ShowList = ghostlight_db:get_show_listings(),
+    [{<<"shows">>, [ record_to_json(Show) || Show <- ShowList ]}].
 
-show_to_json(Req, State) ->
-    ShowId = cowboy_req:binding(show_id, Req),
-    case ShowId of
-        undefined ->
-            ShowList = ghostlight_db:get_show_listings(),
-            ToEncode = {[{<<"shows">>, [ record_to_json(Show) || Show <- ShowList ]}]},
-            Body = jiffy:encode(ToEncode),
-            {Body, Req, State};
-        _ ->
-            ShowRecord = ghostlight_db:get_show(ShowId),
-            AsJson = jiffy:encode(record_to_json(ShowRecord)),
-            {AsJson, Req, State}
-    end.
+get_json(ShowId) ->
+    ShowRecord = ghostlight_db:get_show(ShowId),
+    record_to_json(ShowRecord).
 
+post_json(ShowRecord) ->
+    ghostlight_db:insert_show(ShowRecord).
 
-%% HTML
+edit_json(ShowRecord) ->
+    ghostlight_db:update_show(ShowRecord).
+
+get_id(#show{id=Id}) -> Id.
+
 
 record_to_proplist(#show{
                      id=ShowId,
@@ -171,6 +133,7 @@ record_to_json(#show{
         {<<"performances">>, [ performance_record_to_json(Performance) || Performance <- Performances ]},
         {<<"dates">>, [ ghostlight_utils:erl_date_to_iso8601(Date) || Date <- Dates ]}
     ]).
+
 performance_record_to_json(#performance{
                              work=Work,
                              directors=Directors,
@@ -200,40 +163,7 @@ offstage_as_json(#offstage{
     ]).
 
 
-post_json(Req, State) ->
-    % upload the body, return yes or no
-    {ok, RequestBody, Req2} = cowboy_req:body(Req),
-    {Decoded} = jiffy:decode(RequestBody),
-    ShowRecord = show_json_to_record(Decoded),
-    Method = cowboy_req:method(Req2),
-    case {ShowRecord#show.id, Method} of
-        {null, <<"POST">>} ->
-            ShowId = ghostlight_db:insert_show(ShowRecord),
-            Response = jiffy:encode({[{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(ShowId)}]}),
-            {true, cowboy_req:set_resp_body(Response, Req2), State};
-        {_Else, <<"POST">>} ->
-            Body = jiffy:encode({[{<<"error">>, <<"You may not insert a person with the field 'id'.">>}]}),
-            Req3 = cowboy_req:set_resp_body(Body, Req2),
-            {false, Req3, State};
-        {null, <<"PUT">>} ->
-            Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
-            Req3 = cowboy_req:set_resp_body(Body, Req2),
-            {false, Req3, State};
-        {_PersonId, <<"PUT">>} ->
-            Success = ghostlight_db:update_show(ShowRecord),
-            case Success of
-                true ->
-                    Response = jiffy:encode({[{<<"status">>, ok}]}),
-                    {true, cowboy_req:set_resp_body(Response, Req2), State};
-                false ->
-                    Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
-                    Req3 = cowboy_req:set_resp_body(Body, Req2),
-                    {false, Req3, State}
-            end
-    end.
-
-
-show_json_to_record(Decoded) ->
+json_to_record({Decoded}) ->
     Title = proplists:get_value(<<"title">>, Decoded),
     SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),
     Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded)),

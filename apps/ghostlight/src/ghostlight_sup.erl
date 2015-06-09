@@ -28,7 +28,13 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, {{one_for_one, 5, 60}, []}}.
+    {ok, {{one_for_one, 5, 60},
+          [{resource_listener,
+            {ghostlight_resource, start_link, []},
+            permanent,
+            5000,
+            worker,
+            [ghostlight_resource]}]}}.
 
 %%====================================================================
 %% Internal functions

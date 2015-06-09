@@ -15,9 +15,11 @@
 start(_StartType, _StartArgs) ->
     lager:start(),
     lager:info("__~-~-*^*HELLO GHOSTLIGHT*^*-~-~__"),
+    Return = ghostlight_sup:start_link(),
+    register_resources(),
     initiate_listening_to_endpoints(),
     compile_all_templates(),
-    ghostlight_sup:start_link().
+    Return.
 
 %%--------------------------------------------------------------------
 stop(_State) ->
@@ -28,19 +30,33 @@ stop(_State) ->
 %%====================================================================
 
 
+register_resources() ->
+    Resources = 
+        [
+         [{resource_name, "people"},
+          {module, ghostlight_people},
+          {get_listing_template, person_listing_template},
+          {get_template, person_template},
+          {update_template, insert_person_template}]
+        ],
+    lists:foreach(fun ghostlight_resource:register/1, Resources),
+    ok.
+
+
 initiate_listening_to_endpoints() ->
     Port = ghostlight_config:get(ghostlight_port),
     Dispatch = cowboy_router:compile([
                                       {'_', [
-                                             {"/shows/[:show_id[/:command]]", ghostlight_show, []},
-                                             {"/people/[:person_id[/:command]]", ghostlight_people, []},
-                                             {"/organizations/[:org_id[/:command]]", ghostlight_org, []},
-                                             {"/works/[:work_id[/:command]]", ghostlight_work, []},
                                              {"/static/[...]", cowboy_static, {priv_dir, ghostlight, "static/",
                                                                                [{mimetypes, cow_mimetypes, all}]}},
                                              {"/faq", cowboy_static, {priv_file, ghostlight, "static/faq.html"}},
+                                             {"/favicon.ico", cowboy_static, {priv_file, ghostlight, "static/favicon.ico"}},
                                              {"/index.html", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},
-                                             {"/", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}}
+                                             {"/", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},
+                                             {"/works/[:work_id[/:command]]", ghostlight_work, []},
+                                             {"/shows/[:show_id[/:command]]", ghostlight_show, []},
+                                             {"/organizations/[:org_id[/:command]]", ghostlight_org, []},
+                                             {"/:resource[/:resource_id[/:command]]", ghostlight_resource, []}
                                       ]}
     ]),
     {ok, _} = cowboy:start_http(http, 100, [{port, Port}], [

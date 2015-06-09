@@ -164,6 +164,10 @@ make_error(invalid_data) ->
 make_error(not_authorized) ->
     ok.
 
+augment_request_header(Body, Headers) ->
+    NewValue = {<<"content-length">>, integer_to_list(iolist_size(Body))},
+    lists:keyreplace(<<"content-length">>, 1, Headers, NewValue).
+
 handle_errors(400, Headers, _Body, Req) ->
     Req;
 handle_errors(401, Headers, _Body, Req) ->  %% Unauthorized
@@ -175,8 +179,7 @@ handle_errors(404, Headers, _Body, Req) ->
     case Type of
         html ->
             {ok, NewBody} = ghostlight_404_template:render(), 
-            Headers2 = lists:keyreplace(<<"content-length">>, 1, Headers,
-                           {<<"content-length">>, integer_to_list(iolist_size(NewBody))}),
+            Headers2 = augment_request_header(NewBody, Headers),
             cowboy_req:reply(404, Headers2, NewBody, Req);
         json ->
             Req

@@ -104,7 +104,7 @@ content_types_accepted(Req, State) ->
       {<<"application/json">>, post_resource}
      ], Req, State}.
 
-
+%%% @private
 resource_to_json(Req, State) ->
     ResourceName = cowboy_req:binding(resource, Req),
     Id = cowboy_req:binding(resource_id, Req),
@@ -122,76 +122,88 @@ resource_to_json(Req, State) ->
             {AsJson, Req2, State}
     end.
 
-
+%%% @private
 resource_to_html(Req, State) ->
     ResourceName = cowboy_req:binding(resource, Req),
     Id = cowboy_req:binding(resource_id, Req),
     Command = cowboy_req:binding(command, Req),
 
-    #render_pack {
-       module = Module,
-       get_template = GetTemplate,
-       get_listing_template = ListingTemplate,
-       update_template = UpdateTemplate
-    } = gen_server:call(?SERVER, {get_module, ResourceName}),
+    RenderPack = gen_server:call(?SERVER, {get_module, ResourceName}),
     Req2 = cowboy_req:set_meta(response_type, html, Req),
 
-    case {Id, Command} of
-        {undefined, undefined} ->
-            Proplist = Module:get_listings_html(),
-            {ok, Body} = ListingTemplate:render(Proplist),
-            {Body, Req2, State};
-        {<<"new">>, _} ->
-            {ok, Body} = UpdateTemplate:render([]),
-            {Body, Req2, State};
-        {_, undefined} ->
-            Proplist = Module:get_html(Id),
-            {ok, Body} = GetTemplate:render(Proplist),
-            {Body, Req2, State};
-        {_, <<"edit">>} ->
-            Proplist = Module:edit_html(Id),
-            {ok, Body} = UpdateTemplate:render(Proplist),
-            {Body, Req2, State}
+    try make_appropriate_html(Id, Command, RenderPack) of
+        Body -> {Body, Req2, State}
+    catch
+        throw:not_found -> pass_on_error(404, Req2, State)
     end.
 
+
+make_appropriate_html(undefined, undefined, #render_pack{module=Module,
+                                                         get_listing_template=ListingTemplate}) ->
+    Proplist = Module:get_listings_html(),
+    {ok, Body} = ListingTemplate:render(Proplist),
+    Body;
+make_appropriate_html(<<"new">>, _, #render_pack{update_template=UpdateTemplate}) ->
+    {ok, Body} = UpdateTemplate:render([]),
+    Body;
+make_appropriate_html(Id, undefined,#render_pack{module=Module,
+                                                 get_template=GetTemplate}) ->
+    Proplist = Module:get_html(Id),
+    {ok, Body} = GetTemplate:render(Proplist),
+    Body;
+make_appropriate_html(Id, <<"edit">>, #render_pack{module=Module,
+                                                   update_template=UpdateTemplate} ) ->
+    Proplist = Module:edit_html(Id),
+    {ok, Body} = UpdateTemplate:render(Proplist),
+    Body.
+
+
+%%% @private
 post_resource(Req, State) ->
     ResourceName = cowboy_req:binding(resource, Req),
     #render_pack{module = Module} = gen_server:call(?SERVER, {get_module, ResourceName}),
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
-    Req3 = cowboy_req:set_meta(response_type, html, Req2),
+    Req3 = cowboy_req:set_meta(response_type, json, Req2),
     AsJson = jiffy:decode(RequestBody),
     Record = Module:json_to_record(AsJson),
     Method = cowboy_req:method(Req3),
     Id = Module:get_id(Record),
-    case {Id, Method} of
-        {null, <<"POST">>} ->
-            NewId = Module:post_json(Record),
-            Response = jiffy:encode({[{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(NewId)}]}),
-            {true, cowboy_req:set_resp_body(Response, Req3), State};
-        {_Else, <<"POST">>} ->
-            Body = jiffy:encode({[{<<"error">>, <<"You may not insert with the field 'id'.">>}]}),
-            Req3 = cowboy_req:set_resp_body(Body, Req3),
-            {false, Req3, State};
-        {null, <<"PUT">>} ->
-            Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
-            Req4 = cowboy_req:set_resp_body(Body, Req3),
-            {false, Req4, State};
-        {_PersonId, <<"PUT">>} ->
-            Success = Module:update_json(Record),
-            case Success of
-                true ->
-                    Response = jiffy:encode({[{<<"status">>, ok}]}),
-                    {true, cowboy_req:set_resp_body(Response, Req3), State};
-                false ->
-                    Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
-                    Req4 = cowboy_req:set_resp_body(Body, Req3),
-                    {false, Req4, State}
-            end
+
+    try make_appropriate_json(Id, Method, Module, Record) of
+        {Status, Response} -> {Status, cowboy_req:set_resp_body(Response, Req3), State}
+    catch
+        throw:not_found -> pass_on_error(404, Req3, State)
     end.
 
 
-%% External API
+make_appropriate_json(null, <<"POST">>, Module, Record) ->
+    NewId = Module:post_json(Record),
+    Response = jiffy:encode({[{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(NewId)}]}),
+    {true, Response};
+make_appropriate_json(_Else, <<"POST">>, _Module, _Record) ->
+    Body = jiffy:encode({[{<<"error">>, <<"You may not insert with the field 'id'.">>}]}),
+    {false, Body};
+make_appropriate_json(null, <<"PUT">>, _Module, _Record) ->
+    Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
+    {false, Body};
+make_appropriate_json(_Else, <<"PUT">>, Module, Record) ->
+    Success = Module:update_json(Record),
+    case Success of
+        true ->
+            Response = jiffy:encode({[{<<"status">>, ok}]}),
+            {true, Response};
+        false ->
+            Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
+            {false, Body}
+    end.
 
+
+pass_on_error(StatusCode, Req, State) ->
+    Req2 = cowboy_req:reply(StatusCode, Req),
+    {halt, Req2, State}.
+
+
+%% External API
 -type ghostlight_rest_resource() :: {resource_name, Name::binary()}
                                   | {module, Module::module()}
                                   | {get_template, Module::module()}

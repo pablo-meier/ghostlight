@@ -149,6 +149,7 @@ proplist_with_valid_values(Candidates) ->
 %% Helps us filter out unshowable values.
 suitable_to_show(<<"">>) -> false;
 suitable_to_show([]) -> false;
+suitable_to_show({[]}) -> false;
 suitable_to_show(null) -> false;
 suitable_to_show(undefined) -> false;
 suitable_to_show(_) -> true.

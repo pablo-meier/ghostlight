@@ -109,16 +109,17 @@ resource_to_json(Req, State) ->
     ResourceName = cowboy_req:binding(resource, Req),
     Id = cowboy_req:binding(resource_id, Req),
     #render_pack{module = Module} = gen_server:call(?SERVER, {get_module, ResourceName}),
+    Req2 = cowboy_req:set_meta(response_type, json, Req),
 
     case Id of
         undefined ->
             ToEncode = Module:get_listings_json(),
             Body = jiffy:encode({ToEncode}),
-            {Body, Req, State};
+            {Body, Req2, State};
         _ ->
             ToEncode = Module:get_json(Id),
             AsJson = jiffy:encode(ToEncode),
-            {AsJson, Req, State}
+            {AsJson, Req2, State}
     end.
 
 
@@ -133,57 +134,58 @@ resource_to_html(Req, State) ->
        get_listing_template = ListingTemplate,
        update_template = UpdateTemplate
     } = gen_server:call(?SERVER, {get_module, ResourceName}),
+    Req2 = cowboy_req:set_meta(response_type, html, Req),
 
-    lager:info("~p ~p ~p ~p", [ResourceName, Id, Command, Module]),
     case {Id, Command} of
         {undefined, undefined} ->
             Proplist = Module:get_listings_html(),
             {ok, Body} = ListingTemplate:render(Proplist),
-            {Body, Req, State};
+            {Body, Req2, State};
         {<<"new">>, _} ->
             {ok, Body} = UpdateTemplate:render([]),
-            {Body, Req, State};
+            {Body, Req2, State};
         {_, undefined} ->
             Proplist = Module:get_html(Id),
             {ok, Body} = GetTemplate:render(Proplist),
-            {Body, Req, State};
+            {Body, Req2, State};
         {_, <<"edit">>} ->
             Proplist = Module:edit_html(Id),
             {ok, Body} = UpdateTemplate:render(Proplist),
-            {Body, Req, State}
+            {Body, Req2, State}
     end.
 
 post_resource(Req, State) ->
     ResourceName = cowboy_req:binding(resource, Req),
     #render_pack{module = Module} = gen_server:call(?SERVER, {get_module, ResourceName}),
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
+    Req3 = cowboy_req:set_meta(response_type, html, Req2),
     AsJson = jiffy:decode(RequestBody),
     Record = Module:json_to_record(AsJson),
-    Method = cowboy_req:method(Req2),
+    Method = cowboy_req:method(Req3),
     Id = Module:get_id(Record),
     case {Id, Method} of
         {null, <<"POST">>} ->
             NewId = Module:post_json(Record),
             Response = jiffy:encode({[{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(NewId)}]}),
-            {true, cowboy_req:set_resp_body(Response, Req2), State};
+            {true, cowboy_req:set_resp_body(Response, Req3), State};
         {_Else, <<"POST">>} ->
             Body = jiffy:encode({[{<<"error">>, <<"You may not insert with the field 'id'.">>}]}),
-            Req3 = cowboy_req:set_resp_body(Body, Req2),
+            Req3 = cowboy_req:set_resp_body(Body, Req3),
             {false, Req3, State};
         {null, <<"PUT">>} ->
             Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
-            Req3 = cowboy_req:set_resp_body(Body, Req2),
-            {false, Req3, State};
+            Req4 = cowboy_req:set_resp_body(Body, Req3),
+            {false, Req4, State};
         {_PersonId, <<"PUT">>} ->
             Success = Module:update_json(Record),
             case Success of
                 true ->
                     Response = jiffy:encode({[{<<"status">>, ok}]}),
-                    {true, cowboy_req:set_resp_body(Response, Req2), State};
+                    {true, cowboy_req:set_resp_body(Response, Req3), State};
                 false ->
                     Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
-                    Req3 = cowboy_req:set_resp_body(Body, Req2),
-                    {false, Req3, State}
+                    Req4 = cowboy_req:set_resp_body(Body, Req3),
+                    {false, Req4, State}
             end
     end.
 
@@ -215,6 +217,7 @@ register(Options) ->
     gen_server:cast(?MODULE, {register, Name, Pack}).
 
 
+-spec ensure_binary(Bin :: string() | binary()) -> binary().
 ensure_binary(Bin) when is_list(Bin) -> list_to_binary(Bin);
 ensure_binary(Bin) when is_binary(Bin) -> Bin.
 

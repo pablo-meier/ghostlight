@@ -1,4 +1,5 @@
 -module(ghostlight_show).
+-behavior(ghostlight_resource_behavior).
 
 -export([get_html/1,
          get_listings_html/0,

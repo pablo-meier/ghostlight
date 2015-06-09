@@ -1,63 +1,55 @@
 -module(ghostlight_org).
--export([init/2,
-         content_types_provided/2,
-         content_types_accepted/2,
-         charsets_provided/2,
-         allowed_methods/2]).
+-behavior(ghostlight_resource_behavior).
 
--export([org_to_html/2,
-         org_to_json/2]).
+-export([get_html/1,
+         get_listings_html/0,
+         edit_html/1,
 
--export([json_to_record/1,
-         record_to_json/1,
+         get_listings_json/0,
+         get_json/1,
 
-         to_json/2]).
+         get_id/1,
+         post_json/1,
+         edit_json/1,
+         json_to_record/1
+        ]).
+
+-export([record_to_json/1,
+         record_to_proplist/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-init(Req, Opts) ->
-    {cowboy_rest, Req, Opts}.
-allowed_methods(Req, State) ->
-    {[<<"GET">>, <<"POST">>, <<"PUT">>, <<"DELETE">>],
-     Req, State}.
-charsets_provided(Req, State) ->
-    {[<<"utf-8">>], Req, State}.
-content_types_provided(Req, State) ->
-    {[
-      {<<"text/html">>, org_to_html},
-      {<<"application/json">>, org_to_json}
-     ], Req, State}.
-content_types_accepted(Req, State) ->
-    {[
-      {<<"application/json; charset=utf-8">>, to_json},
-      {<<"application/json">>, to_json}
-     ], Req, State}.
+get_html(OrgId) ->
+    OrgRecord = ghostlight_db:get_org(OrgId),
+    record_to_proplist(OrgRecord).
 
-org_to_html(Req, State) ->
-    OrgId = cowboy_req:binding(org_id, Req),
-    Command = cowboy_req:binding(command, Req),
-    case {OrgId, Command} of
-        {undefined, undefined} ->
-            OrgList = ghostlight_db:get_org_listings(),
-            ForTemplate = [{orgs, [ record_to_proplist(Org) || Org <- OrgList ]}],
-            {ok, Body} = org_listing_template:render(ForTemplate),
-            {Body, Req, State};
-        {<<"new">>, _} ->
-            {ok, Body} = insert_org_template:render([]),
-            {Body, Req, State};
-        {_, undefined} ->
-            OrgRecord = ghostlight_db:get_org(OrgId),
-            ForTemplate = record_to_proplist(OrgRecord),
-            {ok, Body} = org_template:render(ForTemplate),
-            {Body, Req, State};
-        {_, <<"edit">>} ->
-            OrgRecord = ghostlight_db:get_org(OrgId, markdown),
-            {AsOuterBodyJson} = record_to_json(OrgRecord),
-            AsJson = jiffy:encode(proplists:get_value(<<"org">>, AsOuterBodyJson)),
-            {ok, Body} = insert_org_template:render([{name, OrgRecord#org_return.org#organization.name},
-                                                     {editmode, AsJson}]),
-            {Body, Req, State}
-    end.
+get_listings_html() ->
+    OrgList = ghostlight_db:get_org_listings(),
+    [{orgs, [ record_to_proplist(Org) || Org <- OrgList ]}].
+
+edit_html(OrgId) ->
+    OrgRecord = ghostlight_db:get_org(OrgId, markdown),
+    {AsOuterBodyJson} = record_to_json(OrgRecord),
+    AsJson = jiffy:encode(proplists:get_value(<<"org">>, AsOuterBodyJson)),
+    [{name, OrgRecord#org_return.org#organization.name},
+     {editmode, AsJson}].
+
+
+get_listings_json() ->
+    OrgList = ghostlight_db:get_org_listings(),
+    [{<<"organizations">>, [ record_to_json(Org) || Org <- OrgList ]}].
+
+get_json(OrgId) ->
+    OrgRecord = ghostlight_db:get_org(OrgId, markdown),
+    record_to_json(OrgRecord).
+
+post_json(OrgRecord) ->
+    ghostlight_db:insert_org(OrgRecord).
+
+edit_json(OrgRecord) ->
+    ghostlight_db:update_org(OrgRecord).
+
+get_id(#organization{id=Id}) -> Id.
 
 
 %% Makes the Record returned from the DB into a proplist we can feed the template.
@@ -207,51 +199,4 @@ employee_to_json(#org_employee{person=Person, title=Title, description=Desc}) ->
         {<<"title">>, Title},
         {<<"description">>, Desc}
     ]).
-
-org_to_json(Req, State) ->
-    OrgId = cowboy_req:binding(org_id, Req),
-    case OrgId of
-        undefined ->
-            OrgList = ghostlight_db:get_org_listings(),
-            ToEncode = {[{<<"organizations">>, [ record_to_json(Org) || Org <- OrgList ]}]},
-            Body = jiffy:encode(ToEncode),
-            {Body, Req, State};
-        _ ->
-            OrgRecord = ghostlight_db:get_org(OrgId, markdown),
-            AsJson = jiffy:encode(record_to_json(OrgRecord)),
-            {AsJson, Req, State}
-    end.
-
-
-to_json(Req, State) ->
-    {ok, RequestBody, Req2} = cowboy_req:body(Req),
-    AsJson = jiffy:decode(RequestBody),
-    OrgRecord = json_to_record(AsJson),
-    Method = cowboy_req:method(Req2),
-    case {OrgRecord#organization.id, Method} of
-        {null, <<"POST">>} ->
-            OrgId = ghostlight_db:insert_org(OrgRecord),
-            Response = jiffy:encode({[{<<"status">>, ok}, {<<"id">>, list_to_binary(OrgId)}]}),
-            {true, cowboy_req:set_resp_body(Response, Req2), State};
-        {_Else, <<"POST">>} ->
-            Body = jiffy:encode({[{<<"error">>, <<"You may not insert an organization with the field 'id'.">>}]}),
-            Req3 = cowboy_req:set_resp_body(Body, Req2),
-            {false, Req3, State};
-        {null, <<"PUT">>} ->
-            Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
-            Req3 = cowboy_req:set_resp_body(Body, Req2),
-            {false, Req3, State};
-        {_OrgId, <<"PUT">>} ->
-            Success = ghostlight_db:update_org(OrgRecord),
-            case Success of
-                true ->
-                    Response = jiffy:encode({[{<<"status">>, ok}]}),
-                    {true, cowboy_req:set_resp_body(Response, Req2), State};
-                false ->
-                    Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
-                    Req3 = cowboy_req:set_resp_body(Body, Req2),
-                    {false, Req3, State}
-            end
-    end.
-
 

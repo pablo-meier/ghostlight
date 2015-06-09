@@ -3,17 +3,10 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="small-8 columns">
-      <h1><em>{{ title }}</em></h1>
-      <h3>By
-        {% for author in authors %}
-          <a href="/people/{{ author.author_id }}">{{ author.author_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% if collab_org %} with <a href="/organizations/{{ collab_org.org_id }}">{{ collab_org.org_name }}</a>{% endif %}.</h3>
-    </div>
-    <div class="small-4 columns">
-      <a href="/works/{{ id }}/edit" id="submitButton" class="button large radius success right">EDIT</a>
-    </div>
-  </div>
+  <h1><em>{{ title }}</em></h1>
+  <h3>By
+    {% for author in authors %}
+      <a href="/people/{{ author.author_id }}">{{ author.author_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% if collab_org %} with <a href="/organizations/{{ collab_org.org_id }}">{{ collab_org.org_name }}</a>{% endif %}.</h3>
 
   {% if minutes_long %}
   <p><strong>{{ minutes_long }} minutes.</strong></p>

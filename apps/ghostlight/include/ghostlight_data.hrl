@@ -48,17 +48,17 @@
 }).
 
 -record(organization, {
-    id = <<"">>                :: binary(),
-    name = <<"">>              :: binary(),
-    tagline = <<"">>           :: binary(),
-    description = null         :: null | binary(),
-    parent = {id, <<"">>}      :: organization_parent(),
-    vanity_name = <<"">>       :: binary(),
-    date_founded = {}          :: datetime(),
-    external_links = null      :: null | #external_links{},
-    members = null             :: null | list(#org_member{}),
-    employees = null           :: null | list(#org_employee{}),
-    visibility = <<"public">>  :: binary()
+    id = <<"">>                        :: binary(),
+    name = <<"">>                      :: binary(),
+    tagline = <<"">>                   :: binary(),
+    description = null                 :: binary(),
+    parent = {id, <<"">>}              :: organization_parent(),
+    vanity_name = <<"">>               :: binary(),
+    date_founded = {}                  :: datetime(),
+    external_links = #external_links{} :: #external_links{},
+    members = []                       :: list(#org_member{}),
+    employees = []                     :: list(#org_employee{}),
+    visibility = <<"public">>          :: binary()
 }).
 
 -record(work, {

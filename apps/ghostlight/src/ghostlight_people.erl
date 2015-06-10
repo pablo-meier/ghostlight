@@ -157,14 +157,10 @@ make_director_proplist(#show{
                           title=ShowTitle,
                           producers=Producers,
                           dates=[Opening],
-                          performances=[#performance{
-                                            work=#work{ id=WorkId,
-                                                        title=WorkTitle }
-                                        }]}) ->
+                          performances=Performances}) ->
     [{show_id, ShowId},
      {show_title, ShowTitle},
-     {work_id, WorkId},
-     {work_title, WorkTitle},
+     {performances, [ work_proplist_from_performance(Performance) || Performance <- Performances ]},
      {opening, Opening},
      {producers, [ person_or_org_to_proplist(Producer) || Producer <- Producers ]} ].
 

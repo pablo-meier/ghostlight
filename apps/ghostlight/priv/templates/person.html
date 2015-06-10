@@ -58,7 +58,11 @@
             {% if producer.is_org %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last and not show.producers|length == 2 %},  {% endif %}
           {% endfor %}
           </td>
-          <td><a href="/works/{{ show.work_id }}">{{ show.work_title }}</a></td>
+          <td>
+              {% for work in show.performances %}
+                  <a href="/works/{{ work.work_id }}">{{ work.work_title }}</a>
+                  {% if not forloop.last %}<br />{% endif %}
+              {% endfor %}
           <td>{{ show.opening|date:"n/j/o" }}</td>
       </tr>
       {% endfor %}

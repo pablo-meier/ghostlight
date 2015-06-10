@@ -37,7 +37,6 @@ main() {
         }
         fprintf(stdout, "%s", result);
         fflush(stdout);
-        free(result);
         free(input_buffer);
     }
 }

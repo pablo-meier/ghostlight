@@ -8,7 +8,8 @@
     "url": "https://paul.meier@bitbucket.org/paul.meier/ghostlight.git"
   },
   "dependencies": {
-    "lodash": "^3.6.0",
-    "request": "^2.55.0"
+    "async": "1.2.1",
+    "lodash": "3.6.0",
+    "request": "2.55.0"
   }
 }

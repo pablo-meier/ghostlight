@@ -1,5 +1,6 @@
 "use strict";
 var _ = require('lodash');
+var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var request = require('request');
@@ -13,7 +14,7 @@ resources.forEach(function(resource) {
   var resourcePath = path.join('testdata', resource);
   var contents = fs.readdirSync(resourcePath);
 
-  contents.forEach(function(entity) {
+  async.eachSeries(contents, function(entity, cb) {
     var entityPath = path.join(resourcePath, entity);
     if (entityPath.match(/^\./)) return;
     var contents = fs.readFileSync(entityPath);
@@ -37,6 +38,9 @@ resources.forEach(function(resource) {
         return;
       }
       console.log('   ', entity, 'Success!', body);
+      setTimeout(function() {
+        cb();
+      }, 400);
     });
   });
 });

@@ -291,10 +291,14 @@ SELECT
                                                 FROM works w
                                                 INNER JOIN performances p USING (work_id)
                                                 WHERE p.show_id = s.show_id ORDER BY p.performance_order)) AS works,
-                     array_to_json(ARRAY(SELECT sd.show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY sd.show_date DESC)) AS show_dates
+                     array_to_json(ARRAY(SELECT sd.show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY sd.show_date DESC)) AS show_dates,
+                     (
+                        SELECT show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY show_date ASC LIMIT 1
+                     ) AS opening_night
                FROM shows s
                INNER JOIN producers USING (show_id)
-               WHERE producers.org_id = o.org_id) AS prod
+               WHERE producers.org_id = o.org_id
+               ORDER BY opening_night DESC) AS prod
     ) AS shows_produced,
     (
         SELECT to_json(array_agg(emp))

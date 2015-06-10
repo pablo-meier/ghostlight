@@ -230,9 +230,6 @@ get(ShowId) ->
         Performances}]},
      _] = Response,
 
-    lager:info("Press is ~p~n", [jiffy:decode(Press)]),
-    lager:info("External is ~p~n", [jiffy:decode(External)]),
-
     #show{
         id = ShowId,
         title = Title,
@@ -242,10 +239,16 @@ get(ShowId) ->
         hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- jiffy:decode(Hosts) ],
         producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
                     || Producer <- jiffy:decode(Producers) ],
-        performances = [ parse_performance(Performance) || Performance <- jiffy:decode(Performances) ]
-%        external_links=ExternalLinks,
-%        press_links=PressLinks
+        performances = [ parse_performance(Performance) || Performance <- jiffy:decode(Performances) ],
+        external_links=ghostlight_db_utils:external_links_sql_to_record(jiffy:decode(External)),
+        press_links=format_press_links(jiffy:decode(Press))
       }.
+
+format_press_links(PressLinks) ->
+    [ #press_link{
+         link = proplists:get_value(<<"link">>, Unwrapped) ,
+         description = proplists:get_value(<<"description">>, Unwrapped)
+      } || {Unwrapped} <- PressLinks ].
 
 parse_performance({Proplist}) ->
     #performance{

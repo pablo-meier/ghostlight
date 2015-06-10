@@ -65,7 +65,8 @@
               {% endfor %} </h5>
       <h5> Directed by 
       {% for director in performance.directors %}
-          <a href="/people/{{ director.person_id }}">{{ director.name }}</a>
+          {% if forloop.last and not forloop.first %} and {% endif %}
+          <a href="/people/{{ director.person_id }}">{{ director.name }}</a>{% if not forloop.last and producers|length != 2 %}, {% endif %}
       {% endfor %}</h5>
 
       {% if performance.description %}

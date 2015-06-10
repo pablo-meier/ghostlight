@@ -172,8 +172,7 @@ json_to_record({Decoded}) ->
                   || Producer <- proplists:get_value(<<"producers">>, Decoded)],
     Performances = lists:map(fun performance_json_to_record/1, proplists:get_value(<<"performances">>, Decoded)),
 
-    {LinksObj} = proplists:get_value(<<"social">>, Decoded, {[]}),
-    ExternalLinks = ghostlight_utils:external_links_json_to_record(LinksObj),
+    ExternalLinks = ghostlight_utils:external_links_json_to_record(Decoded),
     Hosts = [ ghostlight_people:json_to_record(Host) || Host <- proplists:get_value(<<"hosts">>, Decoded, []) ],
 
     Press = proplists:get_value(<<"press">>, Decoded, []),

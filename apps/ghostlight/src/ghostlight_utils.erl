@@ -6,7 +6,6 @@
          external_links_record_to_json/1,
          json_with_valid_values/1,
          handle_errors/4,
-         make_error/1,
          proplist_with_valid_values/1,
          person_or_org_json_to_record/1,
          person_or_org_record_to_json/1,
@@ -157,12 +156,6 @@ suitable_to_show(_) -> true.
 remove_null(null) -> <<"">>;
 remove_null(E) -> E.
 
-make_error(resource_missing) ->
-    ok;
-make_error(invalid_data) ->
-    ok;
-make_error(not_authorized) ->
-    ok.
 
 augment_request_header(Body, Headers) ->
     NewValue = {<<"content-length">>, integer_to_list(iolist_size(Body))},

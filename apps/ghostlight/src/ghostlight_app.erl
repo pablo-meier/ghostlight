@@ -16,7 +16,6 @@ start(_StartType, _StartArgs) ->
     lager:start(),
     lager:info("__~-~-*^*HELLO GHOSTLIGHT*^*-~-~__"),
     Return = ghostlight_sup:start_link(),
-    register_resources(),
     initiate_listening_to_endpoints(),
     compile_all_templates(),
     Return.
@@ -28,30 +27,6 @@ stop(_State) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
-
-
-register_resources() ->
-    Resources = 
-        [
-         [{resource_name, "people"},
-          {module, ghostlight_people},
-          {template_base, person}],
-
-         [{resource_name, "shows"},
-          {module, ghostlight_show},
-          {template_base, show}],
-
-         [{resource_name, "organizations"},
-          {module, ghostlight_org},
-          {template_base, org}],
-
-         [{resource_name, "works"},
-          {module, ghostlight_work},
-          {template_base, work}]
-        ],
-    lists:foreach(fun ghostlight_resource:register/1, Resources),
-    ok.
-
 
 initiate_listening_to_endpoints() ->
     Port = ghostlight_config:get(ghostlight_port),

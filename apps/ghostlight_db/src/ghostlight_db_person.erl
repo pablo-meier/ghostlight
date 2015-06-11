@@ -114,7 +114,7 @@ get_update_commands(#person{id=PersonId,
  
     lists:append([ [{UP, [Name, DescSrc, DescMarkdown, PersonId]},
                     {DL, [PersonId]}],
-                   LinkInserts ]).
+                    LinkInserts]).
 
 
 %%%===================================================================
@@ -125,7 +125,22 @@ get(PersonId) ->
   get(PersonId, html).
 
 get(PersonId, Form) ->
-    Response = gen_server:call(?MODULE, {get_person, PersonId}),
+    lager:info("PersonId is ~p~n", [PersonId]),
+    case ghostlight_utils:is_valid_uuid(PersonId) of
+        false -> throw(not_found);
+        true -> process_db_response(PersonId, gen_server:call(?MODULE, {get_person, PersonId}), Form)
+    end.
+
+process_db_response(
+  _PersonId,
+  [{ok, []},
+   {ok, []},
+   {ok, []}], _Form) ->
+    throw(not_found);
+
+process_db_response(
+    PersonId,
+
     [{ok, []},
      {ok, [{
         Name,
@@ -140,7 +155,9 @@ get(PersonId, Form) ->
         Member,
         Producer
        }]},
-     {ok, []}] = Response,
+     {ok, []}],
+
+     Form) ->
 
     Description = case Form of html -> DescriptionMarkdown; markdown -> DescriptionSrc end,
 

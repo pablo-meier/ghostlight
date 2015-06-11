@@ -164,7 +164,16 @@ get(OrgId) ->
 %% Format parameter tells us whether we return Markdown or the Src for any
 %% fields that apply.
 get(OrgId, Format) ->
-    Reply = gen_server:call(?MODULE, {get_org, OrgId}),
+    process_db_response(OrgId, gen_server:call(?MODULE, {get_org, OrgId}), Format).
+
+process_db_response(
+  _OrgId,
+  [{ok, []},
+   {ok, []},
+   {ok, []}], _Form) ->
+    throw(not_found);
+process_db_response(
+    OrgId,
     [{ok, []},
      {ok,
       [{
@@ -179,7 +188,8 @@ get(OrgId, Format) ->
         Employees,
         Members
        }]},
-     {ok, []}] = Reply,
+     {ok, []}],
+     Format) ->
 
     ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
     MemberList = [ parse_member(Member, Format) || Member <- ghostlight_db_utils:decode_not_null(Members)],

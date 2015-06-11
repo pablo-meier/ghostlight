@@ -11,18 +11,24 @@ I'm emailing you first because, of my many acquaintances who've made their lives
 in the Arts, you're someone I trust, and whose opinions I value, in both a
 professional and a personal context.
 
-I've been thinking about this on-and-off for a few years now, and working on
-pretty hard on nights and weekends for the past month or two, on top of my
-full-time job. While I would love to keep going with it stubbornly knowing I Am
-Right And It Is Perfect, the fact is I don't work full-time in the arts and am
-only one person — I can't really know what large numbers of artists like or
-need. I also need some feedback to break out of any tunnelvision before it gets
-super solidified.
+I've been thinking about this on-and-off for a few years now, and working on it
+on nights and weekends for the past few months, on top of my job. While I would
+love to keep going with it stubbornly knowing I Am Right And It Is Perfect, the
+fact is I don't work full-time in the arts and am only one person - I can't
+really know what large numbers of artists like or need. I also need some
+feedback to break out of any tunnelvision before it gets super solidified.
+
+**To get started: visit [https://ghostlight.io](https://ghostlight.io). When it
+asks for username/password, enter:**
+
+**Username: casper**
+
+**Password: fantasma\_porfavor** (that's "Ghost, please" in Spanish)
 
 ## SO what are you working on?
 
 There's a few ways of saying it, so I'll give you a few of them. It's called
-**Ghostlight**, and the one-liner that I don't love is
+**Ghostlight**, and the one-liner I don't love is
 
 **IMDb for theatre and live performance.**
 
@@ -34,13 +40,13 @@ What the app actually _is_:
 
 * You take the information in a program you'd get at a show: what piece was
   being performed, who produced the show, who acted in it, who did the designs,
-  and you add it to the app.
+  and you add it to the site.
 * Every person, organization, and piece is linked with every time they've been 
   entered. This means, when you're looking at a show's page, you can click any
   actor (or Lighting Designer, or the producing organization, or the author of
-  the work, or the work itself…) and get taken to _their_ page, which lists
+  the work, or the work itself...) and get taken to _their_ page, which lists
   all the other work they're connected with.  Which you can click, which takes
-  you to another page…
+  you to another page...
 * If you are the person in question, you can naturally manage parts of your
   page to include photos, a Bio, links to your social media, etc.
 
@@ -64,9 +70,9 @@ themselves for work on [The Green
 Book](http://pw.brown.edu/wiki/people/greenbook).
 
 Using just a Wiki and basic links, you can build a pretty rich system, but
-I wanted to make something bigger. I have a stack of programs of the 20+ shows
-Charly and I have seen since we moved here in August and I would love build
-something that shows exactly how rich and meaningful the work of the people
+I wanted to make something a little smarter. I have a stack of programs of the
+20+ shows Charly and I have seen since we moved here in August and I would love
+build something that shows exactly how rich and meaningful the work of the people
 listed on them was.
 
 ## That's what Ghostlight _is_, but what problems is it solving?
@@ -110,9 +116,13 @@ would be linked to more descriptive pages, and c) there's a centralized place to
 look for more information on anyone/anything in theatre ("let's check out their
 Ghostlight page").
 
+Note that I'm _not_ intending on replacing personal sites with Ghostlight
+profiles - it's very easy to point people viewing your profile to your personal
+site :D
+
 ### Networking!
 
-Lastly — networking! If you have a searchable, up-to-date database of _everyone
+Lastly - networking! If you have a searchable, up-to-date database of _everyone
 you've worked with_ and _everyone they've ever worked with_, well, I think
 that'd be pretty cool. Not just for the person using the product, but for me
 and what I could build on it, too.
@@ -129,71 +139,95 @@ These networks are there, and how cool if we had a database we could both see
 the links we wouldn't otherwise, or avoid them! I was thinking it'd be fun to
 organize a Ghostlight retreat like _brb_, but find "islands" from the data (the
 "NYU alum mafia" island, the "Brown alum proletariat" island, the
-"YoungBlooders"…) get a few groups together from people of different islands
+"YoungBlooders"...) get a few groups together from people of different islands
 expressly for the purposes of cross-pollination.
 
-(Charly and I saw something like that happen in a lovely way — we saw [Stevo
+(Charly and I saw something like that happen in a lovely way - we saw [Stevo
 Arnoczy](http://www.harunalee.com/stevo.html) and [Trevor Salter](http://www.uniqueboard.com/trevorfsalter)
 perform a collaboration called _mothertongue_ at the [FGP Birthday
 Party](https://www.facebook.com/events/1691968014363395/) after meeting for the
-first time, and getting along swimmingly, at Charly's _brb_).
+first time, and getting along swimmingly, at Charly's
+[_brb_](http://freshgroundpeppernyc.com/brb/)).
+
+Once things get built a little better, I was hoping to work on cool ways to
+explore your network, like [this way of graphing the characters in _Les
+Miserables_](http://bl.ocks.org/mbostock/4600693).
 
 ((bee tee dubs all the links in this entire sections lall required separate Google
 searches, and would have been easier... _**with Ghostlight!!!!**_
 <small><em>vaudeville hook...</em></small>))
 
-## What can I do?
+### Fun!
 
-Use it! A **lot** is unfinished:
+Right now it's very bare-bones, but I'll try to build this in a way that follows
+Best Practices in making it easy-to-use, but doesn't feel corporate and dry. I
+was thinking of randomly enabling
+[Fartscroll](http://theonion.github.io/fartscroll.js/) for some users, or having
+a "Back to Top" button with [Elevator](http://tholman.com/elevator.js/), putting
+[a Game of Life on 404
+pages](http://pmav.eu/stuff/javascript-game-of-life-v3.1.1/?autoplay=0&trail=0&grid=1&colors=1&zoom=1&s=random),
+stealing a variation of [this joke](http://visitsteve.com/jibberish).
 
-* There's no sense of users yet (everyone is God).
-* Adding/changing Productions doesn't work (the forms for People, Pieces, and
-  Organizations should, tho).
+## What do I need from you?
+
+Use it! Click around! There is **a lot** of work to do:
+
+* There's no sense of users yet (everyone is "Pablo!" on the top).
 * The search bar doesn't do anything.
+* The add/edit forms for things aren't there yet.
+* Complete lack of images.
+* **IT'S SO BORING AND UGLY**
 
 **BUT** still browse around and tell me thinks like
 
-* Is this something you'd even do?
+* Is this something you'd even do or find useful?
+* What sucks about maintaining an Internet presence?
+* What sucks about archiving your work?
 * What's good about it? What sucks about it?
 
 **Please remember this is, like, 40% done.** I'm showing it off to a few of you
 early in the spirit of ["30%
-feedback"](https://42floors.com/blog/startups/thirty-percent-feedback) — it's
+feedback"](https://42floors.com/blog/startups/thirty-percent-feedback) - it's
 probably too early to _really_ show, but this also allows you to give me the
 most valuable, impactful feedback. That means _spare no courtesy_ and please be
 brutal, and feel free to comment on broad issues with it too, not just "it's
-ugly" (oy, it is ugly).
+ugly".
 
 _Since its the same username/password for everyone, I probably won't notice or
-care if you show it to friends or forward this email around._
+care if you show it to friends or forward this email around to anyone you think
+might find it interesting._
 
 ## How can I give you feedback?
 
-I'm glad you asked! I'm launching it to you with two other baby sites:
+I'm glad you asked!
 
-* I'm launching a [Discourse](http://www.discourse.org/) instance at
+* Email me at [pablo@ghostlight.io]().
+
+* Call or text me at (240) 535-3882.
+
+* I'm also launching a blog at [blog.ghostlight.io](blog.ghostlight.io). Many of
+  the posts will be technical, but my hope is not all of them are, and that
+  should shed some light as to where I'm coming from.
+
+* I'm also tracking what I have left to do (and bugs I encouter) with a 
+  [Trello](https://trello.com) board. It's private, but if you guys tell me your
+  Trello usernames, I'll gladly give you access so you can see how I'm doing.
+
+* I'll eventually launch a [Discourse](http://www.discourse.org/) instance at
   [discuss.ghostlight.io](discuss.ghostlight.io). I think it's pretty brilliant
   that [all StackExchange sites have a Meta
   site](http://meta.stackexchange.com/tour), a place where they can discuss the
   community as they build it. I have no idea how Ghostlight will turn out, but I
   want it to be a place we got to because we discussed it.
-* I'm also launching a blog at [blog.ghostlight.io](blog.ghostlight.io). Many of
-  the posts will be technical, but my hope is not all of them are, and that
-  should shed some light as to where I'm coming from.
-* I'm also tracking what I have left to do (and bugs I encouter) with a 
-  [Trello](https://trello.com) board. It's private, but if you guys tell me your
-  Trello usernames, I'll gladly give you access so you can see how I'm doing.
-
-You can also email me at [pablo@ghostlight.io](mailto:pablo@ghoslight.io), or
-call or text me at (240) 535-3882.
 
 ## Has this been tried before?
 
 Yes and no. My heart sank the first time Charly told me about
-[Stage32](https://www.stage32.com/welcome/). I was like _"someone did this
-already I'm a failure!"_. But then I logged in, saw it was a spamfest of
-LinkedIn-looking horseshit, didn't see anything it offered me, and realized that
-just because someone executed on an idea, doesn't mean they did it well.
+[Stage32](https://www.stage32.com/welcome/). I was like 
+_"someone did this already I'm a failure!"_. But then I logged in, saw it was a
+spamfest of LinkedIn-looking horseshit, didn't see anything it offered me, and
+realized that just because someone executed on an idea, doesn't mean they did it
+well.
 
 There are related problems that are getting some tech treatment.
 [NewPlayExchange](https://newplayexchange.org/) got some fanfare when it

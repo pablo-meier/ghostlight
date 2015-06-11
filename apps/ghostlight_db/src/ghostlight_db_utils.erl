@@ -2,6 +2,7 @@
 -export([connect_to_postgres/0,
          markdown_or_null/1,
          fresh_uuid/0,
+         is_valid_uuid/1,
          decode_not_null/1,
          null_if_unspecified/1,
          get_state/1,
@@ -22,6 +23,11 @@ connect_to_postgres() ->
 
 fresh_uuid() ->
     uuid:to_string(uuid:uuid4()).
+
+is_valid_uuid(Uuid = <<_:128>>) ->
+    uuid:is_valid(Uuid);
+is_valid_uuid(_) ->
+    false.
 
 null_if_unspecified({}) -> null;
 null_if_unspecified(null) -> null;

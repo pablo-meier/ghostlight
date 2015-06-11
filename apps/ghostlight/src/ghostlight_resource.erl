@@ -13,10 +13,6 @@
          terminate/2,
          code_change/3]).
 
--export([
-         register/1
-        ]).
-
 %% Cowboy REST exports
 -export([init/2,
          content_types_provided/2,
@@ -43,7 +39,27 @@ start_link() ->
 
 %%% @private
 init([]) ->
-    {ok, maps:new()}.
+    Resources = 
+        [
+         [{resource_name, "people"},
+          {module, ghostlight_people},
+          {template_base, person}],
+
+         [{resource_name, "shows"},
+          {module, ghostlight_show},
+          {template_base, show}],
+
+         [{resource_name, "organizations"},
+          {module, ghostlight_org},
+          {template_base, org}],
+
+         [{resource_name, "works"},
+          {module, ghostlight_work},
+          {template_base, work}]
+        ],
+    State = register(Resources),
+
+    {ok, State}.
 
 %%% @private
 handle_call({get_module, Name}, _From, State) ->
@@ -134,7 +150,8 @@ resource_to_html(Req, State) ->
     try make_appropriate_html(Id, Command, RenderPack) of
         Body -> {Body, Req2, State}
     catch
-        throw:not_found -> pass_on_error(404, Req2, State)
+        throw:not_found -> pass_on_error(404, Req2, State);
+        error:_ -> pass_on_error(500, Req2, State)
     end.
 
 
@@ -172,7 +189,8 @@ post_resource(Req, State) ->
     try make_appropriate_json(Id, Method, Module, Record) of
         {Status, Response} -> {Status, cowboy_req:set_resp_body(Response, Req3), State}
     catch
-        throw:not_found -> pass_on_error(404, Req3, State)
+        throw:not_found -> pass_on_error(404, Req3, State);
+        error:_ -> pass_on_error(500, Req2, State)
     end.
 
 
@@ -209,9 +227,15 @@ pass_on_error(StatusCode, Req, State) ->
                                   | {get_template, Module::module()}
                                   | {get_listing_template, Module::module()}
                                   | {update_template , Module::module()}.
--spec register(Options :: list(ghostlight_rest_resource())) -> none().
+-spec register(Options :: list(list(ghostlight_rest_resource()))) -> none().
 %% @doc Allows a module to register itself as a resource.
-register(Options) ->
+register(ResourceSpecs) ->
+    lists:foldl(fun (Option, Accum) ->
+                        {Name, RenderPack} = register_resource(Option),
+                        maps:put(Name, RenderPack, Accum)
+                end, maps:new(), ResourceSpecs).
+
+register_resource(Options) ->
     Name = ensure_binary(proplists:get_value(resource_name, Options)),
     Module = proplists:get_value(module, Options),
     [
@@ -226,7 +250,7 @@ register(Options) ->
         get_listing_template = ListingsHtml,
         update_template = UpdateHtml
     },
-    gen_server:cast(?MODULE, {register, Name, Pack}).
+    {Name, Pack}.
 
 
 -spec ensure_binary(Bin :: string() | binary()) -> binary().

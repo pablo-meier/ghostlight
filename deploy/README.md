@@ -123,4 +123,5 @@ Major approaches:
   merl and shit). This is gross, I should mostly be working with BEAMs
   goddammit.
 
-
+## Fuck referrer spam
+http://veithen.github.io/2015/01/21/referrer-spam.html

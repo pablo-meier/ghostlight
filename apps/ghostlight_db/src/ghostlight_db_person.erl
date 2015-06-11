@@ -125,10 +125,9 @@ get(PersonId) ->
   get(PersonId, html).
 
 get(PersonId, Form) ->
-    lager:info("PersonId is ~p~n", [PersonId]),
-    case ghostlight_utils:is_valid_uuid(PersonId) of
-        false -> throw(not_found);
-        true -> process_db_response(PersonId, gen_server:call(?MODULE, {get_person, PersonId}), Form)
+    case ghostlight_db_utils:is_valid_uuid(PersonId) of
+        true -> process_db_response(PersonId, gen_server:call(?MODULE, {get_person, PersonId}), Form);
+        false -> throw(not_found)
     end.
 
 process_db_response(

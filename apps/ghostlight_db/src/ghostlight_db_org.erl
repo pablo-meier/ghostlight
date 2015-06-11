@@ -164,7 +164,11 @@ get(OrgId) ->
 %% Format parameter tells us whether we return Markdown or the Src for any
 %% fields that apply.
 get(OrgId, Format) ->
-    process_db_response(OrgId, gen_server:call(?MODULE, {get_org, OrgId}), Format).
+    case ghostlight_db_utils:is_valid_uuid(OrgId) of
+        true -> process_db_response(OrgId, gen_server:call(?MODULE, {get_org, OrgId}), Format);
+        false -> throw(not_found)
+    end.
+
 
 process_db_response(
   _OrgId,
@@ -172,6 +176,7 @@ process_db_response(
    {ok, []},
    {ok, []}], _Form) ->
     throw(not_found);
+
 process_db_response(
     OrgId,
     [{ok, []},

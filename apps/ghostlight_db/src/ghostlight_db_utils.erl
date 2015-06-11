@@ -24,8 +24,9 @@ connect_to_postgres() ->
 fresh_uuid() ->
     uuid:to_string(uuid:uuid4()).
 
-is_valid_uuid(Uuid = <<_:128>>) ->
-    uuid:is_valid(Uuid);
+is_valid_uuid(Uuid = <<_:288>>) ->
+    Condensed = uuid:to_binary(binary_to_list(Uuid)),
+    uuid:is_valid(Condensed);
 is_valid_uuid(_) ->
     false.
 

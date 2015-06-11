@@ -214,8 +214,21 @@ fold_over_performances(Performances, ShowId, WorksWithIds, State) ->
 %%% Resource callbacks.
 %%%===================================================================
 get(ShowId) ->
-    Response = gen_server:call(?MODULE, {get_show, ShowId}),
-    %% handle if this call fails.
+    case ghostlight_db_utils:is_valid_uuid(ShowId) of
+        true -> process_db_response(ShowId, gen_server:call(?MODULE, {get_show, ShowId}));
+        false -> throw(not_found)
+    end.
+
+
+process_db_response(
+  _ShowId,
+  [{ok, []},
+   {ok, []},
+   {ok, []}]) ->
+    throw(not_found);
+
+process_db_response(
+    ShowId,
     [_,
      {ok, 
       [{ShowId,
@@ -228,7 +241,7 @@ get(ShowId) ->
         Dates,
         Hosts,
         Performances}]},
-     _] = Response,
+     _]) ->
 
     #show{
         id = ShowId,

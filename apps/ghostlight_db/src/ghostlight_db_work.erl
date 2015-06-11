@@ -1,18 +1,3 @@
-%%% Welcome to the New World!
-%%% 
-%%% Here, we keep SQL in SQL files kept in `priv/`, not awkwardly expressed in
-%%% Erlang terms. Each resource gets its own connection to the DB (or pool of 
-%%% them, eventually).
-%%%
-%%% I can maybe abstract out how each resource can be made into a module with
-%%% callbacks, like gen_server does or Cowboy handlers, but for now I'll just
-%%% handle the gen_servers myself.
-%%%
-%%% How to do that:
-%%% * How do I gen_server:call?
-%%% * Who supervises?
-%%%
-%%% My Erlang-foo needs work.
 -module(ghostlight_db_work).
 -behaviour(gen_server).
 
@@ -120,7 +105,21 @@ get(WorkId) ->
   get(WorkId, html).
 
 get(WorkId, Format) ->
-    Response = gen_server:call(?MODULE, {get_work, WorkId}),
+    case ghostlight_db_utils:is_valid_uuid(WorkId) of
+        true -> process_db_response(WorkId, gen_server:call(?MODULE, {get_work, WorkId}), Format);
+        false -> throw(not_found)
+    end.
+
+process_db_response(
+    _WorkId,
+    [{ok, []},
+     {ok, []},
+     {ok, []}],
+    _Format) ->
+      throw(not_found);
+
+process_db_response(
+    WorkId,
     [{ok, []},
      {ok, [{
         WorkId,
@@ -132,8 +131,8 @@ get(WorkId, Format) ->
         MinutesLong,
         Productions
        }]},
-     {ok, []}] = Response,
-
+     {ok, []}],
+    Format) ->
     Description = case Format of html -> DescriptionMarkdown; markdown -> DescriptionSrc end,
 
     #work_return{

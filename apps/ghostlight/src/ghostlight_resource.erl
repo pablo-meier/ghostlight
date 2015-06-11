@@ -63,8 +63,10 @@ init([]) ->
 
 %%% @private
 handle_call({get_module, Name}, _From, State) ->
-    Reply = maps:get(Name, State),
-    {reply, Reply, State};
+    case maps:find(Name, State) of
+        error -> {reply, not_found, State};
+        {ok, Reply} ->{reply, Reply, State} 
+    end;
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -122,33 +124,37 @@ content_types_accepted(Req, State) ->
 
 %%% @private
 resource_to_json(Req, State) ->
-    ResourceName = cowboy_req:binding(resource, Req),
-    Id = cowboy_req:binding(resource_id, Req),
-    #render_pack{module = Module} = gen_server:call(?SERVER, {get_module, ResourceName}),
     Req2 = cowboy_req:set_meta(response_type, json, Req),
-
-    case Id of
-        undefined ->
-            ToEncode = Module:get_listings_json(),
-            Body = jiffy:encode({ToEncode}),
-            {Body, Req2, State};
-        _ ->
-            ToEncode = Module:get_json(Id),
-            AsJson = jiffy:encode(ToEncode),
-            {AsJson, Req2, State}
+    ResourceName = cowboy_req:binding(resource, Req2),
+    Id = cowboy_req:binding(resource_id, Req2),
+    try
+        #render_pack{module = Module} = get_renderpack(ResourceName),
+        Body = make_appropriate_json(Id, Module),
+        {Body, Req2, State}
+    catch
+        throw:not_found -> pass_on_error(404, Req2, State);
+        error:_ -> pass_on_error(500, Req2, State)
     end.
+
+make_appropriate_json(undefined, Module) ->
+    ToEncode = Module:get_listings_json(),
+    jiffy:encode({ToEncode});
+make_appropriate_json(Id, Module) ->
+    ToEncode = Module:get_json(Id),
+    jiffy:encode(ToEncode).
+
 
 %%% @private
 resource_to_html(Req, State) ->
-    ResourceName = cowboy_req:binding(resource, Req),
-    Id = cowboy_req:binding(resource_id, Req),
-    Command = cowboy_req:binding(command, Req),
-
-    RenderPack = gen_server:call(?SERVER, {get_module, ResourceName}),
     Req2 = cowboy_req:set_meta(response_type, html, Req),
+    ResourceName = cowboy_req:binding(resource, Req2),
+    Id = cowboy_req:binding(resource_id, Req2),
+    Command = cowboy_req:binding(command, Req2),
 
-    try make_appropriate_html(Id, Command, RenderPack) of
-        Body -> {Body, Req2, State}
+    try
+        RenderPack = get_renderpack(ResourceName),
+        Body = make_appropriate_html(Id, Command, RenderPack),
+        {Body, Req2, State}
     catch
         throw:not_found -> pass_on_error(404, Req2, State);
         error:_ -> pass_on_error(500, Req2, State)
@@ -175,10 +181,12 @@ make_appropriate_html(Id, <<"edit">>, #render_pack{module=Module,
     Body.
 
 
+
+
 %%% @private
 post_resource(Req, State) ->
     ResourceName = cowboy_req:binding(resource, Req),
-    #render_pack{module = Module} = gen_server:call(?SERVER, {get_module, ResourceName}),
+    #render_pack{module = Module} = get_renderpack(ResourceName),
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     Req3 = cowboy_req:set_meta(response_type, json, Req2),
     AsJson = jiffy:decode(RequestBody),
@@ -220,6 +228,12 @@ pass_on_error(StatusCode, Req, State) ->
     Req2 = cowboy_req:reply(StatusCode, Req),
     {halt, Req2, State}.
 
+
+get_renderpack(ResourceName) ->
+    case gen_server:call(?SERVER, {get_module, ResourceName}) of
+        not_found -> throw(not_found);
+        Else -> Else
+    end.
 
 %% External API
 -type ghostlight_rest_resource() :: {resource_name, Name::binary()}

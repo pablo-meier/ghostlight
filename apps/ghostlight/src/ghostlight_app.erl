@@ -35,6 +35,8 @@ initiate_listening_to_endpoints() ->
                                              {"/static/[...]", cowboy_static, {priv_dir, ghostlight, "static/",
                                                                                [{mimetypes, cow_mimetypes, all}]}},
                                              {"/faq.html", cowboy_static, {priv_file, ghostlight, "static/faq.html"}},
+                                             {"/robots.txt", cowboy_static, {priv_file, ghostlight, "static/robots.txt"}},
+                                             {"/humans.txt", cowboy_static, {priv_file, ghostlight, "static/humans.txt"}},
                                              {"/favicon.ico", cowboy_static, {priv_file, ghostlight, "static/favicon.ico"}},
                                              {"/index.html", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},
                                              {"/", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},

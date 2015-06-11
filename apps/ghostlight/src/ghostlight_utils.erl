@@ -161,30 +161,29 @@ augment_request_header(Body, Headers) ->
     NewValue = {<<"content-length">>, integer_to_list(iolist_size(Body))},
     lists:keyreplace(<<"content-length">>, 1, Headers, NewValue).
 
-handle_errors(400, Headers, _Body, Req) ->
+handle_errors(400, _Headers, _Body, Req) ->
     Req;
-handle_errors(401, Headers, _Body, Req) ->  %% Unauthorized
+handle_errors(401, _Headers, _Body, Req) ->  %% Unauthorized
     Req;
-handle_errors(403, Headers, _Body, Req) ->  %% Forbidden
+handle_errors(403, _Headers, _Body, Req) ->  %% Forbidden
     Req;
 handle_errors(404, Headers, _Body, Req) ->
-    Type = cowboy_req:meta(response_type, Req, html),
-    case Type of
-        html ->
-            {ok, NewBody} = ghostlight_404_template:render(), 
-            Headers2 = augment_request_header(NewBody, Headers),
-            cowboy_req:reply(404, Headers2, NewBody, Req);
-        json ->
-            Req
-    end;
+    handle_error_with(Req, Headers, 404, ghostlight_404_template);
 handle_errors(500, Headers, _Body, Req) ->  %% Internal Server Error
-    Req;
+    handle_error_with(Req, Headers, 500, ghostlight_500_template);
 handle_errors(_, _, _, Req) ->
     Req.
 
 
-make_error_response(html, Req, Module) ->
-    {ok, NewBody} = Module:render(),
-    cowboy_req:set_resp_body(NewBody, Req);
-make_error_response(json, Req, _Module) ->
-    Req.
+handle_error_with(Req, Headers, StatusCode, Template) ->
+    Type = cowboy_req:meta(response_type, Req, html),
+    NewBody = case Type of
+                  html ->
+                      {ok, Body} = Template:render(),
+                      Body;
+                  json ->
+                      list_to_binary("{\"error\": \"" ++ integer_to_list(StatusCode) ++ "\"}")
+              end,
+    Headers2 = augment_request_header(NewBody, Headers),
+    cowboy_req:reply(StatusCode, Headers2, NewBody, Req).
+

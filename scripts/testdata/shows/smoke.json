@@ -1,0 +1,78 @@
+{
+  "title" : "Smoke",
+  "special_thanks" : "Technical Artistry, ThinkSo, Tribeca Lighting, Souths, Ben Kamine, Erin Courtney, Mac Wellman, Kristen Corey, David Haugen",
+  "dates" : ["2014-12-16T19:00:00.000Z",
+             "2015-02-01T19:00:00.000Z"],
+
+  "producers": [
+    {
+      "org" : {
+        "name": "The Flea Theater",
+        "description" : "The Flea is an award-winning producing organization, founded in 1996, that offers more than 250 cutting-edge theatrical and multi-disciplinary performances each year and gives voice to some of the most exciting and innovative writers of our time. Founded from the purely artistic impulse to create \"joyful hell in a small space,\" our body of work has earned us accolades from around the globe including two Obie Awards for Best Production, an Otto for Courageous Political Theater, and a Drama Desk Award Special Award for our commitment to adventurous theater."
+      }
+    }
+  ],
+
+  "press": [
+    {
+      "pull_quote": "The plot is intriguing, the dialogue is consistently surprising, and the performances are exceptional.",
+      "link": "http://www.nytimes.com/2014/09/09/theater/kim-daviess-smoke-explores-power-and-desire.html?_r=0",
+      "description": "NYT Review."
+    },
+    {
+      "pull_quote": "Ms. Davies’ creation is remarkable…a superior, flawless work…Nuanced in the extreme, Mr. Stout’s performance captures his character with exciting precision and subtlety. Ms. Bundy is nothing short of stellar.",
+      "link": "http://www.stageandcinema.com/2014/09/07/smoke-the-flea/",
+      "description": "Stage & Cinema"
+    }
+  ],
+
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Smoke",
+        "authors" : [{"person": {"name": "Kim Davies"}}],
+        "description": "SMOKE brings an entitled college student and a jaded wannabe artist – with more in common than they thought – past the verge."
+      },
+      "directors": [{"name": "Tom Costello"}],
+      "onstage": [
+        {
+          "performer" : {"name" : "Stephen Stout" },
+          "role" : "John",
+          "understudy" : {"name": "Ivan Dolido"}
+        },
+        {
+          "performer" : {"name": "Madeleine Bundy"},
+          "role" : "Julie",
+          "understudy" : {"name": "Adelind Horan"}
+        }
+      ],
+      "offstage" : [
+        {
+            "contributor" : {"person": {"name" : "Andrew Diaz" }},
+            "job" : "Set Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Daisy Long" }},
+            "job" : "Lighting Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Beth Goldenberg" }},
+            "job" : "Costume Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Lee Kinney" }},
+            "job" : "Sound Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Jesse Geguzis" }},
+            "job" : "Fight Director"
+        },
+        {
+            "contributor" : {"person": {"name" : "Ben Andersen" }},
+            "job" : "Stage Manager"
+        }
+      ]
+    }
+  ]
+}

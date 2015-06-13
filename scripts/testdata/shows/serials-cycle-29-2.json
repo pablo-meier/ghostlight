@@ -1,9 +1,9 @@
 {
-  "title" : "Serials @ The Flea, Cycle 28, Part 2",
+  "title" : "Serials @ The Flea, Cycle 29, Part 2",
   "special_thanks" : "",
-  "dates" : ["2015-04-30T23:00:00.000Z",
-             "2015-05-01T23:00:00.000Z",
-             "2015-05-02T23:00:00.000Z"],
+  "dates" : ["2015-06-11T23:30:00.000Z",
+             "2015-06-12T23:30:00.000Z",
+             "2015-06-13T23:30:00.000Z"],
   "producers": [
     { "person" : { "name": "Crystal Arnette" } },
     { "person" : { "name": "Cleo Gray" } },
@@ -19,84 +19,77 @@
   "performances": [
     {
       "work" : {
-        "title" : "Y2K Time Bomb (Episode 1)",
+        "title" : "Y2K Time Bomb (Episode 4: Check It Out Now, Funk Soul Sister)",
         "authors": [{"person": {"name": "Jenny Morris"}}]
       },
-      "directors": [{"name": "Alex Keegan"}],
+      "directors": [{"name": "Katie Lindsay"}],
       "onstage": [
+        { "performer" : {"name": "Whitney Conkling"} },
         { "performer" : {"name": "Jack Dellatorri"} },
-        { "performer" : {"name": "Brett Epstein"} },
-        { "performer" : {"name": "Ben Shrager"} },
+        { "performer" : {"name": "Julie Ann Earls"} },
+        { "performer" : {"name": "Erik Olsen"} },
+        { "performer" : {"name": "Mariette Strauss"} },
+        { "performer" : {"name": "Colin Waitt"} },
         { "performer" : {"name": "Catherine Woodard"} }
       ]
     },
     {
       "work" : {
-        "title" : "Sing For Your Life: A Karaoke Serial (Episode 2)",
-        "authors": [{"person": {"name": "Ryan Andrew Gaffney"}},
-                    {"person": {"name": "Sarah Einspanier"}}]
+        "title" : "-Archy (Episode 1)",
+        "authors": [{"person": {"name": "Sam Corbin"}}]
       },
-      "directors": [{"name": "Lila Rachel Becker"}],
+      "directors": [{"name": "Jake Beckhard"}],
       "onstage": [
-        { "performer" : {"name": "Alex Campbell"} },
-        { "performer" : {"name": "Jordan Carey"} },
-        { "performer" : {"name": "John Paul Harkins"} },
-        { "performer" : {"name": "Marlowe Holden"} },
-        { "performer" : {"name": "Jeremy Rafal"} }
-      ]
-    },
-    {
-      "work" : {
-        "title" : "Should Have Gone To Mexico (Episode 2)",
-        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
-      },
-      "directors": [{"name": "Ashley Brooke Monroe"}],
-      "onstage": [
-        { "performer" : {"name": "Mike Axelrod"} },
-        { "performer" : {"name": "Sam Garber"} },
-        { "performer" : {"name": "Alex J. Gould"} },
-        { "performer" : {"name": "Kerry Ipema"} },
-        { "performer" : {"name": "Edan Jacob Levy"} },
-        { "performer" : {"name": "Cristina Pitter"} },
-        { "performer" : {"name": "Neil Redfield"} }
-      ]
-    },
-    {
-      "work" : {
-        "title" : "Dane & Zane & Jane vs. The Metal Overlord!!!!!!!! (Episode 1)",
-        "authors": [{"person": {"name": "Dominic Finocchiaro"}}]
-      },
-      "directors": [{"name": "Anna Loyd Bradshaw"}],
-      "onstage": [
-        { "performer" : {"name": "Miles Butler"} },
+        { "performer" : {"name": "Edgar Eguia"} },
+        { "performer" : {"name": "Lillith Fallon"} },
         { "performer" : {"name": "Brandon Johnson"} },
         { "performer" : {"name": "Karsten Otto"} },
+        { "performer" : {"name": "Peter Sansbury"} },
         { "performer" : {"name": "Rachel Yong"} }
       ]
     },
     {
       "work" : {
-        "title" : "Locked Up Bitches (Episode 6: Blood and Placenta or, Tom Cruise vs. Pusiris — The Penultimate Episode)",
-        "authors": [{"person": {"name": "Catya McMullen"}}]
+        "title" : "Intelligent People Do Dumb Shit Daily (Episode 2)",
+        "authors": [{"person": {"name": "Paul Cameron Hardy"}}]
       },
-      "directors": [{"name": "Michael Raine"}],
+      "directors": [{"name": "Nicole Ricciardi"}],
       "onstage": [
-        { "performer" : {"name": "Crystal Arnette"} },
-        { "performer" : {"name": "Mike Axelrod"} },
-        { "performer" : {"name": "Alex J. Gould"} },
-        { "performer" : {"name": "Cameran Hebb"} },
-        { "performer" : {"name": "Shane Hall"} },
+        { "performer" : {"name": "Jessie Cannizzaro"} },
+        { "performer" : {"name": "Cleo Gray"} },
         { "performer" : {"name": "Alex Haynes"} },
         { "performer" : {"name": "Maia Henkin"} },
-        { "performer" : {"name": "Kerry Ipema"} },
         { "performer" : {"name": "Artem Kreimer"} },
-        { "performer" : {"name": "Edan Jacob Levy"} },
-        { "performer" : {"name": "Rachel Lin"} },
-        { "performer" : {"name": "Leemore Malka"} },
-        { "performer" : {"name": "Eleanor Philips"} },
+        { "performer" : {"name": "Evan William Smith"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Running in a Dream (Episode 1)",
+        "authors": [{"person": {"name": "Kett Turton"}}]
+      },
+      "directors": [{"name": "Josh Boerman"}],
+      "onstage": [
+        { "performer" : {"name": "Crystal Arnette"} },
+        { "performer" : {"name": "Jordan Carey"} },
+        { "performer" : {"name": "AJ Ditty"} },
+        { "performer" : {"name": "John Paul Harkins"} },
+        { "performer" : {"name": "Jeremy Rafal"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Should Have Gone To Mexico (Episode 5: The Finale)",
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
+      },
+      "directors": [{"name": "Ashley Brooke Monroe"}],
+      "onstage": [
+        { "performer" : {"name": "Sydney Blaxill"} },
+        { "performer" : {"name": "Alex J. Gould"} },
+        { "performer" : {"name": "Kerry Ipema"} },
         { "performer" : {"name": "Cristina Pitter"} },
-        { "performer" : {"name": "Peter Sansbury"} },
-        { "performer" : {"name": "Bonnie White"} }
+        { "performer" : {"name": "Neil Redfield"} },
+        { "performer" : {"name": "Tessa Slovis"} }
       ]
     }
   ]

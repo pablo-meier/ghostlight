@@ -1,0 +1,93 @@
+{
+  "title" : "The Old Masters",
+  "special_thanks" : "Technical Artistry, ThinkSo, Tribeca Lighting, Souths, Sabina Streeter, and our official pizza sponsor Two Boots Pizza",
+  "dates" : ["2015-05-27T21:00:00.000Z",
+             "2015-05-28T21:00:00.000Z",
+             "2015-05-30T21:00:00.000Z",
+             "2015-05-31T19:00:00.000Z",
+             "2015-06-01T21:00:00.000Z",
+
+             "2015-06-03T21:00:00.000Z",
+             "2015-06-04T21:00:00.000Z",
+             "2015-06-06T21:00:00.000Z",
+             "2015-06-07T19:00:00.000Z",
+             "2015-06-08T21:00:00.000Z",
+
+             "2015-06-10T21:00:00.000Z",
+             "2015-06-11T21:00:00.000Z",
+             "2015-06-13T21:00:00.000Z",
+             "2015-06-14T19:00:00.000Z",
+             "2015-06-15T21:00:00.000Z",
+
+             "2015-06-17T21:00:00.000Z",
+             "2015-06-18T21:00:00.000Z",
+             "2015-06-20T21:00:00.000Z",
+             "2015-06-21T19:00:00.000Z",
+
+             "2015-06-27T21:00:00.000Z",
+             "2015-06-28T21:00:00.000Z"],
+
+  "producers": [
+    {
+      "org" : {
+        "name": "The Flea Theater",
+        "description" : "The Flea is an award-winning producing organization, founded in 1996, that offers more than 250 cutting-edge theatrical and multi-disciplinary performances each year and gives voice to some of the most exciting and innovative writers of our time. Founded from the purely artistic impulse to create \"joyful hell in a small space,\" our body of work has earned us accolades from around the globe including two Obie Awards for Best Production, an Otto for Courageous Political Theater, and a Drama Desk Award Special Award for our commitment to adventurous theater."
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "description": "### A New York Premiere\n\nAfter a run at the 6th Annual First Look Repertory of New Work at Steppenwolf Theatre in Chicago, Sam Marks’ dark examination of marriage comes to The Flea. _The Old Masters_ will be directed by Resident Director Brandon Stock in his Flea debut.\n\n_The Old Masters_ features three Bats that were most recently seen in _The Mysteries_ – Adelind Horan, Rory Kulz, and Alesandra Nahodil. Understudies include Alex Coelho, Anna Dart, and Rachel Yong.\n\nThe creative team includes set design by Andrew Diaz (_Smoke_, _The Cutthroat Series_, _The Feast_), lighting design by Jonathan Cottle (_Mexicans_, _White Hot, a cautionary tale_, _Job_), costume design by Travis Alexandra Boatright (_The Cutthroat Series_, _The Feast_), and props by Cristina Pitter (_The Feast_).",
+      "work" : {
+        "title" : "The Old Masters",
+        "authors" : [{"person": {"name": "Sam Marks"}}],
+        "description": "Ben Schmitt, a never-was has-been artist turned teacher and expectant father, serendipitously discovers an old friend’s paintings – an old friend who mysteriously disappeared 4 months ago. As the art world falls under the spell of his friend’s work and life story, Ben is left to wonder: what about me?"
+      },
+      "directors": [{"name": "Brandon Stock"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Adelind Horan"},
+          "role" : "Lara",
+          "understudy" : {"name" : "Rachel Yong" }
+        },
+        {
+          "performer" : {"name": "Rory Kulz"},
+          "role" : "Ben",
+          "understudy" : {"name": "Alex Coelho"}
+        },
+        {
+          "performer" : {"name": "Alesandra Nahodil"},
+          "role" : "Olive",
+          "understudy" : {"name" : "Anna Dart" }
+        }
+      ],
+      "offstage" : [
+        {
+            "contributor" : {"person": {"name" : "Andrew Diaz" }},
+            "job" : "Set Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Jonathan Cottle" }},
+            "job" : "Lighting Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Travis Alexandra Boatright" }},
+            "job" : "Costume Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Reece Arthur" }},
+            "job" : "Sound Designer"
+        },
+        {
+            "contributor" : {"person": {"name" : "Cristina Pitter" }},
+            "job" : "Props Master"
+        },
+        {
+            "contributor" : {"person": {"name" : "Kaila Hill" }},
+            "job" : "Stage Manager"
+        }
+      ]
+    }
+  ]
+}

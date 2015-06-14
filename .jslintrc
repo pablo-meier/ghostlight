@@ -3,5 +3,6 @@
   "predef": {
     "$": true,
     "_": true
-  }
+  },
+  "stupid": true
 }

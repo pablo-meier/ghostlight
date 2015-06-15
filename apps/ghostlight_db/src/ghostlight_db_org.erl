@@ -12,16 +12,19 @@
          terminate/2,
          code_change/3]).
 
--export([get/1,
-         get/2,
-         listings/0,
+-export([listings/0,
          insert/1,
          update/1,
          get_inserts/1,
          prepare_statements/2]).
 
--export([get_statement/1,
-         db_to_record/2]).
+-export([
+         get_statement/1,
+         db_to_record/2,
+
+         listings_statement/1,
+         db_listings_to_record_list/1
+        ]).
 
 
 
@@ -163,47 +166,6 @@ get_update_commands(#organization{id=OrgId,
 %%% Resource callbacks.
 %%%===================================================================
 
-get(OrgId) ->
-  ghostlight_db_resource:get(?MODULE, OrgId).
-
-%% Format parameter tells us whether we return Markdown or the Src for any
-%% fields that apply.
-get(OrgId, Format) ->
-  ghostlight_db_resource:get(?MODULE, OrgId, Format).
-
-
-parse_member({Member}, Format) ->
-    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
-    #org_member{
-       member = #person {
-                   id = proplists:get_value(<<"person_id">>, Member),
-                   name = proplists:get_value(<<"name">>, Member)
-                },
-       description = proplists:get_value(DescType, Member, null)
-    }.
-
-parse_employee({Employee}, Format) ->
-    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
-    #org_employee{
-       person = #person {
-                   id = proplists:get_value(<<"person_id">>, Employee),
-                   name = proplists:get_value(<<"name">>, Employee)
-                },
-       title = proplists:get_value(<<"title">>, Employee, null),
-       description = proplists:get_value(DescType, Employee, null)
-    }.
-
-parse_show_abbrev({Show}) ->
-    #show{
-       id = proplists:get_value(<<"show_id">>, Show),
-       title = proplists:get_value(<<"title">>, Show),
-       performances = [#performance{
-                           work=#work{ id = proplists:get_value(<<"work_id">>, Work),
-                                       title = proplists:get_value(<<"name">>, Work)}} 
-                       || {Work} <- proplists:get_value(<<"works">>, Show)
-                    ],
-       dates = [ iso8601:parse(Date) || Date <- proplists:get_value(<<"show_dates">>, Show) ]
-    }.
 
 listings() ->
     Results = gen_server:call(?MODULE, get_org_listings),
@@ -329,6 +291,9 @@ WHERE o.org_id = $1
 get_statement(#db_state{get_org_statement=GO}) ->
     GO.
 
+listings_statement(#db_state{get_org_listings=GOL}) ->
+    GOL.
+
 db_to_record(
     [{ok, []},
      {ok,
@@ -366,5 +331,46 @@ db_to_record(
              employees=EmployeeList
           },
       shows_produced = ShowList
+    }.
+
+db_listings_to_record_list(Results) ->
+    [ #organization{
+         id=OrgId,
+         name=OrgName,
+         tagline=Tagline,
+         description=Description
+        } || {OrgId, OrgName, Tagline, Description} <- Results].
+
+parse_member({Member}, Format) ->
+    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
+    #org_member{
+       member = #person {
+                   id = proplists:get_value(<<"person_id">>, Member),
+                   name = proplists:get_value(<<"name">>, Member)
+                },
+       description = proplists:get_value(DescType, Member, null)
+    }.
+
+parse_employee({Employee}, Format) ->
+    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
+    #org_employee{
+       person = #person {
+                   id = proplists:get_value(<<"person_id">>, Employee),
+                   name = proplists:get_value(<<"name">>, Employee)
+                },
+       title = proplists:get_value(<<"title">>, Employee, null),
+       description = proplists:get_value(DescType, Employee, null)
+    }.
+
+parse_show_abbrev({Show}) ->
+    #show{
+       id = proplists:get_value(<<"show_id">>, Show),
+       title = proplists:get_value(<<"title">>, Show),
+       performances = [#performance{
+                           work=#work{ id = proplists:get_value(<<"work_id">>, Work),
+                                       title = proplists:get_value(<<"name">>, Work)}} 
+                       || {Work} <- proplists:get_value(<<"works">>, Show)
+                    ],
+       dates = [ iso8601:parse(Date) || Date <- proplists:get_value(<<"show_dates">>, Show) ]
     }.
 

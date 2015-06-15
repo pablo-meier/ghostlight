@@ -134,13 +134,13 @@ update_show(ShowId) ->
     ghostlight_db_show:update(ShowId).
 
 get_org(OrgId) ->
-    ghostlight_db_org:get(OrgId).
+    ghostlight_db_resource:get(ghostlight_db_org, OrgId).
 get_org(OrgId, Form) ->
-    ghostlight_db_org:get(OrgId, Form).
+    ghostlight_db_resource:get(ghostlight_db_org, OrgId, Form).
 insert_org(Org) ->
     ghostlight_db_org:insert(Org).
 get_org_listings() ->
-    ghostlight_db_org:listings().
+    ghostlight_db_resource:listings(ghostlight_db_org).
 update_org(Org) ->
     ghostlight_db_org:update(Org).
 

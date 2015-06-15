@@ -133,7 +133,9 @@ resource_to_json(Req, State) ->
         {Body, Req2, State}
     catch
         throw:not_found -> pass_on_error(404, Req2, State);
-        error:_ -> pass_on_error(500, Req2, State)
+        error:Err -> 
+            lager:error("ERROR! ~n~p", [Err]),
+            pass_on_error(500, Req2, State)
     end.
 
 make_appropriate_json(undefined, Module) ->
@@ -157,7 +159,9 @@ resource_to_html(Req, State) ->
         {Body, Req2, State}
     catch
         throw:not_found -> pass_on_error(404, Req2, State);
-        error:_ -> pass_on_error(500, Req2, State)
+        error:Err ->
+            lager:error("ERROR! ~n~p", [Err]),
+            pass_on_error(500, Req2, State)
     end.
 
 
@@ -198,7 +202,9 @@ post_resource(Req, State) ->
         {Status, Response} -> {Status, cowboy_req:set_resp_body(Response, Req3), State}
     catch
         throw:not_found -> pass_on_error(404, Req3, State);
-        error:_ -> pass_on_error(500, Req2, State)
+        error:Err ->
+            lager:error("ERROR: ~p~n", [Err]),
+            pass_on_error(500, Req2, State)
     end.
 
 

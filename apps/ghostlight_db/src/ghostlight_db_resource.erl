@@ -12,7 +12,9 @@
 %% API
 -export([start_link/0,
         get/2,
-        get/3]).
+        get/3,
+        listings/1
+        ]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -42,6 +44,12 @@ handle_call({get, Resource, ResourceId}, _From, DbState) ->
     Batch = [ {GetStatement, [ResourceId]} ],
     Reply = ghostlight_db_utils:exec_batch(Batch, DbState),
     {reply, Reply, DbState};
+
+handle_call({get_listings, Resource}, _From, DbState=#db_state{connection=C}) ->
+    ListingsStatement = Resource:listings_statement(DbState),
+    epgsql:bind(C, ListingsStatement, "", []),
+    {ok, Rows} = epgsql:execute(C, ListingsStatement),
+    {reply, Rows, DbState};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -81,6 +89,12 @@ get(Resource, ResourceId, Format) ->
         false -> throw(not_found)
     end.
 
+%%% @doc
+%%% Gets all of a resource from the DB as HTML
+%%% @end
+listings(Resource) ->
+    Response = gen_server:call(?MODULE, {get_listings, Resource}),
+    Resource:db_listings_to_record_list(Response).
 
 
 %%%===================================================================

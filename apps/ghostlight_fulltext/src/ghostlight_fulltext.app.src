@@ -1,0 +1,12 @@
+{application, ghostlight_fulltext,
+ [{description, "Fulltext search for Ghostlight"},
+ {vsn, "0.1.0"},
+ {registered, []},
+ {mod, {'ghostlight_fulltext_app', []}},
+ {applications,
+   [kernel,
+   stdlib
+   ]},
+ {env,[]},
+ {modules, []}
+ ]}.

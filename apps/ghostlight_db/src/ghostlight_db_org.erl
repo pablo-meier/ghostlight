@@ -20,6 +20,11 @@
          get_inserts/1,
          prepare_statements/2]).
 
+-export([get_statement/1,
+         db_to_record/2]).
+
+
+
 -define(SERVER, ?MODULE).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
@@ -159,63 +164,13 @@ get_update_commands(#organization{id=OrgId,
 %%%===================================================================
 
 get(OrgId) ->
-  get(OrgId, html).
+  ghostlight_db_resource:get(?MODULE, OrgId).
 
 %% Format parameter tells us whether we return Markdown or the Src for any
 %% fields that apply.
 get(OrgId, Format) ->
-    case ghostlight_db_utils:is_valid_uuid(OrgId) of
-        true -> process_db_response(OrgId, gen_server:call(?MODULE, {get_org, OrgId}), Format);
-        false -> throw(not_found)
-    end.
+  ghostlight_db_resource:get(?MODULE, OrgId, Format).
 
-
-process_db_response(
-  _OrgId,
-  [{ok, []},
-   {ok, []},
-   {ok, []}], _Form) ->
-    throw(not_found);
-
-process_db_response(
-    OrgId,
-    [{ok, []},
-     {ok,
-      [{
-        OrgId,
-        OrgName,
-        OrgTaglineSrc,
-        OrgTagline,
-        OrgDescriptionSrc,
-        OrgDescription,
-        Links,
-        ShowsProduced,
-        Employees,
-        Members
-       }]},
-     {ok, []}],
-     Format) ->
-
-    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
-    MemberList = [ parse_member(Member, Format) || Member <- ghostlight_db_utils:decode_not_null(Members)],
-    EmployeeList = [ parse_employee(Employee, Format) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
-    ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
-
-    Desc = case Format of html -> OrgDescription; markdown -> OrgDescriptionSrc end,
-    Tag = case Format of html -> OrgTagline; markdown -> OrgTaglineSrc end,
-
-    #org_return{
-      org=#organization{
-             id=OrgId,
-             name=OrgName,
-             tagline=Tag,
-             description=Desc,
-             external_links=ExternalLinks,
-             members=MemberList,
-             employees=EmployeeList
-          },
-      shows_produced = ShowList
-    }.
 
 parse_member({Member}, Format) ->
     DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
@@ -366,5 +321,50 @@ WHERE o.org_id = $1
        delete_org_links=DeleteExternalLink,
 
        update_org_statement=UpdateOrg
+    }.
+
+
+%%% API callbacks
+
+get_statement(#db_state{get_org_statement=GO}) ->
+    GO.
+
+db_to_record(
+    [{ok, []},
+     {ok,
+      [{
+        OrgId,
+        OrgName,
+        OrgTaglineSrc,
+        OrgTagline,
+        OrgDescriptionSrc,
+        OrgDescription,
+        Links,
+        ShowsProduced,
+        Employees,
+        Members
+       }]},
+     {ok, []}],
+     Format) ->
+
+    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
+    MemberList = [ parse_member(Member, Format) || Member <- ghostlight_db_utils:decode_not_null(Members)],
+    EmployeeList = [ parse_employee(Employee, Format) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
+    ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
+
+    Desc = case Format of html -> OrgDescription; markdown -> OrgDescriptionSrc end,
+    Tag = case Format of html -> OrgTagline; markdown -> OrgTaglineSrc end,
+
+    #org_return{
+      org=#organization{
+             id=OrgId,
+             name=OrgName,
+             tagline=Tag,
+             description=Desc,
+             external_links=ExternalLinks,
+             members=MemberList,
+             employees=EmployeeList
+          },
+      shows_produced = ShowList
     }.
 

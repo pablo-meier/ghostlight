@@ -145,15 +145,15 @@ update_org(Org) ->
     ghostlight_db_resource:update(ghostlight_db_org, Org).
 
 get_work(WorkId) ->
-    ghostlight_db_work:get(WorkId).
+    ghostlight_db_resource:get(ghostlight_db_work, WorkId).
 get_work(WorkId, Form) ->
-    ghostlight_db_work:get(WorkId, Form).
-get_work_listings() ->
-    ghostlight_db_work:listings().
+    ghostlight_db_resource:get(ghostlight_db_work, WorkId, Form).
 insert_work(Work) ->
-    ghostlight_db_work:insert(Work).
+    ghostlight_db_resource:insert(ghostlight_db_work, Work).
+get_work_listings() ->
+    ghostlight_db_resource:listings(ghostlight_db_work).
 update_work(Work) ->
-    ghostlight_db_work:update(Work).
+    ghostlight_db_resource:update(ghostlight_db_work, Work).
 
 get_person(PersonId) ->
     ghostlight_db_person:get(PersonId).

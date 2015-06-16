@@ -1,125 +1,31 @@
 -module(ghostlight_db_work).
--behaviour(gen_server).
 
--export([start_link/0]).
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2,
-         terminate/2,
-         code_change/3]).
+-export([
+         get_statement/1,
+         db_to_record/2,
+         get_inserts/2,
+         get_update_commands/2,
+         listings_statement/1,
+         db_listings_to_record_list/1,
+         prepare_statements/2
+        ]).
 
--export([get/1,
-         get/2,
-         listings/0,
-         insert/1,
-         update/1,
-         
-         get_inserts/1,
-         prepare_statements/2]).
-
--define(SERVER, ?MODULE).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
-init([]) ->
-    C = ghostlight_db_utils:connect_to_postgres(),
-    State = ghostlight_db_utils:get_state(C),
-    {ok, State}.
-handle_cast(_Msg, State) ->
-    {noreply, State}.
-handle_info(_Info, State) ->
-    {noreply, State}.
-terminate(Reason, #db_state{connection=C}) ->
-    lager:error("DB server (WORKS) terminating: ~p", [Reason]),
-    epgsql:close(C).
-code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
-
-
-handle_call(get_work_listings, _From, State=#db_state{connection=C, get_work_listings=GW}) ->
-    epgsql:bind(C, GW, "", []),
-    {ok, Rows} = epgsql:execute(C, GW),
-    {reply, Rows, State};
-
-handle_call({get_work, WorkId}, _From, State=#db_state{get_work_statement=GW}) ->
-    Batch = [ {GW, [WorkId]} ],
-    Reply = ghostlight_db_utils:exec_batch(Batch, State),
-    {reply, Reply, State};
-
-handle_call({insert_work, Work}, _From, State) ->
-    {Inserts, WorkId} = get_inserts(Work, State),
-    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
-    lager:info("Postgres responded to insert with ~p~n", [Reply]),
-    {reply, WorkId, State};
-
-handle_call({update_work, Work}, _From, State) ->
-    Commands  = get_update_commands(Work, State),
-    Reply = ghostlight_db_utils:exec_batch(Commands, State),
-    lager:info("Postgres responded to update with ~p~n", [Reply]),
-    {reply, true, State};
-
-handle_call({get_inserts, Work}, _From, State) ->
-    Reply = get_inserts(Work, State),
-    {reply, Reply, State};
-
-handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
-
-
-get_update_commands(#work{id=WorkId,
-                          title=Title,
-                          description=DescSrc,
-                          collaborating_org=CollabOrg,
-                          minutes_long=MinutesLong,
-                          authors=Authors},
-                    #db_state{update_work_statement=UW,
-                              delete_authors_statement=DA,
-                              insert_authorship_statement=IA}) ->
-
-    DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
-    AuthorshipInserts = lists:flatten([ get_author_inserts(WorkId, Author, IA) || Author <- Authors ]),
-
-    {CollabOrgInserts, CollabOrgId} = case CollabOrg of
-                                          null -> {[], null};
-                                          #organization{} -> ghostlight_db_org:get_inserts(CollabOrg)
-                                      end,
-
-    lager:info("WorkId is ~p~n", [WorkId]),
-    lager:info("CInserts ~p~n, OrgId ~p~n", [CollabOrgInserts, CollabOrgId]),
-
-    lists:append([ CollabOrgInserts,
-                   [{UW, [Title, DescSrc, DescMarkdown, CollabOrgId, MinutesLong, WorkId]},
-                    {DA, [WorkId]}],
-                   AuthorshipInserts]).
 
 
 %%%===================================================================
 %%% Resource callbacks.
 %%%===================================================================
 
-get(WorkId) ->
-  get(WorkId, html).
+get_statement(#db_state{get_work_statement=GW}) ->
+    GW.
 
-get(WorkId, Format) ->
-    case ghostlight_db_utils:is_valid_uuid(WorkId) of
-        true -> process_db_response(WorkId, gen_server:call(?MODULE, {get_work, WorkId}), Format);
-        false -> throw(not_found)
-    end.
+listings_statement(#db_state{get_work_listings=GWL}) ->
+    GWL.
 
-process_db_response(
-    _WorkId,
-    [{ok, []},
-     {ok, []},
-     {ok, []}],
-    _Format) ->
-      throw(not_found);
-
-process_db_response(
-    WorkId,
+db_to_record(
     [{ok, []},
      {ok, [{
         WorkId,
@@ -147,36 +53,14 @@ process_db_response(
        shows=[ parse_show(Show) || Show <- jiffy:decode(Productions) ]
     }.
 
-parse_org({Org}) ->
-    #organization{
-       id = proplists:get_value(<<"org_id">>, Org),
-       name = proplists:get_value(<<"name">>, Org)
-    }.
-
-parse_show({Show}) ->
-    #show{
-       id = proplists:get_value(<<"show_id">>, Show),
-       title = proplists:get_value(<<"title">>, Show),
-       producers = [ ghostlight_db_utils:parse_person_or_org(Producer) ||
-                     Producer <- proplists:get_value(<<"producers">>, Show)]
-    }.
-
-listings() ->
-    Response = gen_server:call(?MODULE, get_work_listings),
+ 
+db_listings_to_record_list(Response) ->
     [ #work{
           id=WorkId,
           title=WorkTitle,
           authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jiffy:decode(Authors) ]
       } || {WorkId, WorkTitle, Authors} <- Response].
 
-insert(Work) ->
-    gen_server:call(?MODULE, {insert_work, Work}).
-
-get_inserts(Work) ->
-    gen_server:call(?MODULE, {get_inserts, Work}).
-
-update(Work) ->
-    gen_server:call(?MODULE, {update_work, Work}).
 
 get_inserts(#work{title=Title,
                   authors=Authors,
@@ -199,6 +83,23 @@ get_inserts(#work{title=Title,
                                  AuthorshipInserts]),
     {WorkInserts, WorkUUID}.
 
+
+parse_org({Org}) ->
+    #organization{
+       id = proplists:get_value(<<"org_id">>, Org),
+       name = proplists:get_value(<<"name">>, Org)
+    }.
+
+
+parse_show({Show}) ->
+    #show{
+       id = proplists:get_value(<<"show_id">>, Show),
+       title = proplists:get_value(<<"title">>, Show),
+       producers = [ ghostlight_db_utils:parse_person_or_org(Producer) ||
+                     Producer <- proplists:get_value(<<"producers">>, Show)]
+    }.
+
+
 get_author_inserts(WorkId, Person=#person{}, Stmt) ->
     {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
     lists:append([ PersonInserts,
@@ -207,6 +108,33 @@ get_author_inserts(WorkId, Org=#organization{}, Stmt) ->
     {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org),
     lists:append([ OrgInserts,
                    [{Stmt, [WorkId, null, OrgId]}] ]).
+
+
+get_update_commands(#work{id=WorkId,
+                          title=Title,
+                          description=DescSrc,
+                          collaborating_org=CollabOrg,
+                          minutes_long=MinutesLong,
+                          authors=Authors},
+                    #db_state{update_work_statement=UW,
+                              delete_authors_statement=DA,
+                              insert_authorship_statement=IA}) ->
+
+    DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
+    AuthorshipInserts = lists:flatten([ get_author_inserts(WorkId, Author, IA) || Author <- Authors ]),
+
+    {CollabOrgInserts, CollabOrgId} = case CollabOrg of
+                                          null -> {[], null};
+                                          #organization{} -> ghostlight_db_org:get_inserts(CollabOrg)
+                                      end,
+
+    lager:info("WorkId is ~p~n", [WorkId]),
+    lager:info("CInserts ~p~n, OrgId ~p~n", [CollabOrgInserts, CollabOrgId]),
+
+    lists:append([ CollabOrgInserts,
+                   [{UW, [Title, DescSrc, DescMarkdown, CollabOrgId, MinutesLong, WorkId]},
+                    {DA, [WorkId]}],
+                   AuthorshipInserts]).
 
 
 prepare_statements(C, State) ->
@@ -285,4 +213,5 @@ ORDER BY w.title ASC",
 
        get_work_listings=GetWorkListings
     }.
+
 

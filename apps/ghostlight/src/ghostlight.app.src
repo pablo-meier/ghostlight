@@ -9,6 +9,7 @@
     erlydtl,
     ghostlight_db,
     ghostlight_devtools,
+    ghostlight_fulltext,
     ghostlight_markdown,
     iso8601,
     jiffy,

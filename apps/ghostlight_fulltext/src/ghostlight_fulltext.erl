@@ -12,6 +12,8 @@
 
 %% API
 -export([start_link/0,
+         populate_indices/0,
+         build_indices/0,
          find/1]).
 
 %% gen_server callbacks
@@ -25,6 +27,8 @@
 -define(SERVER, ?MODULE).
 
 -record(state, {}).
+-include("apps/ghostlight/include/ghostlight_data.hrl").
+
 
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
@@ -67,9 +71,64 @@ code_change(_OldVsn, State, _Extra) ->
 find(_TextFragment) ->
     ok.
 
-
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+
+-record(index_config, {
+          listings_call,
+          resource_module,
+          type_name,
+          id_fun
+         }).
+
+
+build_indices() ->
+    ok.
+
+
+populate_indices() ->
+    ResourceConfigs = [
+                       #index_config{
+                          listings_call = get_show_listings,
+                          resource_module = ghostlight_show,
+                          type_name = <<"shows">>,
+                          id_fun = fun(#show{id=ShowId}) -> ShowId end
+                       },
+                       #index_config{
+                          listings_call = get_org_listings,
+                          resource_module = ghostlight_org,
+                          type_name = <<"organizations">>,
+                          id_fun = fun(#organization{id=OrgId}) -> OrgId end
+                       },
+                       #index_config{
+                          listings_call = get_work_listings,
+                          resource_module = ghostlight_work,
+                          type_name = <<"pieces">>,
+                          id_fun = fun(#work{id=WorkId}) -> WorkId end
+                       },
+                       #index_config{
+                          listings_call = get_person_listings,
+                          resource_module = ghostlight_people,
+                          type_name = <<"people">>,
+                          id_fun = fun(#person{id=PersonId}) -> PersonId end
+                       }
+                      ],
+    lists:foreach(fun populate_index/1, ResourceConfigs).
+
+populate_index(#index_config{
+          listings_call=ListingsCall,
+          resource_module=ResourceModule,
+          type_name=TypeName,
+          id_fun=IdFun
+          }) ->
+    ResourceList = apply(ghostlight_db, ListingsCall, []),
+    AlmostReady = [ {IdFun(Resource), ResourceModule:record_to_json(Resource)} || Resource <- ResourceList],
+    AsStrings = [ {ResourceId, jiffy:encode(ResourceProplist)} || {ResourceId, ResourceProplist} <- AlmostReady],
+    lists:foreach(fun({ResourceId, ResourceJSON}) ->
+                          erlastic_search:index_doc_with_id(<<"ghostlight">>, TypeName, ResourceId, ResourceJSON)
+                  end, AsStrings).
+
 
 

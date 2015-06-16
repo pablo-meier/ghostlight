@@ -1,0 +1,26 @@
+{
+  "mappings": {
+    "show": {
+      "properties": {
+        "dates": {
+          "type": "date",
+          "format": "dateOptionalTime"
+        },
+        "id": {
+          "type": "string",
+          "analyzer": "not_analyzed"
+        },
+        "title": {
+          "type": "string"
+        },
+        "tweet": {
+          "type": "string",
+          "analyzer": "english"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

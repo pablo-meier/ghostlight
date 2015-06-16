@@ -4,7 +4,10 @@
  {registered, []},
  {mod, {'ghostlight_fulltext_app', []}},
  {applications,
-   [kernel,
+   [
+   erlastic_search,
+   ghostlight_db,
+   kernel,
    stdlib
    ]},
  {env,[]},

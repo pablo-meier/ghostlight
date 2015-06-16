@@ -28,30 +28,12 @@ init([]) ->
              5000,
              worker,
              [ghostlight_db]},
-          {show_server,
-             {ghostlight_db_show, start_link, []},
+          {resource_server,
+             {ghostlight_db_resource, start_link, []},
              permanent,
              5000,
              worker,
-             [ghostlight_db_show]},
-          {person_server,
-             {ghostlight_db_person, start_link, []},
-             permanent,
-             5000,
-             worker,
-             [ghostlight_db_person]},
-          {works_server,
-             {ghostlight_db_work, start_link, []},
-             permanent,
-             5000,
-             worker,
-             [ghostlight_db_work]},
-          {org_server,
-             {ghostlight_db_org, start_link, []},
-             permanent,
-             5000,
-             worker,
-             [ghostlight_db_org]} 
+             [ghostlight_db_resource]} 
            ]} }.
 
 %%====================================================================

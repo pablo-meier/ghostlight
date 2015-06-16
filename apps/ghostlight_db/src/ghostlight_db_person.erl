@@ -17,131 +17,29 @@
 %% until I beef up on Views or Postgres features, this is a batch of 5 queries,
 %% 6 once I get directors. I'll see what I can do.
 -module(ghostlight_db_person).
--behaviour(gen_server).
-
--export([start_link/0]).
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2,
-         terminate/2,
-         code_change/3]).
-
--export([get/1,
-         get/2,
-         listings/0,
-         insert/1,
-         update/1,
-
-         get_inserts/1,
-         prepare_statements/2]).
-
--define(SERVER, ?MODULE).
+-export([
+         get_statement/1,
+         db_to_record/2,
+         get_inserts/2,
+         get_update_commands/2,
+         listings_statement/1,
+         db_listings_to_record_list/1,
+         prepare_statements/2
+        ]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
-init([]) ->
-    C = ghostlight_db_utils:connect_to_postgres(),
-    State = ghostlight_db_utils:get_state(C),
-    {ok, State}.
-handle_cast(_Msg, State) ->
-    {noreply, State}.
-handle_info(_Info, State) ->
-    {noreply, State}.
-terminate(Reason, #db_state{connection=C}) ->
-    lager:error("DB server (PEOPLE) terminating: ~p", [Reason]),
-    epgsql:close(C).
-code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
 
+get_statement(#db_state{get_person_statement=GP}) ->
+    GP.
 
-handle_call(get_person_listings, _From, State=#db_state{connection=C, get_person_listings=GP}) ->
-    epgsql:bind(C, GP, "", []),
-    {ok, Rows} = epgsql:execute(C, GP),
-    {reply, Rows, State};
+listings_statement(#db_state{get_person_listings=GPL}) ->
+    GPL.
 
-
-handle_call({get_person, PersonId}, _From, State=#db_state{get_person_statement=GS}) ->
-    Batch = [ {GS, [PersonId]} ],
-    Reply = ghostlight_db_utils:exec_batch(Batch, State),
-    {reply, Reply, State};
-
-
-handle_call({insert_person, Person}, _From, State) ->
-    {Inserts, Id} = get_inserts(Person, State),
-    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
-    lager:info("Postgres responsed ~p for person insert", [Reply]),
-    {reply, Id, State};
-
-handle_call({update_person, Person}, _From, State) ->
-    Commands = get_update_commands(Person, State),
-    Reply = ghostlight_db_utils:exec_batch(Commands, State),
-    lager:info("Postgres responsed ~p for person update", [Reply]),
-    {reply, true, State};
-
-handle_call({get_inserts, Person}, _From, State) ->
-    Reply = get_inserts(Person, State),
-    {reply, Reply, State};
-
-handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
-
-
-get_inserts(#person{ name=Name,
-                     description=Description,
-                     external_links=Links }, #db_state{insert_person_statement=IP, insert_person_links_statement=PL}) ->
-    PersonId = ghostlight_db_utils:fresh_uuid(),
-    Markdowned = ghostlight_db_utils:markdown_or_null(Description),
-    LinkInserts = ghostlight_db_utils:external_links_inserts(PersonId, PL, Links),
-    AllInserts = lists:append([ [{IP, [PersonId, Name, Description, Markdowned]}],
-                                 LinkInserts]),
-    {AllInserts, PersonId}.
-
-
-get_update_commands(#person{id=PersonId,
-                            name=Name,
-                            description=DescSrc,
-                            external_links=Links},
-                    #db_state{update_person_statement=UP,
-                              delete_person_links_statement=DL,
-                              insert_person_links_statement=PL}) ->
-
-    DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
-    LinkInserts = ghostlight_db_utils:external_links_inserts(PersonId, PL, Links),
- 
-    lists:append([ [{UP, [Name, DescSrc, DescMarkdown, PersonId]},
-                    {DL, [PersonId]}],
-                    LinkInserts]).
-
-
-%%%===================================================================
-%%% Resource callbacks.
-%%%===================================================================
-
-get(PersonId) ->
-  get(PersonId, html).
-
-get(PersonId, Form) ->
-    case ghostlight_db_utils:is_valid_uuid(PersonId) of
-        true -> process_db_response(PersonId, gen_server:call(?MODULE, {get_person, PersonId}), Form);
-        false -> throw(not_found)
-    end.
-
-process_db_response(
-  _PersonId,
-  [{ok, []},
-   {ok, []},
-   {ok, []}], _Form) ->
-    throw(not_found);
-
-process_db_response(
-    PersonId,
-
+db_to_record(
     [{ok, []},
      {ok, [{
+        PersonId,
         Name,
         DescriptionSrc,
         DescriptionMarkdown,
@@ -155,7 +53,6 @@ process_db_response(
         Producer
        }]},
      {ok, []}],
-
      Form) ->
 
     Description = case Form of html -> DescriptionMarkdown; markdown -> DescriptionSrc end,
@@ -249,19 +146,37 @@ process_db_response(
        orgs_member = MemberList,
        shows_produced = ProducerList
     }.
+ 
 
-update(Person) ->
-    gen_server:call(?MODULE, {update_person, Person}).
+db_listings_to_record_list(Results) ->
+    [ #person{id=PersonId, name=PersonName} || {PersonId, PersonName} <- Results ].
 
-listings() ->
-    Response = gen_server:call(?MODULE, get_person_listings),
-    [ #person{id=PersonId, name=PersonName} || {PersonId, PersonName} <- Response ].
 
-insert(Person) ->
-    gen_server:call(?MODULE, {insert_person, Person}).
+get_inserts(#person{ name=Name,
+                     description=Description,
+                     external_links=Links }, #db_state{insert_person_statement=IP, insert_person_links_statement=PL}) ->
+    PersonId = ghostlight_db_utils:fresh_uuid(),
+    Markdowned = ghostlight_db_utils:markdown_or_null(Description),
+    LinkInserts = ghostlight_db_utils:external_links_inserts(PersonId, PL, Links),
+    AllInserts = lists:append([ [{IP, [PersonId, Name, Description, Markdowned]}],
+                                 LinkInserts]),
+    {AllInserts, PersonId}.
 
-get_inserts(Person) ->
-    gen_server:call(?MODULE, {get_inserts, Person}).
+
+get_update_commands(#person{id=PersonId,
+                            name=Name,
+                            description=DescSrc,
+                            external_links=Links},
+                    #db_state{update_person_statement=UP,
+                              delete_person_links_statement=DL,
+                              insert_person_links_statement=PL}) ->
+
+    DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
+    LinkInserts = ghostlight_db_utils:external_links_inserts(PersonId, PL, Links),
+ 
+    lists:append([ [{UP, [Name, DescSrc, DescMarkdown, PersonId]},
+                    {DL, [PersonId]}],
+                    LinkInserts]).
 
 
 prepare_statements(C, State) ->
@@ -276,6 +191,7 @@ prepare_statements(C, State) ->
     GetPersonSql =
 "
 SELECT
+    p.person_id,
     p.name,
     p.description_src,
     p.description_markdown,

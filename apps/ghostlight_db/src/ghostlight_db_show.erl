@@ -1,65 +1,76 @@
 -module(ghostlight_db_show).
--behaviour(gen_server).
 
--export([start_link/0]).
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2,
-         terminate/2,
-         code_change/3]).
+-export([
+         get_statement/1,
+         db_to_record/2,
+         get_inserts/2,
+         listings_statement/1,
+         db_listings_to_record_list/1,
+         prepare_statements/2
+        ]).
 
--export([get/1,
-         listings/0,
-         insert/1,
-
-         get_inserts/1,
-         prepare_statements/2]).
-
--define(SERVER, ?MODULE).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
-init([]) ->
-    C = ghostlight_db_utils:connect_to_postgres(),
-    State = ghostlight_db_utils:get_state(C),
-    {ok, State}.
-handle_cast(_Msg, State) ->
-    {noreply, State}.
-handle_info(_Info, State) ->
-    {noreply, State}.
-terminate(Reason, #db_state{connection=C}) ->
-    lager:error("DB server (SHOWS) terminating: ~p", [Reason]),
-    epgsql:close(C).
-code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
 
-handle_call({insert_show, Show}, _From, State) ->
-    {Inserts, Id} = get_inserts(Show, State),
-    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
-    lager:info("Postgres returned ~p for show insert", [Reply]),
-    {reply, Id, State};
+get_statement(#db_state{get_show_statement=GS}) ->
+    GS.
 
+listings_statement(#db_state{get_show_listings=GSL}) ->
+    GSL.
 
-handle_call(get_show_listings, _From, State=#db_state{connection=C, get_show_listings=GL}) ->
-    epgsql:bind(C, GL, "", []),
-    {ok, Rows} = epgsql:execute(C, GL),
-    {reply, Rows, State};
+db_to_record(
+    [_,
+     {ok, 
+      [{ShowId,
+        Title,
+        Description,
+        SpecialThanks,
+        Producers,
+        Press,
+        External,
+        Dates,
+        Hosts,
+        Performances}]},
+     _],
+     _Format) ->
 
+    #show{
+        id = ShowId,
+        title = Title,
+        special_thanks = SpecialThanks,
+        dates = [ iso8601:parse(Date) || Date <- jiffy:decode(Dates) ],
+        description = Description,
+        hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- jiffy:decode(Hosts) ],
+        producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
+                    || Producer <- jiffy:decode(Producers) ],
+        performances = [ parse_performance(Performance) || Performance <- jiffy:decode(Performances) ],
+        external_links=ghostlight_db_utils:external_links_sql_to_record(jiffy:decode(External)),
+        press_links=format_press_links(jiffy:decode(Press))
+      }.
 
-handle_call({get_show, ShowId}, _From, State=#db_state{get_show_statement=GS}) ->
-    Batch = [ {GS, [ShowId]} ],
-    Reply = ghostlight_db_utils:exec_batch(Batch, State),
-    {reply, Reply, State};
+ 
+db_listings_to_record_list(Results) ->
+    [ #show{
+         id=ShowId,
+         title=ShowTitle,
+         description=ShowDescription,
+         producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
+                    || Producer <- jiffy:decode(ShowProducers) ],
+         dates = [ iso8601:parse(Date) || Date <- jiffy:decode(ShowDates) ],
+         performances=[ performance_from_work_json(Work)
+                        || Work <- jiffy:decode(WorksJson) ]
+        }
+     || {
+        ShowId,
+        ShowTitle,
+        ShowDescription,
+        ShowProducers,
+        ShowDates,
+        WorksJson,
+        _OpeningNight
+     } <- Results ].
 
-handle_call({get_inserts, Show}, _From, State) ->
-    get_inserts(Show, State);
-
-handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
 
 get_inserts(#show{title=Title,
                   producers=Producers,
@@ -209,54 +220,6 @@ fold_over_performances(Performances, ShowId, WorksWithIds, State) ->
                    end, {[], []}, Numbered),
     FinalInserts.
 
-
-%%%===================================================================
-%%% Resource callbacks.
-%%%===================================================================
-get(ShowId) ->
-    case ghostlight_db_utils:is_valid_uuid(ShowId) of
-        true -> process_db_response(ShowId, gen_server:call(?MODULE, {get_show, ShowId}));
-        false -> throw(not_found)
-    end.
-
-
-process_db_response(
-  _ShowId,
-  [{ok, []},
-   {ok, []},
-   {ok, []}]) ->
-    throw(not_found);
-
-process_db_response(
-    ShowId,
-    [_,
-     {ok, 
-      [{ShowId,
-        Title,
-        Description,
-        SpecialThanks,
-        Producers,
-        Press,
-        External,
-        Dates,
-        Hosts,
-        Performances}]},
-     _]) ->
-
-    #show{
-        id = ShowId,
-        title = Title,
-        special_thanks = SpecialThanks,
-        dates = [ iso8601:parse(Date) || Date <- jiffy:decode(Dates) ],
-        description = Description,
-        hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- jiffy:decode(Hosts) ],
-        producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
-                    || Producer <- jiffy:decode(Producers) ],
-        performances = [ parse_performance(Performance) || Performance <- jiffy:decode(Performances) ],
-        external_links=ghostlight_db_utils:external_links_sql_to_record(jiffy:decode(External)),
-        press_links=format_press_links(jiffy:decode(Press))
-      }.
-
 format_press_links(PressLinks) ->
     [ #press_link{
          link = proplists:get_value(<<"link">>, Unwrapped) ,
@@ -295,28 +258,6 @@ parse_person({Person}) ->
     }.
 
 
-listings() ->
-    Response = gen_server:call(?MODULE, get_show_listings),
-    [ #show{
-         id=ShowId,
-         title=ShowTitle,
-         description=ShowDescription,
-         producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
-                    || Producer <- jiffy:decode(ShowProducers) ],
-         dates = [ iso8601:parse(Date) || Date <- jiffy:decode(ShowDates) ],
-         performances=[ performance_from_work_json(Work)
-                        || Work <- jiffy:decode(WorksJson) ]
-        }
-     || {
-        ShowId,
-        ShowTitle,
-        ShowDescription,
-        ShowProducers,
-        ShowDates,
-        WorksJson,
-        _OpeningNight
-     } <- Response ].
-
 performance_from_work_json({WorkJson}) ->
     Id = proplists:get_value(<<"work_id">>, WorkJson),
     Title = proplists:get_value(<<"title">>, WorkJson),
@@ -345,11 +286,6 @@ author_from_json({Author}) ->
             }
     end.
 
-insert(Show) ->
-    gen_server:call(?MODULE, {insert_show, Show}).
-
-get_inserts(Show) ->
-    gen_server:call(?MODULE, {get_inserts, Show}).
 
 
 prepare_statements(C, State) ->
@@ -503,4 +439,5 @@ ORDER BY opening_night DESC",
        get_show_listings=GetShowListings,
        get_show_statement=GetShowStatement
      }.
+
 

@@ -35,8 +35,7 @@
          update_work/1
         ]).
 
--export([fix_dups/0,
-         exec_batch/1]).
+-export([fix_dups/0]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -89,16 +88,6 @@ handle_call(fix_dups, _From, State=#state{connection=C,
 
     {reply, ok, State};
 
-handle_call({exec_batch, Batch},
-            _From,
-            State=#state{connection=C,
-                         commit_statement=COMMIT,
-                         begin_statement=BEGIN}) ->
-    AsTransaction = lists:append([ [{BEGIN, []}],
-                                   Batch,
-                                   [{COMMIT, []}] ]),
-    Results = epgsql:execute_batch(C, AsTransaction),
-    {reply, Results, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -123,56 +112,52 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 insert_show(Show) ->
-    ghostlight_db_show:insert(Show).
+    ghostlight_db_resource:insert(ghostlight_db_show, Show).
 get_show_listings() ->
-    ghostlight_db_show:listings().
+    ghostlight_db_resource:listings(ghostlight_db_show).
 get_show(ShowId) ->
-    ghostlight_db_show:get(ShowId).
+    ghostlight_db_resource:get(ghostlight_db_show, ShowId).
 get_show(ShowId, Form) ->
-    ghostlight_db_show:get(ShowId, Form).
+    ghostlight_db_resource:get(ghostlight_db_show, ShowId, Form).
 update_show(ShowId) ->
-    ghostlight_db_show:update(ShowId).
+    ghostlight_db_resource:update(ghostlight_db_show, ShowId).
 
 get_org(OrgId) ->
-    ghostlight_db_org:get(OrgId).
+    ghostlight_db_resource:get(ghostlight_db_org, OrgId).
 get_org(OrgId, Form) ->
-    ghostlight_db_org:get(OrgId, Form).
+    ghostlight_db_resource:get(ghostlight_db_org, OrgId, Form).
 insert_org(Org) ->
-    ghostlight_db_org:insert(Org).
+    ghostlight_db_resource:insert(ghostlight_db_org, Org).
 get_org_listings() ->
-    ghostlight_db_org:listings().
+    ghostlight_db_resource:listings(ghostlight_db_org).
 update_org(Org) ->
-    ghostlight_db_org:update(Org).
+    ghostlight_db_resource:update(ghostlight_db_org, Org).
 
 get_work(WorkId) ->
-    ghostlight_db_work:get(WorkId).
+    ghostlight_db_resource:get(ghostlight_db_work, WorkId).
 get_work(WorkId, Form) ->
-    ghostlight_db_work:get(WorkId, Form).
-get_work_listings() ->
-    ghostlight_db_work:listings().
+    ghostlight_db_resource:get(ghostlight_db_work, WorkId, Form).
 insert_work(Work) ->
-    ghostlight_db_work:insert(Work).
+    ghostlight_db_resource:insert(ghostlight_db_work, Work).
+get_work_listings() ->
+    ghostlight_db_resource:listings(ghostlight_db_work).
 update_work(Work) ->
-    ghostlight_db_work:update(Work).
+    ghostlight_db_resource:update(ghostlight_db_work, Work).
 
 get_person(PersonId) ->
-    ghostlight_db_person:get(PersonId).
+    ghostlight_db_resource:get(ghostlight_db_person, PersonId).
 get_person(PersonId, Form) ->
-    ghostlight_db_person:get(PersonId, Form).
+    ghostlight_db_resource:get(ghostlight_db_person, PersonId, Form).
 get_person_listings() ->
-    ghostlight_db_person:listings().
+    ghostlight_db_resource:listings(ghostlight_db_person).
 insert_person(Person) ->
-    ghostlight_db_person:insert(Person).
+    ghostlight_db_resource:insert(ghostlight_db_person, Person).
 update_person(Person) ->
-    ghostlight_db_person:update(Person).
+    ghostlight_db_resource:update(ghostlight_db_person, Person).
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-exec_batch(Batch) ->
-    gen_server:call(?MODULE, {exec_batch, Batch}).
-
 
 prepare_statements(C) ->
     {ok, BeginStmt} = epgsql:parse(C, "begin_statement", "BEGIN", []),

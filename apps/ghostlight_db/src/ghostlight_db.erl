@@ -123,15 +123,15 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 insert_show(Show) ->
-    ghostlight_db_show:insert(Show).
+    ghostlight_db_resource:insert(ghostlight_db_show, Show).
 get_show_listings() ->
-    ghostlight_db_show:listings().
+    ghostlight_db_resource:listings(ghostlight_db_show).
 get_show(ShowId) ->
-    ghostlight_db_show:get(ShowId).
+    ghostlight_db_resource:get(ghostlight_db_show, ShowId).
 get_show(ShowId, Form) ->
-    ghostlight_db_show:get(ShowId, Form).
+    ghostlight_db_resource:get(ghostlight_db_show, ShowId, Form).
 update_show(ShowId) ->
-    ghostlight_db_show:update(ShowId).
+    ghostlight_db_resource:update(ghostlight_db_show, ShowId).
 
 get_org(OrgId) ->
     ghostlight_db_resource:get(ghostlight_db_org, OrgId).

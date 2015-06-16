@@ -35,8 +35,7 @@
          update_work/1
         ]).
 
--export([fix_dups/0,
-         exec_batch/1]).
+-export([fix_dups/0]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
@@ -89,16 +88,6 @@ handle_call(fix_dups, _From, State=#state{connection=C,
 
     {reply, ok, State};
 
-handle_call({exec_batch, Batch},
-            _From,
-            State=#state{connection=C,
-                         commit_statement=COMMIT,
-                         begin_statement=BEGIN}) ->
-    AsTransaction = lists:append([ [{BEGIN, []}],
-                                   Batch,
-                                   [{COMMIT, []}] ]),
-    Results = epgsql:execute_batch(C, AsTransaction),
-    {reply, Results, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -156,23 +145,19 @@ update_work(Work) ->
     ghostlight_db_resource:update(ghostlight_db_work, Work).
 
 get_person(PersonId) ->
-    ghostlight_db_person:get(PersonId).
+    ghostlight_db_resource:get(ghostlight_db_person, PersonId).
 get_person(PersonId, Form) ->
-    ghostlight_db_person:get(PersonId, Form).
+    ghostlight_db_resource:get(ghostlight_db_person, PersonId, Form).
 get_person_listings() ->
-    ghostlight_db_person:listings().
+    ghostlight_db_resource:listings(ghostlight_db_person).
 insert_person(Person) ->
-    ghostlight_db_person:insert(Person).
+    ghostlight_db_resource:insert(ghostlight_db_person, Person).
 update_person(Person) ->
-    ghostlight_db_person:update(Person).
+    ghostlight_db_resource:update(ghostlight_db_person, Person).
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-exec_batch(Batch) ->
-    gen_server:call(?MODULE, {exec_batch, Batch}).
-
 
 prepare_statements(C) ->
     {ok, BeginStmt} = epgsql:parse(C, "begin_statement", "BEGIN", []),

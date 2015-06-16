@@ -138,11 +138,11 @@ get_org(OrgId) ->
 get_org(OrgId, Form) ->
     ghostlight_db_resource:get(ghostlight_db_org, OrgId, Form).
 insert_org(Org) ->
-    ghostlight_db_org:insert(Org).
+    ghostlight_db_resource:insert(ghostlight_db_org, Org).
 get_org_listings() ->
     ghostlight_db_resource:listings(ghostlight_db_org).
 update_org(Org) ->
-    ghostlight_db_org:update(Org).
+    ghostlight_db_resource:update(ghostlight_db_org, Org).
 
 get_work(WorkId) ->
     ghostlight_db_work:get(WorkId).

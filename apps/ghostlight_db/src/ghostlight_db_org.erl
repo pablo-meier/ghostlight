@@ -2,82 +2,109 @@
 %% produced. Need to see if I care about in-app membership enough to 
 %% make that happen here.
 -module(ghostlight_db_org).
--behaviour(gen_server).
-
--export([start_link/0]).
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2,
-         terminate/2,
-         code_change/3]).
-
--export([listings/0,
-         insert/1,
-         update/1,
-         get_inserts/1,
-         prepare_statements/2]).
 
 -export([
          get_statement/1,
          db_to_record/2,
-
+         get_inserts/2,
+         get_update_commands/2,
          listings_statement/1,
-         db_listings_to_record_list/1
+         db_listings_to_record_list/1,
+         prepare_statements/2
         ]).
-
-
-
--define(SERVER, ?MODULE).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
-init([]) ->
-    C = ghostlight_db_utils:connect_to_postgres(),
-    State = ghostlight_db_utils:get_state(C),
-    {ok, State}.
-handle_cast(_Msg, State) ->
-    {noreply, State}.
-handle_info(_Info, State) ->
-    {noreply, State}.
-terminate(Reason, #db_state{connection=C}) ->
-    lager:error("DB server (ORGS) terminating: ~p", [Reason]),
-    epgsql:close(C).
-code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
+%%%===================================================================
+%%% API callbacks
+%%%===================================================================
+get_statement(#db_state{get_org_statement=GO}) ->
+    GO.
+
+listings_statement(#db_state{get_org_listings=GOL}) ->
+    GOL.
+
+db_to_record(
+    [{ok, []},
+     {ok,
+      [{
+        OrgId,
+        OrgName,
+        OrgTaglineSrc,
+        OrgTagline,
+        OrgDescriptionSrc,
+        OrgDescription,
+        Links,
+        ShowsProduced,
+        Employees,
+        Members
+       }]},
+     {ok, []}],
+     Format) ->
+
+    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
+    MemberList = [ parse_member(Member, Format) || Member <- ghostlight_db_utils:decode_not_null(Members)],
+    EmployeeList = [ parse_employee(Employee, Format) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
+    ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
+
+    Desc = case Format of html -> OrgDescription; markdown -> OrgDescriptionSrc end,
+    Tag = case Format of html -> OrgTagline; markdown -> OrgTaglineSrc end,
+
+    #org_return{
+      org=#organization{
+             id=OrgId,
+             name=OrgName,
+             tagline=Tag,
+             description=Desc,
+             external_links=ExternalLinks,
+             members=MemberList,
+             employees=EmployeeList
+          },
+      shows_produced = ShowList
+    }.
+
+db_listings_to_record_list(Results) ->
+    [ #organization{
+         id=OrgId,
+         name=OrgName,
+         tagline=Tagline,
+         description=Description
+        } || {OrgId, OrgName, Tagline, Description} <- Results].
+
+parse_member({Member}, Format) ->
+    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
+    #org_member{
+       member = #person {
+                   id = proplists:get_value(<<"person_id">>, Member),
+                   name = proplists:get_value(<<"name">>, Member)
+                },
+       description = proplists:get_value(DescType, Member, null)
+    }.
 
 
-handle_call(get_org_listings, _From, State=#db_state{connection=C, get_org_listings=GO}) ->
-    epgsql:bind(C, GO, "", []),
-    {ok, Rows} = epgsql:execute(C, GO),
-    {reply, Rows, State};
+parse_employee({Employee}, Format) ->
+    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
+    #org_employee{
+       person = #person {
+                   id = proplists:get_value(<<"person_id">>, Employee),
+                   name = proplists:get_value(<<"name">>, Employee)
+                },
+       title = proplists:get_value(<<"title">>, Employee, null),
+       description = proplists:get_value(DescType, Employee, null)
+    }.
 
-handle_call({get_org, OrgId}, _From, State=#db_state{get_org_statement=GO}) ->
-    Batch = [ {GO, [OrgId]} ],
-    Reply = ghostlight_db_utils:exec_batch(Batch, State),
-    {reply, Reply, State};
 
-handle_call({insert_org, Org}, _From, State) ->
-    {Inserts, Id} = get_inserts(Org, State),
-    Reply = ghostlight_db_utils:exec_batch(Inserts, State),
-    lager:info("Postgres returned ~p for insert", [Reply]),
-    {reply, Id, State};
-
-handle_call({update_org, Org}, _From, State) ->
-    Commands = get_update_commands(Org, State),
-    Reply = ghostlight_db_utils:exec_batch(Commands, State),
-    lager:info("Postgres returned ~p for update", [Reply]),
-    {reply, true, State};
-
-handle_call({get_inserts, Org }, _From, State) ->
-    Reply = get_inserts(Org, State),
-    {reply, Reply, State};
-
-handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
+parse_show_abbrev({Show}) ->
+    #show{
+       id = proplists:get_value(<<"show_id">>, Show),
+       title = proplists:get_value(<<"title">>, Show),
+       performances = [#performance{
+                           work=#work{ id = proplists:get_value(<<"work_id">>, Work),
+                                       title = proplists:get_value(<<"name">>, Work)}} 
+                       || {Work} <- proplists:get_value(<<"works">>, Show)
+                    ],
+       dates = [ iso8601:parse(Date) || Date <- proplists:get_value(<<"show_dates">>, Show) ]
+    }.
 
 
 get_inserts(#organization {
@@ -161,28 +188,6 @@ get_update_commands(#organization{id=OrgId,
                     MemberInserts,
                     LinkInserts ]).
 
-
-%%%===================================================================
-%%% Resource callbacks.
-%%%===================================================================
-
-
-listings() ->
-    Results = gen_server:call(?MODULE, get_org_listings),
-    [ #organization{
-         id=OrgId,
-         name=OrgName,
-         tagline=Tagline,
-         description=Description
-        } || {OrgId, OrgName, Tagline, Description} <- Results].
-
-insert(Org) ->
-    gen_server:call(?MODULE, {insert_org, Org}).
-get_inserts(Org) ->
-    gen_server:call(?MODULE, {get_inserts, Org}).
-
-update(Org) ->
-    gen_server:call(?MODULE, {update_org, Org}).
 
 prepare_statements(C, State) ->
     OrgsSql = "INSERT INTO organizations "
@@ -285,92 +290,4 @@ WHERE o.org_id = $1
        update_org_statement=UpdateOrg
     }.
 
-
-%%% API callbacks
-
-get_statement(#db_state{get_org_statement=GO}) ->
-    GO.
-
-listings_statement(#db_state{get_org_listings=GOL}) ->
-    GOL.
-
-db_to_record(
-    [{ok, []},
-     {ok,
-      [{
-        OrgId,
-        OrgName,
-        OrgTaglineSrc,
-        OrgTagline,
-        OrgDescriptionSrc,
-        OrgDescription,
-        Links,
-        ShowsProduced,
-        Employees,
-        Members
-       }]},
-     {ok, []}],
-     Format) ->
-
-    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
-    MemberList = [ parse_member(Member, Format) || Member <- ghostlight_db_utils:decode_not_null(Members)],
-    EmployeeList = [ parse_employee(Employee, Format) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
-    ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
-
-    Desc = case Format of html -> OrgDescription; markdown -> OrgDescriptionSrc end,
-    Tag = case Format of html -> OrgTagline; markdown -> OrgTaglineSrc end,
-
-    #org_return{
-      org=#organization{
-             id=OrgId,
-             name=OrgName,
-             tagline=Tag,
-             description=Desc,
-             external_links=ExternalLinks,
-             members=MemberList,
-             employees=EmployeeList
-          },
-      shows_produced = ShowList
-    }.
-
-db_listings_to_record_list(Results) ->
-    [ #organization{
-         id=OrgId,
-         name=OrgName,
-         tagline=Tagline,
-         description=Description
-        } || {OrgId, OrgName, Tagline, Description} <- Results].
-
-parse_member({Member}, Format) ->
-    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
-    #org_member{
-       member = #person {
-                   id = proplists:get_value(<<"person_id">>, Member),
-                   name = proplists:get_value(<<"name">>, Member)
-                },
-       description = proplists:get_value(DescType, Member, null)
-    }.
-
-parse_employee({Employee}, Format) ->
-    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
-    #org_employee{
-       person = #person {
-                   id = proplists:get_value(<<"person_id">>, Employee),
-                   name = proplists:get_value(<<"name">>, Employee)
-                },
-       title = proplists:get_value(<<"title">>, Employee, null),
-       description = proplists:get_value(DescType, Employee, null)
-    }.
-
-parse_show_abbrev({Show}) ->
-    #show{
-       id = proplists:get_value(<<"show_id">>, Show),
-       title = proplists:get_value(<<"title">>, Show),
-       performances = [#performance{
-                           work=#work{ id = proplists:get_value(<<"work_id">>, Work),
-                                       title = proplists:get_value(<<"name">>, Work)}} 
-                       || {Work} <- proplists:get_value(<<"works">>, Show)
-                    ],
-       dates = [ iso8601:parse(Date) || Date <- proplists:get_value(<<"show_dates">>, Show) ]
-    }.
 

@@ -1,6 +1,5 @@
 %%%-------------------------------------------------------------------
 %%% @author pablo
-%%% @copyright (C) 2015, pablo
 %%% @doc
 %%% Abstracts out the bits of the gen_servers for the resources.
 %%% @end
@@ -13,7 +12,9 @@
 -export([start_link/0,
         get/2,
         get/3,
-        listings/1
+        listings/1,
+        insert/2,
+        update/2
         ]).
 
 %% gen_server callbacks
@@ -45,11 +46,23 @@ handle_call({get, Resource, ResourceId}, _From, DbState) ->
     Reply = ghostlight_db_utils:exec_batch(Batch, DbState),
     {reply, Reply, DbState};
 
-handle_call({get_listings, Resource}, _From, DbState=#db_state{connection=C}) ->
+handle_call({listings, Resource}, _From, DbState=#db_state{connection=C}) ->
     ListingsStatement = Resource:listings_statement(DbState),
     epgsql:bind(C, ListingsStatement, "", []),
     {ok, Rows} = epgsql:execute(C, ListingsStatement),
     {reply, Rows, DbState};
+
+handle_call({insert, Resource, Record}, _From, DbState) ->
+    {Inserts, Id} = Resource:get_inserts(Record, DbState),
+    Reply = ghostlight_db_utils:exec_batch(Inserts, DbState),
+    lager:info("Postgres returned ~p for insert", [Reply]),
+    {reply, Id, DbState};
+
+handle_call({update, Resource, Record}, _From, DbState) ->
+    Commands = Resource:get_update_commands(Record, DbState),
+    Reply = ghostlight_db_utils:exec_batch(Commands, DbState),
+    lager:info("Postgres returned ~p for update", [Reply]),
+    {reply, true, DbState};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -93,8 +106,22 @@ get(Resource, ResourceId, Format) ->
 %%% Gets all of a resource from the DB as HTML
 %%% @end
 listings(Resource) ->
-    Response = gen_server:call(?MODULE, {get_listings, Resource}),
+    Response = gen_server:call(?MODULE, {listings, Resource}),
     Resource:db_listings_to_record_list(Response).
+
+
+%%% @doc
+%%% Inserts the record into the appropriate table.
+%%% @end
+insert(Resource, Record) ->
+    gen_server:call(?MODULE, {insert, Resource, Record}).
+
+
+%%% @doc
+%%% Updates the record into the appropriate table.
+%%% @end
+update(Resource, Record) ->
+    gen_server:call(?MODULE, {update, Resource, Record}).
 
 
 %%%===================================================================
@@ -111,9 +138,6 @@ process_db_response(
 process_db_response(Module, Response, Format) ->
     Module:db_to_record(Response, Format).
 
-% get_statement
-% db_to_record
-
 
 %% Alright, here are things that need to happen:
 %% * CALLBACK to get the appropriate "get_/get_listings/insert/update"
@@ -122,5 +146,4 @@ process_db_response(Module, Response, Format) ->
 %% * CALLBACK to package DB response as record.
 %%
 %% * Versioning?
-%%
 

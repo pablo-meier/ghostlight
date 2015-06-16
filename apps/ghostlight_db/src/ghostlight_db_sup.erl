@@ -46,19 +46,12 @@ init([]) ->
              5000,
              worker,
              [ghostlight_db_work]},
-          {org_server,
-             {ghostlight_db_org, start_link, []},
-             permanent,
-             5000,
-             worker,
-             [ghostlight_db_org]},
           {resource_server,
              {ghostlight_db_resource, start_link, []},
              permanent,
              5000,
              worker,
              [ghostlight_db_resource]} 
-
            ]} }.
 
 %%====================================================================

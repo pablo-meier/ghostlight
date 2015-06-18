@@ -1,0 +1,48 @@
+{
+  "title" : "Bloodworks: Hello, My Name Is",
+  "special_thanks" : "",
+  "dates" : ["2015-06-16T19:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Hello, My Name Is",
+        "authors": [{"person": {"name": "Jahna Ferron-Smith"}}]
+      },
+      "directors": [{"name": "Courtney Ulrich"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Ann Talman"},
+          "role" : "Karen"
+        },
+        {
+          "performer" : {"name": "Megan Tusing"},
+          "role" : "Casey/Internet"
+        },
+        {
+          "performer" : {"name": "Haskell King"},
+          "role" : "Gilbert"
+        },
+        {
+          "performer" : {"name": "Sasha Diamond"},
+          "role" : "Answering Machine/Nancy/Janet/Server/Nurse"
+        },
+        {
+          "performer" : {"name": "Ronald Peet"},
+          "role" : "Dr. Myers/Clerk/Loudspeaker"
+        },
+        {
+          "performer" : {"name": "Bella Carter"},
+          "role" : "Stage Directions"
+        }
+      ]
+    }
+  ]
+}

@@ -66,13 +66,13 @@ get_inserts(#work{title=Title,
                   description=Description,
                   collaborating_org=Org,
                   minutes_long=MinutesLong},
-            #db_state{insert_work_statement=IW,
-                      insert_authorship_statement=IA}) ->
+            State=#db_state{insert_work_statement=IW,
+                            insert_authorship_statement=IA}) ->
     WorkUUID = ghostlight_db_utils:fresh_uuid(),
-    AuthorshipInserts = lists:flatten([ get_author_inserts(WorkUUID, Author, IA) || Author <- Authors ]),
+    AuthorshipInserts = lists:flatten([ get_author_inserts(WorkUUID, Author, IA, State) || Author <- Authors ]),
     {OrgInserts, OrgId} = case Org of 
                               null -> {[], null};
-                              _ -> ghostlight_db_org:get_inserts(Org)
+                              _ -> ghostlight_db_org:get_inserts(Org, State)
                           end,
 
     Markdowned = ghostlight_db_utils:markdown_or_null(Description),
@@ -99,12 +99,12 @@ parse_show({Show}) ->
     }.
 
 
-get_author_inserts(WorkId, Person=#person{}, Stmt) ->
-    {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
+get_author_inserts(WorkId, Person=#person{}, Stmt, State) ->
+    {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person, State),
     lists:append([ PersonInserts,
                    [{Stmt, [WorkId, PersonId, null]}] ]);
-get_author_inserts(WorkId, Org=#organization{}, Stmt) ->
-    {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org),
+get_author_inserts(WorkId, Org=#organization{}, Stmt, State) ->
+    {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org, State),
     lists:append([ OrgInserts,
                    [{Stmt, [WorkId, null, OrgId]}] ]).
 
@@ -115,16 +115,16 @@ get_update_commands(#work{id=WorkId,
                           collaborating_org=CollabOrg,
                           minutes_long=MinutesLong,
                           authors=Authors},
-                    #db_state{update_work_statement=UW,
-                              delete_authors_statement=DA,
-                              insert_authorship_statement=IA}) ->
+                    State=#db_state{update_work_statement=UW,
+                                    delete_authors_statement=DA,
+                                    insert_authorship_statement=IA}) ->
 
     DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
-    AuthorshipInserts = lists:flatten([ get_author_inserts(WorkId, Author, IA) || Author <- Authors ]),
+    AuthorshipInserts = lists:flatten([ get_author_inserts(WorkId, Author, IA, State) || Author <- Authors ]),
 
     {CollabOrgInserts, CollabOrgId} = case CollabOrg of
                                           null -> {[], null};
-                                          #organization{} -> ghostlight_db_org:get_inserts(CollabOrg)
+                                          #organization{} -> ghostlight_db_org:get_inserts(CollabOrg, State)
                                       end,
 
     lager:info("WorkId is ~p~n", [WorkId]),

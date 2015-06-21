@@ -33,7 +33,6 @@ edit_html(ShowId) ->
     [{name, ShowRecord#show.title},
      {editmode, AsJson}].
 
-
 get_listings_json() ->
     ShowList = ghostlight_db:get_show_listings(),
     [{<<"shows">>, [ record_to_json(Show) || Show <- ShowList ]}].
@@ -49,7 +48,6 @@ edit_json(ShowRecord) ->
     ghostlight_db:update_show(ShowRecord).
 
 get_id(#show{id=Id}) -> Id.
-
 
 record_to_proplist(#show{
                      id=ShowId,
@@ -146,6 +144,7 @@ performance_record_to_json(#performance{
         {<<"onstage">>, [ onstage_as_json(Performer) || Performer <- Onstage ]},
         {<<"offstage">>, [ offstage_as_json(Contributor) || Contributor <- Offstage ]}
     ]).
+
 onstage_as_json(#onstage{
                    role=Role,
                    person=Person
@@ -162,7 +161,6 @@ offstage_as_json(#offstage{
         {<<"job">>, Job},
         {<<"contributor">>, ghostlight_people:record_to_json(Person)}
     ]).
-
 
 json_to_record({Decoded}) ->
     Title = proplists:get_value(<<"title">>, Decoded),
@@ -206,7 +204,6 @@ performance_json_to_record({Proplist}) ->
        description = Description
     }.
 
-
 onstage_json_to_record({Onstage}) ->
     Performer = ghostlight_people:json_to_record(proplists:get_value(<<"performer">>, Onstage)),
     Role = proplists:get_value(<<"role">>, Onstage),
@@ -222,4 +219,3 @@ offstage_json_to_record({Offstage}) ->
       contributor = Contributor,
       job = Job 
     }.
-

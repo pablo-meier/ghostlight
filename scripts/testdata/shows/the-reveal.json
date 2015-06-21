@@ -1,0 +1,70 @@
+{
+  "title" : "The Reveal",
+  "special_thanks" : "",
+  "dates" : ["2015-06-10T19:00:00.000Z",
+             "2015-06-12T22:30:00.000Z",
+             "2015-06-14T16:00:00.000Z",
+             "2015-06-20T19:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "The Brick Theater",
+        "description" : "The Brick Theater, Inc is a not-for-profit theater company dedicated to nurturing the work of emerging artists at its performance space in Williamsburg, Brooklyn—The Brick.\n\nThe Brick presents world premieres, monthly performance series, and seasonal festivals, expanding Williamsburg’s profile as a destination for cutting-edge art and entertainment.\n\nThe Brick continues to seek new artists and projects, to provide them with a creative home, and to serve as Williamsburg’s primary incubator of innovative theater arts. "
+      },
+      "org" : {
+        "name": "Minty Productions"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "The Reveal",
+        "authors": [{"person": {"name": "Kim Gainer"}}],
+        "description": "A story of struggle, of artistic inspiration, of burlesque black girl realness."
+      },
+      "directors": [{"name": "Christina Roussos"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Kim Gainer"},
+          "role" : "Ms. Minty Newport"
+        },
+        {
+          "performer" : {"name": "Lacy Gams"},
+          "role" : "Stage Kitten"
+        }
+     ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Davide Berardi" }},
+          "job" : "Original Music"
+        },
+        {
+          "contributor" : {"person": {"name" : "Karl Ruckdeschel" }},
+          "job" : "Costume Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Sarah Johnston" }},
+          "job" : "Lighting Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Christina Roussos" }},
+          "job" : "Project Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alejandro Garcia" }},
+          "job" : "Cinematography"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jody Christopherson" }},
+          "job" : "Photography"
+        },
+        {
+          "contributor" : {"person": {"name" : "Liz Richards" }},
+          "job" : "Stage Manager"
+        }
+      ]
+    }
+  ]
+}

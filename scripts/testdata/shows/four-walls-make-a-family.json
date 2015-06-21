@@ -1,0 +1,56 @@
+{
+  "title" : "Bloodworks: four walls make a family",
+  "special_thanks" : "",
+  "dates" : ["2015-06-17T19:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "four walls make a family",
+        "authors": [{"person": {"name": "Paul Cameron Hardy"}}]
+      },
+      "directors": [{"name": "Courtney Ulrich"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Hollye Hudson"},
+          "role" : "Jessica/Piper Moore"
+        },
+        {
+          "performer" : {"name": "Jen Tsay"},
+          "role" : "Elsie/Miko Li"
+        },
+        {
+          "performer" : {"name": "Cassie Seale"},
+          "role" : "Claire/Luna Heart"
+        },
+        {
+          "performer" : {"name": "Nikki Valdez"},
+          "role" : "Mary/Carmen Carrera"
+        },
+        {
+          "performer" : {"name": "Brittane Rowe"},
+          "role" : "Karyn/Ruby Coco"
+        },
+        {
+          "performer" : {"name": "Zoe Garcia"},
+          "role" : "Frieda/Maya Carmen"
+        },
+        {
+          "performer" : {"name": "Luke Robertson"},
+          "role" : "Greg"
+        },
+        {
+          "performer" : {"name": "Brendan Hill"},
+          "role" : "Stage Directions"
+        }
+      ]
+    }
+  ]
+}

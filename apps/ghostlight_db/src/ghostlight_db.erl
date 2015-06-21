@@ -45,7 +45,8 @@
                 commit_statement,
 
                 person_de_dupes,
-                org_de_dupes
+                org_de_dupes,
+                work_de_dupes
                 }).
 
 start_link() ->
@@ -65,8 +66,9 @@ handle_call(fix_dups, _From, State=#state{connection=C,
                                           begin_statement=BEGIN,
                                           commit_statement=COMMIT,
                                           person_de_dupes=PplDeDupes,
-                                          org_de_dupes=OrgDeDupes}) ->
-    {ok, _Columns, PeopleRows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT p1.person_id AS id1, p2.person_id AS id2, "
+                                          org_de_dupes=OrgDeDupes,
+                                          work_de_dupes=WorkDeDupes}) ->
+    {ok, _, PeopleRows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT p1.person_id AS id1, p2.person_id AS id2, "
         ++ "p1.name, row_number() OVER (PARTITION BY p1.name) AS row_num FROM people AS p1, people AS p2 "
         ++ "WHERE p1.name = p2.name AND p1.person_id != p2.person_id ORDER BY p1.name) AS tmp WHERE row_num < 2"),
 
@@ -76,7 +78,7 @@ handle_call(fix_dups, _From, State=#state{connection=C,
                      lager:info("Swapped out ~p for ~p for user ~p", [BadId, GoodId, Name])
                   end, PeopleRows),
 
-    {ok, _Columns, OrgRows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT o1.org_id AS id1, o2.org_id AS id2, "
+    {ok, _, OrgRows} = epgsql:squery(C, "SELECT id1, id2, name FROM (SELECT o1.org_id AS id1, o2.org_id AS id2, "
         ++ "o1.name, row_number() OVER (PARTITION BY o1.name) AS row_num FROM organizations AS o1, organizations AS o2 "
         ++ "WHERE o1.name = o2.name AND o1.org_id != o2.org_id ORDER BY o1.name) AS tmp WHERE row_num < 2"),
 
@@ -85,6 +87,16 @@ handle_call(fix_dups, _From, State=#state{connection=C,
                      Statements = [ {Parsed, [GoodId, BadId]} || Parsed <- OrgDeDupes ],
                      epgsql:execute_batch(C, lists:append([ [{BEGIN, []}], Statements, [{COMMIT, []}] ]))
                   end, OrgRows),
+
+    {ok, _, WorkRows} = epgsql:squery(C, "SELECT id1, id2, title FROM (SELECT w1.work_id AS id1, w2.work_id AS id2, "
+        ++ "w1.title, row_number() OVER (PARTITION BY w1.title) AS row_num FROM works AS w1, works AS w2 "
+        ++ "WHERE w1.title = w2.title AND w1.work_id != w2.work_id ORDER BY w1.title) AS tmp WHERE row_num < 2"),
+
+    lists:foreach(fun ({GoodId, BadId, Name}) ->
+                     lager:info("Swapping out ~p for ~p for work ~p", [BadId, GoodId, Name]),
+                     Statements = [ {Parsed, [GoodId, BadId]} || Parsed <- WorkDeDupes ],
+                     epgsql:execute_batch(C, lists:append([ [{BEGIN, []}], Statements, [{COMMIT, []}] ]))
+                  end, WorkRows),
 
     {reply, ok, State};
 
@@ -189,12 +201,18 @@ prepare_statements(C) ->
     {ok, OrgParsed8} = epgsql:parse(C, "consolidate_h", "DELETE FROM organizations WHERE org_id = $2", [uuid]),
     OrgDeDupes = [OrgParsed1, OrgParsed2, OrgParsed3, OrgParsed4, OrgParsed5,
                   OrgParsed6, OrgParsed7, OrgParsed8],
+
+    {ok, WorkParsed1} = epgsql:parse(C, "consolidate_i", "DELETE FROM authorship WHERE work_id = $2", [uuid]),
+    {ok, WorkParsed2} = epgsql:parse(C, "consolidate_ii", "UPDATE performances SET work_id = $1 WHERE work_id = $2", [uuid, uuid]),
+    {ok, WorkParsed3} = epgsql:parse(C, "consolidate_iii", "DELETE FROM works WHERE work_id = $2", [uuid]),
+    WorkDeDupes = [WorkParsed1, WorkParsed2, WorkParsed3],
  
     State = #state{connection=C,
                    begin_statement=BeginStmt,
                    commit_statement=CommitStmt,
                    person_de_dupes=PplDeDupes,
-                   org_de_dupes=OrgDeDupes
+                   org_de_dupes=OrgDeDupes,
+                   work_de_dupes=WorkDeDupes
                    },
     State.
 

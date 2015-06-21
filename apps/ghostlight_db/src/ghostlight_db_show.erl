@@ -86,7 +86,7 @@ get_inserts(#show{title=Title,
                             insert_links_statement=IL,
                             insert_presslinks_statement=IP}) ->
     Works = extract_works(Performances),
-    {AllWorkInserts, WorksWithId} = fold_over_works(Works),
+    {AllWorkInserts, WorksWithId} = fold_over_works(Works, State),
 
     ShowId = ghostlight_db_utils:fresh_uuid(),
 
@@ -117,13 +117,13 @@ get_inserts(#show{title=Title,
     {Batch, ShowId}.
 
 
-get_producer_inserts(ShowId, Person=#person{}, Order, #db_state{insert_producer_statement=IP}) ->
-    {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
+get_producer_inserts(ShowId, Person=#person{}, Order, State=#db_state{insert_producer_statement=IP}) ->
+    {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person, State),
     WithProduction = lists:append([ PersonInserts,
                                     [{IP, [ShowId, null, PersonId, Order]}] ]),
     {WithProduction, PersonId};
-get_producer_inserts(ShowId, Org=#organization{}, Order, #db_state{insert_producer_statement=IP}) ->
-    {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org),
+get_producer_inserts(ShowId, Org=#organization{}, Order, State=#db_state{insert_producer_statement=IP}) ->
+    {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org, State),
     WithProduction = lists:append([ OrgInserts,
                                     [{IP, [ShowId, OrgId, null, Order]}] ]),
     {WithProduction, OrgId}.
@@ -162,42 +162,42 @@ get_performance_inserts(WorksWithIds,
     {Inserts, PerformanceId}.
 
 
-get_host_inserts(ShowId, Hosts, #db_state{insert_hosts_statement=IH}) ->
+get_host_inserts(ShowId, Hosts, State=#db_state{insert_hosts_statement=IH}) ->
     ListOfLists = lists:map(fun (Person) ->
-                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
+                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person, State),
                                 DirectorInsert = {IH, [ShowId, PersonId]},
                                 [PersonInserts, DirectorInsert]
                             end, Hosts),
     lists:flatten(ListOfLists).
 
-get_director_inserts(PerformanceId, Directors, #db_state{insert_director_statement=ID}) ->
+get_director_inserts(PerformanceId, Directors, State=#db_state{insert_director_statement=ID}) ->
     ListOfLists = lists:map(fun (Person) ->
-                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
+                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person, State),
                                 DirectorInsert = {ID, [PerformanceId, PersonId]},
                                 [PersonInserts, DirectorInsert]
                             end, Directors),
     lists:flatten(ListOfLists).
 
-get_onstage_inserts(PerformanceId, OnstageList, #db_state{insert_onstage_statement=IO}) ->
+get_onstage_inserts(PerformanceId, OnstageList, State=#db_state{insert_onstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#onstage{ role=Role,
                                            person=Person }) ->
-                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person),
+                                {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person, State),
                                 OnstageInsert = {IO, [PerformanceId, PersonId, Role, null, null, null]},
                                 [PersonInserts, OnstageInsert]
                             end, OnstageList),
     lists:flatten(ListOfLists).
 
 
-get_offstage_inserts(PerformanceId, OffstageList, #db_state{insert_offstage_statement=IO}) ->
+get_offstage_inserts(PerformanceId, OffstageList, State=#db_state{insert_offstage_statement=IO}) ->
     ListOfLists = lists:map(fun (#offstage{ job=Job,
                                             contributor=Contrib}) ->
                                 case Contrib of
                                     #person{} ->
-                                        {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Contrib),
+                                        {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Contrib, State),
                                         OffstageInsert = {IO, [PerformanceId, PersonId, null, Job, null, null]},
                                         [PersonInserts, OffstageInsert];
                                     #organization{} ->
-                                        {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Contrib),
+                                        {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Contrib, State),
                                         OffstageInsert = {IO, [PerformanceId, null, OrgId, Job, null, null]},
                                         [OrgInserts, OffstageInsert]
                                 end
@@ -205,9 +205,9 @@ get_offstage_inserts(PerformanceId, OffstageList, #db_state{insert_offstage_stat
     lists:flatten(ListOfLists).
 
 
-fold_over_works(Works) ->
+fold_over_works(Works, State) ->
     lists:foldl(fun (Work, {Inserts, Accum}) ->
-                        {WorkInserts, WorkId} = ghostlight_db_work:get_inserts(Work),
+                        {WorkInserts, WorkId} = ghostlight_db_work:get_inserts(Work, State),
                         {lists:append(WorkInserts, Inserts),
                          [{Work, WorkId}|Accum]}
                 end, {[], []}, Works).

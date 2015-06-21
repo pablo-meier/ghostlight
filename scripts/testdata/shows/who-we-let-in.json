@@ -1,0 +1,44 @@
+{
+  "title" : "Bloodworks: who we let in",
+  "special_thanks" : "",
+  "dates" : ["2015-06-17T21:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "who we let in",
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
+      },
+      "directors": [{"name": "Ilana Stein"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Monica Diaz"},
+          "role" : "Smith"
+        },
+        {
+          "performer" : {"name": "Vanessa Bartlett"},
+          "role" : "Meridian/Adelaide"
+        },
+        {
+          "performer" : {"name": "Brian Burns"},
+          "role" : "Bart"
+        },
+        {
+          "performer" : {"name": "Christopher Livingston"},
+          "role" : "Dayton/Allen"
+        },
+        {
+          "performer" : {"name": "Lauriel Friedman"},
+          "role" : "Stage Directions"
+        }
+      ]
+    }
+  ]
+}

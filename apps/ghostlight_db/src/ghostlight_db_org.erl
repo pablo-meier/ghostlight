@@ -147,14 +147,14 @@ get_inserts(#organization {
                               ]),
     {OrgInserts, OrgId}.
 
-member_inserts(OrgId, #org_member{member=Person, description=Description}, #db_state{insert_org_member=IM}) ->
-    {PersonInsert, PersonId} = ghostlight_db_person:get_inserts(Person),
+member_inserts(OrgId, #org_member{member=Person, description=Description}, State=#db_state{insert_org_member=IM}) ->
+    {PersonInsert, PersonId} = ghostlight_db_person:get_inserts(Person, State),
     Markdowned = ghostlight_db_utils:markdown_or_null(Description),
     [PersonInsert,
      {IM, [OrgId, PersonId, Description, Markdowned, null, null]}].
 
-employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=Description}, #db_state{insert_org_employee=IE}) ->
-    {PersonInsert, PersonId} = ghostlight_db_person:get_inserts(Person),
+employee_inserts(OrgId, #org_employee{person=Person, title=Title, description=Description}, State=#db_state{insert_org_employee=IE}) ->
+    {PersonInsert, PersonId} = ghostlight_db_person:get_inserts(Person, State),
     Markdowned = ghostlight_db_utils:markdown_or_null(Description),
     [PersonInsert,
      {IE, [OrgId, PersonId, Title, Description, Markdowned, null, null]}].

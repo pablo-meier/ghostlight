@@ -39,8 +39,13 @@ initiate_listening_to_endpoints() ->
                                              {"/humans.txt", cowboy_static, {priv_file, ghostlight, "static/humans.txt"}},
                                              {"/favicon.ico", cowboy_static, {priv_file, ghostlight, "static/favicon.ico"}},
                                              {"/index.html", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},
+
                                              {"/", cowboy_static, {priv_file, ghostlight, "static/homepage.html"}},
+                                             {"/search", ghostlight_search, []},
+                                             {"/search_hint", ghostlight_search_hint, []},
                                              {"/:resource[/:resource_id[/:command]]", ghostlight_resource, []}
+
+
                                       ]}
     ]),
     {ok, _} = cowboy:start_http(http, 100, [{port, Port}], [

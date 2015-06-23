@@ -175,5 +175,3 @@ populate_index(#index_config{
                           erlastic_search:index_doc_with_id(?INDEX_NAME, TypeName, ResourceId, ResourceJSON)
                   end, AsStrings).
 
-
-

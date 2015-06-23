@@ -1,0 +1,60 @@
+{
+  "properties": {
+    "dates": {
+      "type": "date",
+      "format": "dateOptionalTime"
+    },
+    "id": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "title": {
+      "type": "string"
+    },
+    "special_thanks": {
+      "type": "string",
+      "index": "not_analyzed"
+    },
+    "performances": {
+      "properties": {
+        "work":{ 
+          "properties":{ 
+            "authors":{
+              "properties":{
+                "org":{
+                  "properties":{
+                    "id":{
+                      "type": "string",
+                      "index": "not_analyzed"
+                    },
+                    "name":{
+                      "type":"string"
+                    }
+                  }
+                },
+                "person":{
+                  "properties":{
+                    "name":{
+                      "type": "string"
+                    },
+                    "id":{
+                      "type":"string",
+                      "index": "not_analyzed"
+                    }
+                  }
+                }
+              }
+            },
+            "id":{
+              "type":"string",
+              "index": "not_analyzed"
+            },
+            "title": {
+              "type":"string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

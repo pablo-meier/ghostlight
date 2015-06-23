@@ -1,0 +1,17 @@
+{
+  "properties": {
+    "id": {
+      "type":"string",
+      "index": "not_analyzed"
+    },
+    "description":{
+      "type":"string"
+    },
+    "name": {
+      "type":"string"
+    },
+    "tagline": { 
+      "type":"string"
+    }
+  }
+}

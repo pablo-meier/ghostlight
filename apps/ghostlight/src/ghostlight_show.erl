@@ -122,12 +122,13 @@ personlist_as_proplist(DirectorList) ->
 record_to_json(#show{
                   id=ShowId,
                   title=ShowTitle,
+                  producers=Producers,
                   performances=Performances,
                   special_thanks=SpecialThanks,
                   dates=Dates}) ->
     ghostlight_utils:json_with_valid_values([
         {<<"id">>, ShowId},
-        {<<"show_title">>, ShowTitle},
+        {<<"title">>, ShowTitle},
         {<<"special_thanks">>, SpecialThanks},
         {<<"performances">>, [ performance_record_to_json(Performance) || Performance <- Performances ]},
         {<<"dates">>, [ ghostlight_utils:erl_date_to_iso8601(Date) || Date <- Dates ]}

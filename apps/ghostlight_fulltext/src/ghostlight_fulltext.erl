@@ -25,6 +25,7 @@
          code_change/3]).
 
 -define(SERVER, ?MODULE).
+-define(INDEX_NAME, <<"ghostlight">>).
 
 -record(state, {}).
 -include("apps/ghostlight/include/ghostlight_data.hrl").
@@ -68,8 +69,32 @@ code_change(_OldVsn, State, _Extra) ->
 %%% @end
 %%%-------------------------------------------------------------------
 
-find(_TextFragment) ->
-    ok.
+find(TextFragment) when is_binary(TextFragment) ->
+  find(binary_to_list(TextFragment));
+find(TextFragment) when is_list(TextFragment) ->
+    QueryBase =
+"
+{
+  \"query\": {
+    \"multi_match\": { 
+      \"query\": \"~s\", 
+      \"fields\": [\"*.title\"]
+    } 
+  } 
+}
+",
+    Query = erlang:iolist_to_binary(io_lib:format(QueryBase, [TextFragment])),
+    lager:info("Query is ~p~n", [Query]),
+    Decoded = jsx:decode(Query),
+    case erlastic_search:search(?INDEX_NAME, Decoded) of
+      {ok, Proplists} ->
+        HitListing = proplists:get_value(<<"hits">>, Proplists, []),
+        Hits = proplists:get_value(<<"hits">>, HitListing, []),
+        Hits;
+      {error, Error} ->
+        lager:error("Error returned from ES: ~p~n", [Error]),
+        error
+    end.
 
 %%%===================================================================
 %%% Internal functions
@@ -85,8 +110,28 @@ find(_TextFragment) ->
 
 
 build_indices() ->
-    ok.
+    erlastic_search:create_index(?INDEX_NAME),
 
+    PrivDir = code:priv_dir(ghostlight_fulltext),
+    Templates = filename:join([PrivDir, "mappings"]),
+    Native = filename:nativename(Templates),
+    {ok, DirContents} = file:list_dir(Native),
+    Filenames = lists:filter(fun (X) -> re:run(X, "^\\.") == nomatch end, DirContents),
+    lists:foreach(fun (File) ->
+                    TypeName = list_to_binary(filename:basename(File, ".json")),
+                    FileAbsName = filename:join([Native, File]),
+                    case file:read_file(FileAbsName) of
+                        {ok, Contents} ->
+                            Decoded = jsx:decode(Contents),
+                            case erlastic_search:put_mapping(?INDEX_NAME, TypeName, Decoded) of
+                                {error, Error} -> lager:error("Error putting the mapping: ~p~n", [Error]);
+                                _ -> ok
+                            end;
+                        {error, Reason} ->
+                            lager:error("    Error: ~p~n", [Reason])
+                    end
+                  end, Filenames),
+    ok. 
 
 populate_indices() ->
     ResourceConfigs = [
@@ -127,7 +172,7 @@ populate_index(#index_config{
     AlmostReady = [ {IdFun(Resource), ResourceModule:record_to_json(Resource)} || Resource <- ResourceList],
     AsStrings = [ {ResourceId, jiffy:encode(ResourceProplist)} || {ResourceId, ResourceProplist} <- AlmostReady],
     lists:foreach(fun({ResourceId, ResourceJSON}) ->
-                          erlastic_search:index_doc_with_id(<<"ghostlight">>, TypeName, ResourceId, ResourceJSON)
+                          erlastic_search:index_doc_with_id(?INDEX_NAME, TypeName, ResourceId, ResourceJSON)
                   end, AsStrings).
 
 

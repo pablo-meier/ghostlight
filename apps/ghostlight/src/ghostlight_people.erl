@@ -228,7 +228,7 @@ record_to_json_shared(#person{
                           description=Description,
                           external_links=Links}) ->
     [
-     {<<"person_id">>, PersonId},
+     {<<"id">>, PersonId},
      {<<"name">>, PersonName},
      {<<"description">>, Description},
      {<<"social">>, ghostlight_utils:external_links_record_to_json(Links)}

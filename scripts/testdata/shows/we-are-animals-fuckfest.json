@@ -1,0 +1,108 @@
+{
+  "title" : "We Are Animals 4: F*ckin'",
+  "dates" : ["2015-06-25T19:00:00.000Z",
+             "2015-06-26T22:30:00.000Z",
+             "2015-06-27T16:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "The Brick Theater",
+        "description" : "The Brick Theater, Inc is a not-for-profit theater company dedicated to nurturing the work of emerging artists at its performance space in Williamsburg, Brooklyn—The Brick.\n\nThe Brick presents world premieres, monthly performance series, and seasonal festivals, expanding Williamsburg’s profile as a destination for cutting-edge art and entertainment.\n\nThe Brick continues to seek new artists and projects, to provide them with a creative home, and to serve as Williamsburg’s primary incubator of innovative theater arts. "
+      }
+    },
+    {
+      "person" : {
+        "name": "Doug Harris"
+      }
+    },
+    {
+      "person" : {
+        "name": "Zac Moon"
+      }
+    },
+    {
+      "person" : {
+        "name": "Catya McMullen"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "We Are Animals 4: F*ckin'",
+        "authors": [{"person": {"name": "Catya McMullen"}}],
+        "description": "WE ARE ANIMALS is a series of short solo pieces, comedy sketches and original music by Catya McMullen and Reel Big Fish's Scott Klopfenstein. We take on a theme and write for a specific team of actors/vocalists and are a precise blend of comedy, rap music, sweeping ballads and monologues that capture some bizarre, beautiful and complicated elements of the human experience. We're here to make you laugh, move you, make you think and create a kick ass good time.\n\nIt's about time we took on sex."
+      },
+      "directors": [{"name": "Kevin Laibson"}],
+      "description": "**\"WE ARE ANIMALS\"** MC Chihuahua Fancy and Scott Klopfenstein\n\n**Sketch One: \"Meat Locker Groupon\"** Alex Gould, Evan Maltby, Karsten Otto and Ryan Stinnett\n\n**My Vagina is a Lesbian** Kerry Ipema\n\n**\"The Kegel Shuffle\"** Chihuahua Fancy feat. Scott Klopfenstein\n\n**Fuck You, Slutty Millenials** Vanessa Felix\n\n**And Now I'm the Criminal?** William Barnet\n\n**\"The Penis Song\"** Scott Klopfenstein, Kerry Ipema and Vanessa Felix\n\n**Sketch Two: Shake Out the Lump in Your Penis** Alex Gould, Evan Maltby, Karsten Otto and Ryan Stinnett\n\n**Amber Waves of Tail Stuff** Ren Santiago\n\n**\"IMA DO ME\"** Chihuahua Fancy\n\n**VIDA** Nick Lawson\n\n**Now What?** Philip Martin\n\n**\"Something There\"** Scott Klopfenstein, Kerry Ipema, Vanessa Felix and Evan Maltby\n\n**I'm Gonna Find Me** Cristina Pitter\n\n**Sketch Three: The Class Show for the 35th Groupon for the Meat Locker Training Program** Alex Gould, Evan Maltby, Karsten Otto and Ryan Stinnett",
+      "onstage": [
+        {
+          "performer" : {"name": "Karsten Otto"}
+        },
+        {
+          "performer" : {"name": "Ryan Stinnett"}
+        },
+        {
+          "performer" : {"name": "Evan Maltby"}
+        },
+        {
+          "performer" : {"name": "Kerry Ipema"}
+        },
+        {
+          "performer" : {"name": "Chihuahua Fancy"}
+        },
+        {
+          "performer" : {"name": "Alex J. Gould"}
+        },
+        {
+          "performer" : {"name": "Cristina Pitter"}
+        },
+        {
+          "performer" : {"name": "Ren Santiago"}
+        },
+        {
+          "performer" : {"name": "Nick Lawson"}
+        },
+        {
+          "performer" : {"name": "Scott Klopfenstein"}
+        },
+        {
+          "performer" : {"name": "Vanessa Felix"}
+        },
+        {
+          "performer" : {"name": "William Barnet"}
+        },
+        {
+          "performer" : {"name": "Philip Martin"}
+        }
+     ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Scott Klopfenstein" }},
+          "job" : "Original Music"
+        },
+        {
+          "contributor" : {"person": {"name" : "Michael Raine" }},
+          "job" : "Choreographer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jenna Alexy" }},
+          "job" : "Props"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rebecca Heisler" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Dylan Grunn" }},
+          "job" : "Production Assistant"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jason Linzer" }},
+          "job" : "Graphics/Poster"
+        }
+      ]
+    }
+  ]
+}

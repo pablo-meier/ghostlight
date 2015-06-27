@@ -1,11 +1,11 @@
 -module(ghostlight_show).
--behavior(ghostlight_resource_behavior).
 
 -export([get_html/1,
          get_listings_html/0,
          edit_html/1,
 
          get_listings_json/0,
+         get_prefetch/0,
          get_json/1,
 
          get_id/1,
@@ -36,6 +36,10 @@ edit_html(ShowId) ->
 get_listings_json() ->
     ShowList = ghostlight_db:get_show_listings(),
     [{<<"shows">>, [ record_to_json(Show) || Show <- ShowList ]}].
+
+get_prefetch() ->
+    ShowList = ghostlight_db:get_show_listings(),
+    [ {[{<<"id">>, Id},{<<"title">>, Title}]} || #show{id=Id, title=Title} <- ShowList ].
 
 get_json(ShowId) ->
     ShowRecord = ghostlight_db:get_show(ShowId),
@@ -129,6 +133,7 @@ record_to_json(#show{
     ghostlight_utils:json_with_valid_values([
         {<<"id">>, ShowId},
         {<<"title">>, ShowTitle},
+        {<<"producers">>, [ ghostlight_utils:person_or_org_record_to_json(Producer) || Producer <- Producers ]},
         {<<"special_thanks">>, SpecialThanks},
         {<<"performances">>, [ performance_record_to_json(Performance) || Performance <- Performances ]},
         {<<"dates">>, [ ghostlight_utils:erl_date_to_iso8601(Date) || Date <- Dates ]}

@@ -141,6 +141,9 @@ resource_to_json(Req, State) ->
 make_appropriate_json(undefined, Module) ->
     ToEncode = Module:get_listings_json(),
     jiffy:encode({ToEncode});
+make_appropriate_json(<<"prefetch">>, Module) ->
+    ToEncode = Module:get_prefetch(),
+    jiffy:encode(ToEncode);
 make_appropriate_json(Id, Module) ->
     ToEncode = Module:get_json(Id),
     jiffy:encode(ToEncode).

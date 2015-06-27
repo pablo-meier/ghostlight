@@ -1,11 +1,11 @@
 -module(ghostlight_people).
--behavior(ghostlight_resource_behavior).
 
 -export([get_html/1,
          get_listings_html/0,
          edit_html/1,
         
          get_listings_json/0,
+         get_prefetch/0,
          get_json/1,
         
          get_id/1,
@@ -35,10 +35,13 @@ edit_html(PersonId) ->
      {editmode, AsJson}].
 
 
-
 get_listings_json() ->
     PersonList = ghostlight_db:get_person_listings(),
     [{<<"people">>, [ record_to_json(Person) || Person <- PersonList ]}].
+
+get_prefetch() ->
+    PersonList = ghostlight_db:get_person_listings(),
+    [ {[{<<"id">>, Id},{<<"name">>, Name}]} || #person{id=Id, name=Name} <- PersonList ].
 
 get_json(PersonId) ->
     PersonRecord = ghostlight_db:get_person(PersonId),

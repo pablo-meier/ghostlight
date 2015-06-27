@@ -1,11 +1,11 @@
 -module(ghostlight_work).
--behavior(ghostlight_resource_behavior).
 
 -export([get_html/1,
          get_listings_html/0,
          edit_html/1,
 
          get_listings_json/0,
+         get_prefetch/0,
          get_json/1,
 
          get_id/1,
@@ -35,10 +35,13 @@ edit_html(WorkId) ->
     [{title, WorkRecord#work_return.work#work.title},
      {editmode, AsJson}].
 
-
 get_listings_json() ->
     Listings = ghostlight_db:get_work_listings(),
     [{<<"shows">>, [ record_to_json(Work) || Work <- Listings ]}].
+
+get_prefetch() ->
+    WorkList = ghostlight_db:get_work_listings(),
+    [ {[{<<"id">>, Id},{<<"title">>, Title}]} || #work{id=Id, title=Title} <- WorkList ].
 
 get_json(WorkId) ->
     WorkRecord = ghostlight_db:get_work(WorkId, markdown),

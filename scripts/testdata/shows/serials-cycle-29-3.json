@@ -1,0 +1,94 @@
+{
+  "title" : "Serials @ The Flea, Cycle 29, Part 3",
+  "special_thanks" : "",
+  "dates" : ["2015-06-18T23:30:00.000Z",
+             "2015-06-19T23:30:00.000Z",
+             "2015-06-20T23:30:00.000Z"],
+  "producers": [
+    { "person" : { "name": "Crystal Arnette" } },
+    { "person" : { "name": "Cleo Gray" } },
+    {
+      "org" : {
+        "name": "The Flea Theater",
+        "tagline" : "raising a joyful hell in a small space",
+        "description" : "# Why & What\n\nFounded in 1996 by three of New York’s most acclaimed downtown theater artists—director Jim Simpson, designer Kyle Chepulis and playwright Mac Wellman—the award-winning Flea Theater was originally formed out of the purely artistic impulse to create \"a joyful hell in a small space\". Brash, energetic and dedicated, we quickly became a downtown beacon for creative artists of every discipline, and for audiences seeking bold and inventive work.\n\nSoon a more formal mission was born: _to present distinctive work that raises the standards of Off-Off-Broadway for artists & audiences alike._ Comfortable seats and decent dressing rooms became as much a part of our goal as our commitment to supporting talented artists with big ideas.\n\nNon-institutional and resolutely noncommercial, The Flea embodies the spirit of adventure and experiment that has defined Off-Off-Broadway since its inception. We are one of the only professional theaters in the city that maintains an open-door policy for artists—a policy that we believe is crucial to keeping New York theater vital. Part playground, part laboratory, part training ground, The Flea has been home to established artists taking new risks, emerging artists developing their ideas, and mid-career artists building sustained audiences.\n\nEach year The Flea presents and produces dozens of new works in an environment that is professional, welcoming, and intimate. As a testament to our success, Flea artists have been honored with two OBIE Awards, an Otto Award and, in May 2004, The Flea was given a Drama Desk Award for Distinguished Achievement commending our dedication to adventurous theater. With the continued participation of our founders and an ever-growing community of diverse and creative talents, The Flea strives to represent the wide range of what is possible Off-Off-Broadway."
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "-Archy (Episode 2: Lever? I Hardly Know Her!)",
+        "authors": [{"person": {"name": "Sam Corbin"}}]
+      },
+      "directors": [{"name": "Jake Beckhard"}],
+      "onstage": [
+        { "performer" : {"name": "Miles Butler"} },
+        { "performer" : {"name": "Edgar Eguia"} },
+        { "performer" : {"name": "Lillith Fallon"} },
+        { "performer" : {"name": "Brandon Johnson"} },
+        { "performer" : {"name": "Karsten Otto"} },
+        { "performer" : {"name": "Peter Sansbury"} },
+        { "performer" : {"name": "Rachel Yong"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Your Life Choices, or, The Day The World Is Supposed To End, Maybe (Episode 1)",
+        "authors": [{"person": {"name": "Maya MacDonald"}}]
+      },
+      "directors": [{"name": "Suzanne Karpinski"}],
+      "onstage": [
+        { "performer" : {"name": "Crystal Arnette"} },
+        { "performer" : {"name": "Miles Butler"} },
+        { "performer" : {"name": "AJ Ditty"} },
+        { "performer" : {"name": "John Paul Harkins"} },
+        { "performer" : {"name": "Jeremy Rafal"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Intelligent People Do Dumb Shit Daily (Episode 3)",
+        "authors": [{"person": {"name": "Paul Cameron Hardy"}}]
+      },
+      "directors": [{"name": "Josh Boerman"}],
+      "onstage": [
+        { "performer" : {"name": "Cleo Gray"} },
+        { "performer" : {"name": "Alex Haynes"} },
+        { "performer" : {"name": "Maia Henkin"} },
+        { "performer" : {"name": "Artem Kreimer"} },
+        { "performer" : {"name": "Evan William Smith"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Orc (Episode 1)",
+        "authors": [{"person": {"name": "Frank Winters"}}]
+      },
+      "directors": [{"name": "Frank Winters"}],
+      "onstage": [
+        { "performer" : {"name": "Sydney Blaxill"} },
+        { "performer" : {"name": "Alex J. Gould"} },
+        { "performer" : {"name": "Kerry Ipema"} },
+        { "performer" : {"name": "Edan Jacob Levy"} },
+        { "performer" : {"name": "Cristina Pitter"} },
+        { "performer" : {"name": "Neil Redfield"} },
+        { "performer" : {"name": "Tessa Slovis"} }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Y2K Time Bomb (Episode 5: Can You Feel The Love Tonight)",
+        "authors": [{"person": {"name": "Jenny Morris"}}]
+      },
+      "directors": [{"name": "Katie Lindsay"}],
+      "onstage": [
+        { "performer" : {"name": "Jack Dellatorri"} },
+        { "performer" : {"name": "Erik Olsen"} },
+        { "performer" : {"name": "Mariette Strauss"} },
+        { "performer" : {"name": "Catherine Woodard"} }
+      ]
+    }
+  ]
+}

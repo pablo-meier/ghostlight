@@ -1,3 +1,4 @@
+/* GENERAL */
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -12,6 +13,13 @@ h1, h2, h3, h4, h5, .title {
     margin-top: 30px;
     height: auto;
 }
+
+/* Search bar */
+
+.suggestion {
+    background: white;
+}
+
 
 /* FORMS */
 

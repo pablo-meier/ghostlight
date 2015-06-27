@@ -1,0 +1,62 @@
+{
+  "title" : "Krapp's Last Sex Tape/Fish Out Of Water",
+  "special_thanks" : "",
+  "dates" : ["2015-06-13T15:00:00.000Z",
+             "2015-06-14T18:00:00.000Z",
+             "2015-06-26T19:00:00.000Z",
+             "2015-07-01T21:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "The Brick Theater",
+        "description" : "The Brick Theater, Inc is a not-for-profit theater company dedicated to nurturing the work of emerging artists at its performance space in Williamsburg, Brooklyn—The Brick.\n\nThe Brick presents world premieres, monthly performance series, and seasonal festivals, expanding Williamsburg’s profile as a destination for cutting-edge art and entertainment.\n\nThe Brick continues to seek new artists and projects, to provide them with a creative home, and to serve as Williamsburg’s primary incubator of innovative theater arts. "
+      }
+    },
+    {
+      "org" : {
+        "name": "blackbird delight"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Krapp's Last Sex Tape",
+        "authors": [{"person": {"name": "Shannon McPhee"}}],
+        "description": "On the night of her bachelorette party, a woman goes through her sex tapes in her hotel bedroom. With many of the tapes made during her engagement she tries to navigate the fine line between want and need, funny and awkward, new beginnings or happy endings. An exploration in documentation, sex, need, and lusty cupcake eating, KRAPP'S LAST SEX TAPE draws from found and created footage to discern what we are all searching for."
+      },
+      "directors": [{"name": "Darren Edward Johnston"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Shannon McPhee"},
+          "role" : "Sam Krapp"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Ben Bauer" }},
+          "job" : "Lighting Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jordan Harrison" }},
+          "job" : "Video Design"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Fish Out Of Water",
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}],
+        "description": "Through a series of moments, Charly explores how her understanding of her sexual self was formed. The show is about being tired of feeling. It is about those words, those people, those situations that linger inside long after their moments have passed. It is about looking for pleasure and finding pain. It is about Charly learning to put words to her desire and, in turn, learning to define herself."
+      },
+      "directors": [{"name": "Pablo Meier"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Charly Evon Simpson"},
+          "role" : "Herself"
+        }
+      ]
+    }
+  ]
+}

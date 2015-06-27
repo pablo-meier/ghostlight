@@ -2,13 +2,21 @@
 <html>
     <head>
         <title>ghostlight!</title>
+        <meta charset="utf-8" />
         <link href='http://fonts.googleapis.com/css?family=Ovo' rel='stylesheet' type='text/css'>
         <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 
+        <script src="/static/js/vendor/jquery.js"></script>
         <script src="/static/js/vendor/modernizr.js"></script>
+        <script src="/static/js/vendor/handlebars-v3.0.3.js"></script>
+        <script src="/static/js/vendor/typeahead.bundle.js"></script>
+        <script src="/static/js/vendor/foundation.min.js"></script>
+
         <script src="/static/js/ghostlight.js"></script>
+
         <link href="/static/css/vendor/foundation.css" rel="stylesheet" />
         <link href="/static/css/ghostlight.css" media="all" rel="stylesheet" />
+
     </head>
     <body>
         <nav class="top-bar" data-topbar>
@@ -47,6 +55,11 @@
             <div id="content" class="medium-12 columns">
               <h1>Ghostlight</h1>
               <h3>Performances, linked together!</h3>
+
+              <div class="searchdiv">
+                  <input class="typeahead" type="text" style="width: 800px" placeholder="Find something you care about…">
+              </div>
+
             </div>  <!-- content -->
         </div> <!-- row -->
 
@@ -61,8 +74,6 @@
         </div> <!-- footer -->
 
     <!-- -->
-    <script src="/static/js/vendor/jquery.js"></script>
-    <script src="/static/js/vendor/foundation.min.js"></script>
     <script>
       $(document).foundation();
     </script>

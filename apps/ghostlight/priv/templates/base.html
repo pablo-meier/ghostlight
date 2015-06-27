@@ -7,7 +7,12 @@
         <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 
         <script src="/static/js/vendor/modernizr.js"></script>
+        <script src="/static/js/vendor/jquery.js"></script>
+        <script src="/static/js/vendor/handlebars-v3.0.3.js"></script>
+        <script src="/static/js/vendor/typeahead.bundle.js"></script>
+        <script src="/static/js/vendor/foundation.min.js"></script>
         <script src="/static/js/ghostlight.js"></script>
+
         <link href="/static/css/vendor/foundation.css" rel="stylesheet" />
         <link href="/static/css/ghostlight.css" media="all" rel="stylesheet" />
         {% block head %}
@@ -33,8 +38,8 @@
 
                     <li class="has-form">
                       <div class="row collapse">
-                        <div class="large-8 small-9 columns">
-                          <input type="text" placeholder="Search...">
+                        <div class="large-8 small-9 columns searchdiv">
+                          <input class="typeahead" type="text" placeholder="Search...">
                         </div>
                         <div class="large-4 small-3 columns">
                           <a href="#" class="button expand">Search</a>
@@ -88,8 +93,7 @@
         </div> <!-- footer -->
 
 
-    <script src="/static/js/vendor/jquery.js"></script>
-    <script src="/static/js/vendor/foundation.min.js"></script>
+   <script src="/static/js/vendor/foundation.min.js"></script>
     <script>
       $(document).foundation();
     </script>

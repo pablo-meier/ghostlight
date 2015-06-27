@@ -1,11 +1,11 @@
 -module(ghostlight_org).
--behavior(ghostlight_resource_behavior).
 
 -export([get_html/1,
          get_listings_html/0,
          edit_html/1,
 
          get_listings_json/0,
+         get_prefetch/0,
          get_json/1,
 
          get_id/1,
@@ -34,10 +34,13 @@ edit_html(OrgId) ->
     [{name, OrgRecord#org_return.org#organization.name},
      {editmode, AsJson}].
 
-
 get_listings_json() ->
     OrgList = ghostlight_db:get_org_listings(),
     [{<<"organizations">>, [ record_to_json(Org) || Org <- OrgList ]}].
+
+get_prefetch() ->
+    OrgList = ghostlight_db:get_org_listings(),
+    [ {[{<<"id">>, Id},{<<"name">>, Name}]} || #organization{id=Id, name=Name} <- OrgList ].
 
 get_json(OrgId) ->
     OrgRecord = ghostlight_db:get_org(OrgId, markdown),

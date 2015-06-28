@@ -14,7 +14,8 @@
     {
       "work" : {
         "title" : "We Can All Agree To Pretend This Never Happened",
-        "authors": [{"person": {"name": "Emma Goidel"}}]
+        "authors": [{"person": {"name": "Emma Goidel"}}],
+        "description": "When two gung-ho researchers decide to fake results in their Siberian lab, a series of misunderstandings take over the lives of the whole research team."
       },
       "directors": [{"name": "Abigail Zealey Bess"}],
       "onstage": [
@@ -109,7 +110,8 @@
     {
       "work" : {
         "title" : "John, Who's Here From Cambridge",
-        "authors": [{"person": {"name": "Martyna Majok"}}]
+        "authors": [{"person": {"name": "Martyna Majok"}}],
+        "description": "Overworked, under-qualified, and broke, Jess takes on yet another job to make ends meet as a personal caregiver for a graduate student named John. John has cerebral palsy. John is beautiful. And John is here from Cambridge."
       },
       "directors": [{"name": "Nick Leavens"}],
       "onstage": [
@@ -200,7 +202,8 @@
     {
       "work" : {
         "title" : "The Hour Of All Things",
-        "authors": [{"person": {"name": "Caridad Svich"}}]
+        "authors": [{"person": {"name": "Caridad Svich"}}],
+        "description": "A play in portraits that confronts the soul of America. A story of love, country and bad shopping."
       },
       "directors": [{"name": "William Carden"}],
       "onstage": [
@@ -283,7 +286,8 @@
     {
       "work" : {
         "title" : "Cora And Dave Are Getting Older",
-        "authors": [{"person": {"name": "Julia Cho"}}]
+        "authors": [{"person": {"name": "Julia Cho"}}],
+        "description": "A not-so-young couple confronts the biggest threat to their marriage: their happily married best friends."
       },
       "directors": [{"name": "Marcia Jean Kurtz"}],
       "onstage": [

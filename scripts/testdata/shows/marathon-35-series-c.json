@@ -1,7 +1,7 @@
 {
-  "title" : "35th Marathon of One-Act Plays, Series A",
+  "title" : "35th Marathon of One-Act Plays, Series C",
   "special_thanks" : "The Professional Performing Arts School",
-  "dates" : ["2015-05-13T19:00:00.000Z"],
+  "dates" : ["2015-06-13T18:00:00.000Z"],
   "producers": [
     {
       "org" : {
@@ -13,53 +13,37 @@
   "performances": [
     {
       "work" : {
-        "title" : "I Battled Lenny Ross",
-        "authors": [{"person": {"name": "Anna Ziegler"}}],
-        "description": "A new musical about the toughest interview of Mike Wallace's career."
+        "title" : "Devil Music",
+        "authors": [{"person": {"name": "Angela Banks"}}],
+        "description": "Devil Music will close its doors in a matter days. Geraldine and J.J., longtime employees of the store, discuss body modification, Billy Ocean, and their relationship until they have to call it quits."
       },
-      "directors": [{"name": "Daniella Topol"}],
+      "directors": [{"name": "Mogan Gould"}],
       "onstage": [
         {
-          "performer" : {"name": "Jake Kitchin"},
-          "role" : "Lenny"
+          "performer" : {"name": "Daniel Morgan Shelley"},
+          "role" : "JJ"
         },
         {
-          "performer" : {"name": "Aaron Serotsky"},
-          "role" : "Mike Wallace"
-        },
-        {
-          "performer" : {"name": "Olli Haaskivin"},
-          "role" : "Man"
-        },
-        {
-          "performer" : {"name": "Julie Fitzpatrick"},
-          "role" : "Woman"
+          "performer" : {"name": "Crystal Lucas-Perry"},
+          "role" : "Geraldine"
         }
       ],
       "offstage": [
         {
-          "contributor": {"person": {"name": "Assaf Gleizner"}},
-          "job": "Musical Director"
-        },
-        {
-          "contributor": {"person": {"name": "Matt Schatz"}},
-          "job": "Music & Lyrics"
+          "contributor" : {"person": {"name" : "Sarah Haber" }},
+          "job" : "Rehearsal SM"
         },
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
           "job" : "Scenic Designer"
         },
         {
-          "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "contributor" : {"person": {"name" : "Suzanne Chesney" }},
+          "job" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
-        },
-        {
-          "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "job" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
@@ -70,15 +54,15 @@
           "job" : "Props Master"
         },
         {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Plot Designer"
+        },
+        {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
           "job" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
-        },
-        {
-          "contributor" : {"person": {"name" : "Sara Stevens" }},
           "job" : "Assistant Stage Manager"
         },
         {
@@ -114,44 +98,44 @@
           "job" : "Run Crew"
         },
         {
-          "contributor" : {"person": {"name" : "Devaughn Sheperd" }},
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
           "job" : "Run Crew"
         }
       ]
     },
     {
       "work" : {
-        "title" : "52nd to Bowery to Cobble Hill, In Brooklyn",
-        "authors": [{"person": {"name": "Chiara Atik"}}],
-        "description": "Trapped in a cab on a Saturday night, two frenemies are forced to come to terms with their feelings."
+        "title" : "Good Afternoon",
+        "authors": [{"person": {"name": "Daniel Reitz"}}],
+        "description": "An ex-Internet reputation specialist who's lost his own reputation pays a visit to new neighbor.  Over tea, cookies and bourbon, they discover they share a similarly sordid past."
       },
-      "directors": [{"name": "Adrienne Campbell-Holt"}],
+      "directors": [{"name": "Jules Ochoa"}],
       "onstage": [
         {
-          "performer" : {"name": "Megan Tusing"},
-          "role" : "Halle"
+          "performer" : {"name": "Haskell King"},
+          "role" : "Glen"
         },
         {
-          "performer" : {"name": "Molly Carden"},
-          "role" : "Alison"
+          "performer" : {"name": "Kersti Bryan"},
+          "role" : "Lorrie"
         }
       ],
       "offstage": [
+        {
+          "contributor" : {"person": {"name" : "Emma Power" }},
+          "job" : "Rehearsal SM"
+        },
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
           "job" : "Scenic Designer"
         },
         {
-          "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "contributor" : {"person": {"name" : "Suzanne Chesney" }},
+          "job" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
-        },
-        {
-          "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "job" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
@@ -162,15 +146,15 @@
           "job" : "Props Master"
         },
         {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Plot Designer"
+        },
+        {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
           "job" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
-        },
-        {
-          "contributor" : {"person": {"name" : "Sara Stevens" }},
           "job" : "Assistant Stage Manager"
         },
         {
@@ -206,48 +190,44 @@
           "job" : "Run Crew"
         },
         {
-          "contributor" : {"person": {"name" : "Devaughn Sheperd" }},
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
           "job" : "Run Crew"
         }
       ]
     },
     {
       "work" : {
-        "title" : "Silver Men",
-        "authors": [{"person": {"name": "Amy Fox"}}],
-        "description": "Who painted the barn pink and why are men walking around with nickels in their boots? A family grapples with memories and mystery in the aftermath of a father's death."
+        "title" : "The Science of Stars and Fathers and Daughters",
+        "authors": [{"person": {"name": "Darcy Fowler"}}],
+        "description": "Astronomy, disappointment, and Neil Diamond in a rowboat on a summer night are part of a father/daughter tradition spanning decades."
       },
-      "directors": [{"name": "Matt Dickson"}],
+      "directors": [{"name": "Linsay Firman"}],
       "onstage": [
         {
-          "performer" : {"name": "Catherine Curtin"},
-          "role" : "Marjorie"
+          "performer" : {"name": "Michael Cullen"},
+          "role" : "Tom"
         },
         {
-          "performer" : {"name": "Tommy Heleringer"},
-          "role" : "Matthew"
-        },
-        {
-          "performer" : {"name": "David Margulies"},
-          "role" : "Wilson"
+          "performer" : {"name": "Emma Galvin"},
+          "role" : "Madelyn"
         }
       ],
       "offstage": [
+        {
+          "contributor" : {"person": {"name" : "Carsen Joenk" }},
+          "job" : "Rehearsal SM"
+        },
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
           "job" : "Scenic Designer"
         },
         {
-          "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "contributor" : {"person": {"name" : "Suzanne Chesney" }},
+          "job" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
-        },
-        {
-          "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "job" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
@@ -258,15 +238,15 @@
           "job" : "Props Master"
         },
         {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Plot Designer"
+        },
+        {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
           "job" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
-        },
-        {
-          "contributor" : {"person": {"name" : "Sara Stevens" }},
           "job" : "Assistant Stage Manager"
         },
         {
@@ -302,48 +282,48 @@
           "job" : "Run Crew"
         },
         {
-          "contributor" : {"person": {"name" : "Devaughn Sheperd" }},
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
           "job" : "Run Crew"
         }
       ]
     },
     {
       "work" : {
-        "title" : "The Big Man",
-        "authors": [{"person": {"name": "Will Snider"}}],
-        "description": "An American aid worker negotiates with Kenyan police for the release of his truck, but gets more than he expected in this menacing thriller about political power."
+        "title" : "The Talk",
+        "authors": [{"person": {"name": "France-Luce Benson"}}],
+        "description": "When a recently widowed woman wakes her adult daughter in the middle of the night to ask a very personal question, what ensues is a Caribbean-American take on an after school special about exploring one’s sexuality gone horribly wrong."
       },
-      "directors": [{"name": "Matt Penn"}],
+      "directors": [{"name": "Elizabeth Van Dyke"}],
       "onstage": [
         {
-          "performer" : {"name": "Gianmarco Soresi"},
-          "role" : "Gabe"
+          "performer" : {"name": "Lizan Mitchell"},
+          "role" : "Manu"
         },
         {
-          "performer" : {"name": "Brian D. Coats"},
-          "role" : "Okech"
-        },
-        {
-          "performer" : {"name": "Ray Anthony Thomas"},
-          "role" : "Okeyo"
+          "performer" : {"name": "Sharina Martin"},
+          "role" : "Claire"
         }
       ],
       "offstage": [
+        {
+          "contributor" : {"person": {"name" : "Mary Greene" }},
+          "job" : "Rehearsal SM"
+        },
+        {
+          "contributor" : {"person": {"name" : "Danielle Sacks" }},
+          "job" : "Rehearsal SM"
+        },
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
           "job" : "Scenic Designer"
         },
         {
-          "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "contributor" : {"person": {"name" : "Suzanne Chesney" }},
+          "job" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
-        },
-        {
-          "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "job" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
@@ -354,15 +334,15 @@
           "job" : "Props Master"
         },
         {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Plot Designer"
+        },
+        {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
           "job" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
-        },
-        {
-          "contributor" : {"person": {"name" : "Sara Stevens" }},
           "job" : "Assistant Stage Manager"
         },
         {
@@ -398,44 +378,64 @@
           "job" : "Run Crew"
         },
         {
-          "contributor" : {"person": {"name" : "Devaughn Sheperd" }},
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
           "job" : "Run Crew"
         }
       ]
     },
     {
       "work" : {
-        "title" : "Until She Claws Her Way Out",
-        "authors": [{"person": {"name": "Mariah MacCarthy"}}],
-        "description": "In Elissa's head, she and Max will always be dancing. And no matter what anyone said, she broke her own rib."
+        "title" : "Double Suicide at Ueno Park!",
+        "authors": [{"person": {"name": "Leah Nanako Winkler"}}],
+        "description": "Two courtesans in 18th century Japan are set free from the red-light district once a year to see the cherry blossoms at Ueno Park. As the seasons pass, the best friends make a dangerous pact."
       },
-      "directors": [{"name": "Sidney Erik Wright"}],
+      "directors": [{"name": "John Giampietro"}],
       "onstage": [
         {
-          "performer" : {"name": "Naomi Kakuk"},
-          "role" : "Elissa"
+          "performer" : {"name": "Sasha Diamond"},
+          "role" : "Onoe"
         },
         {
-          "performer" : {"name": "Kit Treece"},
-          "role" : "Max"
+          "performer" : {"name": "Jo Mei"},
+          "role" : "Akemi"
+        },
+        {
+          "performer" : {"name": "Yurika Ohno"},
+          "role" : "Cherry Tree"
+        },
+        {
+          "performer" : {"name": "Kana Hatakeyama"},
+          "role" : "Cherry Tree"
+        },
+        {
+          "performer" : {"name": "Shiori Ichikawa"},
+          "role" : "Cherry Tree"
+        },
+        {
+          "performer" : {"name": "Don Castro"},
+          "role" : "Samurai"
         }
       ],
       "offstage": [
+        {
+          "contributor" : {"person": {"name" : "Mikhaela Mahoney" }},
+          "job" : "Assistant Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alexis Distler" }},
+          "job" : "Designer, Rice-Paper Houses"
+        },
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
           "job" : "Scenic Designer"
         },
         {
-          "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "contributor" : {"person": {"name" : "Suzanne Chesney" }},
+          "job" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
-        },
-        {
-          "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "job" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
@@ -446,15 +446,15 @@
           "job" : "Props Master"
         },
         {
+          "contributor" : {"person": {"name" : "Greg MacPherson" }},
+          "job" : "Lighting Plot Designer"
+        },
+        {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
           "job" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
-        },
-        {
-          "contributor" : {"person": {"name" : "Sara Stevens" }},
           "job" : "Assistant Stage Manager"
         },
         {
@@ -490,7 +490,7 @@
           "job" : "Run Crew"
         },
         {
-          "contributor" : {"person": {"name" : "Devaughn Sheperd" }},
+          "contributor" : {"person": {"name" : "Nicole Richards" }},
           "job" : "Run Crew"
         }
       ]

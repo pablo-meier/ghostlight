@@ -1,0 +1,296 @@
+{
+  "title" : "Asking for Trouble, 2014, Series C",
+  "special_thanks" : "The Harold & Mimi Steinburg Trust, The Jerome Foundation, and Tournesol Project for their support of Youngblood and new play productions at EST.",
+  "dates" : ["2014-11-05T19:00:00.000Z",
+             "2014-11-07T20:30:00.000Z",
+             "2014-11-08T18:00:00.000Z" ],
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "The Moench Brunch",
+        "authors": [{"person": {"name": "Jahna Ferron-Smith"}}]
+      },
+      "directors": [{"name": "RJ Tolan"}],
+      "onstage": [
+        { "performer" : {"name": "David Thomas Brown"} },
+        { "performer" : {"name": "Eli Gelb"} },
+        { "performer" : {"name": "Diana Oh"} }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Things I Do When You're Away",
+        "authors": [{"person": {"name": "Lucy Gillespie"}}]
+      },
+      "directors": [{"name": "Leta Tremblay"}],
+      "onstage": [
+        { "performer" : {"name": "Megan Hill"} },
+        { "performer" : {"name": "Diana Ruppe"} }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Sugar Fountain",
+        "authors": [{"person": {"name": "Martyna Majok"}}]
+      },
+      "directors": [{"name": "Colleen Sullivan"}],
+      "onstage": [
+        { "performer" : {"name": "Eddie Boroevich"} },
+        { "performer" : {"name": "Stacey Raymond"} }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Sit or Lie Down",
+        "authors": [{"person": {"name": "Willie Orbison"}}]
+      },
+      "directors": [{"name": "Mia Walker"}],
+      "onstage": [
+        { "performer" : {"name": "Helen Coxe"} },
+        { "performer" : {"name": "Briana Pozner"} },
+        { "performer" : {"name": "Patricia Randell"} },
+        { "performer" : {"name": "Jonathan Randell Silver"} },
+        { "performer" : {"name": "Amy Staats"} }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "I Am Literally On A Boat Right Now",
+        "authors": [{"person": {"name": "Michael Walek"}}]
+      },
+      "directors": [{"name": "Mikhaela Mahony"}],
+      "onstage": [
+        { "performer" : {"name": "Kelly Anne Burns"} },
+        { "performer" : {"name": "Hanna Cheek"} },
+        { "performer" : {"name": "Dylan Dawson"} },
+        { "performer" : {"name": "Dawn Evans"} },
+        { "performer" : {"name": "Kelli Lynn Harrison"} }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Go Get It",
+        "authors": [{"person": {"name": "Emily Chadick Weiss"}}]
+      },
+      "directors": [{"name": "Shelley Butler"}],
+      "onstage": [
+        { "performer" : {"name": "Kana Hatakeyama"} },
+        { "performer" : {"name": "Shane Kearns"} },
+        { "performer" : {"name": "Risa Sarachan"} },
+        { "performer" : {"name": "Stephen Stout"} }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    } 
+  ]
+}

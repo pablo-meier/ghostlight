@@ -1,0 +1,359 @@
+{
+  "title" : "Asking for Trouble, 2014, Series D",
+  "special_thanks" : "The Harold & Mimi Steinburg Trust, The Jerome Foundation, and Tournesol Project for their support of Youngblood and new play productions at EST.",
+  "dates" : ["2014-11-05T20:30:00.000Z",
+             "2014-11-07T19:00:00.000Z",
+             "2014-11-08T15:00:00.000Z" ],
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Self Esteem",
+        "authors": [{"person": {"name": "Will Snider"}}]
+      },
+      "directors": [{"name": "Jacob Sexton"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Eloise Eonnet"},
+          "role" : "Sarah"
+        },
+        {
+          "performer" : {"name": "Carter Redwood"},
+          "role" : "Kennedy"
+        },
+        {
+          "performer" : {"name": "Keola Simpson"},
+          "role" : "Tim"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Feel Free To Butter My Toast",
+        "authors": [{"person": {"name": "Paul Cameron Hardy"}}]
+      },
+      "directors": [{"name": "Stephanie Ward"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Brian D. Coats"},
+          "role" : "Biletnikof"
+        },
+        {
+          "performer" : {"name": "Gregg Mozgala"},
+          "role" : "Roberts"
+        },
+        {
+          "performer" : {"name": "Debargo Sanyal"},
+          "role" : "Ghosh"
+        },
+        {
+          "performer" : {"name": "Chris Wight"},
+          "role" : "Hillman"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "I Was Born With a Hole In My Throat",
+        "authors": [{"person": {"name": "Alex Borinsky"}}]
+      },
+      "directors": [{"name": "Jamie Richards"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Teresa Stephenson"},
+          "role" : "Host"
+        },
+        {
+          "performer" : {"name": "Madeleine Bundy"},
+          "role" : "1st Caller"
+        },
+        {
+          "performer" : {"name": "Allison Buck"},
+          "role" : "2nd Caller"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Sealed With a Miss",
+        "authors": [{"person": {"name": "Charly Evon Simpson"}}]
+      },
+      "directors": [{"name": "Mark Armstrong"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Michael Rosete"},
+          "role" : "Mike"
+        },
+        {
+          "performer" : {"name": "Samantha Sembler"},
+          "role" : "Sue"
+        },
+        {
+          "performer" : {"name": "Megan Tusing"},
+          "role" : "Gabby"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "By the Rainfall",
+        "authors": [{"person": {"name": "Brendan Hill"}}]
+      },
+      "directors": [{"name": "Matt Dickson"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Graham Stuart Allen"},
+          "role" : "Efthro"
+        },
+        {
+          "performer" : {"name": "Frank Harts"},
+          "role" : "Jepther"
+        },
+        {
+          "performer" : {"name": "Jason Liebman"},
+          "role" : "Pernius"
+        },
+        {
+          "performer" : {"name": "Carolyn Mignini"},
+          "role" : "Mother"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Wrinkle",
+        "authors": [{"person": {"name": "Leah Nanako Winkler"}}]
+      },
+      "directors": [{"name": "Danya Taymor"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Steven Boyer"},
+          "role" : "Zack"
+        },
+        {
+          "performer" : {"name": "Curran Connor"},
+          "role" : "Bob"
+        },
+        {
+          "performer" : {"name": "Jesse Geguzis"},
+          "role" : "Jimmy"
+        },
+        {
+          "performer" : {"name": "Artem Kreimer"},
+          "role" : "Sebastian"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    } 
+  ]
+}

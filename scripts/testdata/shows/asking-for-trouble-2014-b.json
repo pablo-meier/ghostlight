@@ -1,0 +1,363 @@
+{
+  "title" : "Asking for Trouble, 2014, Series B",
+  "special_thanks" : "The Harold & Mimi Steinburg Trust, The Jerome Foundation, and Tournesol Project for their support of Youngblood and new play productions at EST.",
+  "dates" : ["2014-11-04T20:30:00.000Z",
+             "2014-11-06T19:00:00.000Z",
+             "2014-11-08T20:00:00.000Z" ],
+  "producers": [
+    {
+      "org" : {
+        "name": "EST Youngblood"
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Bridesmaids Support Group",
+        "authors": [{"person": {"name": "Chiara Atik"}}]
+      },
+      "directors": [{"name": "Colette Robert"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Danny Dale Bess"},
+          "role" : "Bruce"
+        },
+        {
+          "performer" : {"name": "Sasha Diamond"},
+          "role" : "Megan"
+        },
+        {
+          "performer" : {"name": "Akyiaa Wilson"},
+          "role" : "Astrid"
+        },
+        {
+          "performer" : {"name": "Alex Herrald"},
+          "role" : "Tad"
+        },
+        {
+          "performer" : {"name": "David Gelles"},
+          "role" : "Alec"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Eugenics for Fun",
+        "authors": [{"person": {"name": "Anna Moench"}}]
+      },
+      "directors": [{"name": "Michael Leibenluft"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Scott Sowers"},
+          "role" : "Greg"
+        },
+        {
+          "performer" : {"name": "Thomas Lyons"},
+          "role" : "Principal Bosman"
+        },
+        {
+          "performer" : {"name": "Maren Bush"},
+          "role" : "Officer Nina"
+        },
+        {
+          "performer" : {"name": "Emma Galvin"},
+          "role" : "Eugenia"
+        },
+        {
+          "performer" : {"name": "Layla Khoshnoudi"},
+          "role" : "Ms. Patton"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Walter Johnson is a Horrible Person",
+        "authors": [{"person": {"name": "Ana Nogueira"}}]
+      },
+      "directors": [{"name": "Andrew Grosso"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Melanie Nicholls King"},
+          "role" : "Naomi"
+        },
+        {
+          "performer" : {"name": "Shawn Randall"},
+          "role" : "Walter"
+        },
+        {
+          "performer" : {"name": "Graeme Gillis"},
+          "role" : "Chuck"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "The Country House",
+        "authors": [{"person": {"name": "Christopher Sullivan"}}]
+      },
+      "directors": [{"name": "Jade King Carroll"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Dawn McGee"},
+          "role" : "Jean"
+        },
+        {
+          "performer" : {"name": "Dustin Ingram"},
+          "role" : "Dougy"
+        },
+        {
+          "performer" : {"name": "Kristen Harlow"},
+          "role" : "Gwen"
+        },
+        {
+          "performer" : {"name": "Margot Avery"},
+          "role" : "Belinda"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Bee Sting",
+        "authors": [{"person": {"name": "Zhu Yi"}}]
+      },
+      "directors": [{"name": "Paul L. Coffey"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Christine Farrell"},
+          "role" : "Julie"
+        },
+        {
+          "performer" : {"name": "Jay Patterson"},
+          "role" : "George"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    },
+    {
+      "work" : {
+        "title" : "Maybe One Day He Will Get Divorced",
+        "authors": [{"person": {"name": "Eric Dufault"}}]
+      },
+      "directors": [{"name": "Larissa Lury"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Lilli Stein"},
+          "role" : "Liz"
+        },
+        {
+          "performer" : {"name": "Katherine Folk Sullivan"},
+          "role" : "Cinthia/The Mall"
+        },
+        {
+          "performer" : {"name": "Chet Siegel"},
+          "role" : "Karla"
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": {"person": {"name": "Mikhaela Mahony"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Taylor Wilkerson"}},
+          "job": "A4T Lieutenant"
+        },
+        {
+          "contributor": {"person": {"name": "Eileen Lalley"}},
+          "job": "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rachel Fae Szymanski" }},
+          "job" : "Lighting Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Spitaliere" }},
+          "job" : "Sound Designer"
+        },
+        {
+          "contributor" : {"person": {"name" : "Olivia Wells" }},
+          "job" : "Run Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
+          "job" : "Run Crew"
+        }
+      ]
+    } 
+  ]
+}

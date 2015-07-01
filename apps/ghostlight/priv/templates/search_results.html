@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Search{% if results %} Results{% endif %}{% endblock %}
+
+{% block content %}
+  <h1>Search{% if results %} Results{% endif %}</h1>
+
+  {% if not results %}
+    <div class="searchdiv">
+        <input class="typeahead" type="text" placeholder="Find something you care about…">
+    </div>
+  {% else %}
+    {% for result in results %}
+      {% if result.type == "show" %}
+        <h3>Production!</h3>
+        {% with show=result.data %}
+          {% include "show_widget.html" %}
+        {% endwith %}
+
+      {% elif result.type == "work" %}
+        <h3>Piece!</h3>
+      {% elif result.type == "org" %}
+        <h3>Org!</h3>
+      {% else %}
+        <h3>Person!</h3>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+
+  {% for show in shows %}
+  <div class="row text-center">
+    <div class="small-6 columns">
+      <h3><a href="/shows/{{ show.id }}">{{ show.title }}</a></h3>
+    </div>
+    <div class="small-4 columns">
+      Presented by: {% for producer in show.producers %} 
+        {% if forloop.last and not forloop.first %} and {% endif %}
+        {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last %},  {% endif %}
+      {% endfor %}
+    </div>
+    <div class="small-2 columns">
+      {% if show.opening == show.closing %}
+          {{ show.opening|date:"n/j/o" }}
+      {% else %}
+          {{ show.opening|date:"n/j/o" }} &ndash; {{ show.closing|date:"n/j/o" }}
+      {% endif %}
+    </div>
+  </div>
+  {% if show.description %}
+  <div class="row">
+    <div class="small-12 columns text-center">
+      {{show.description}}
+    </div>
+  </div>
+  {% endif %}
+  <div class="row">
+    <div class="small-12 columns">
+      {% for performance in show.performances %} 
+        <p><a href="/works/{{ performance.work.work_id }}"><em>{{ performance.work.title }}</em></a>, by {% for author in performance.work.authors %}
+          {% if forloop.last and not forloop.first %} and {% endif %}<a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% if not forloop.last %},  {% endif %}{% endfor %}</p>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+ 
+{% endblock %}

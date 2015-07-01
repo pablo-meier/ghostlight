@@ -7,8 +7,8 @@ var request = require('request');
 var util = require('util');
 
 var resources = ['organizations', 'shows', 'works', 'people'];
-//var url = 'http://127.0.0.1:8080/%s';
-var url = 'https://ghostlight.io/%s';
+var url = 'http://127.0.0.1:8080/%s';
+//var url = 'https://ghostlight.io/%s';
 
 resources.forEach(function(resource) {
   var resourcePath = path.join('testdata', resource);
@@ -20,10 +20,10 @@ resources.forEach(function(resource) {
     var contents = fs.readFileSync(entityPath);
     var options = {
       uri: util.format(url, resource),
-      auth: {
-        user: 'casper',
-        pass: 'fantasma_porfavor'
-      },
+//      auth: {
+//        user: 'casper',
+//        pass: 'fantasma_porfavor'
+//      },
       method: "POST",
       headers: {
         'content-type' : 'application/json'

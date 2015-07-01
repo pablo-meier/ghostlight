@@ -30,7 +30,7 @@ get_listings_html() ->
 edit_html(OrgId) ->
     OrgRecord = ghostlight_db:get_org(OrgId, markdown),
     {AsOuterBodyJson} = record_to_json(OrgRecord),
-    AsJson = jiffy:encode(proplists:get_value(<<"org">>, AsOuterBodyJson)),
+    AsJson = jsx:encode(proplists:get_value(<<"org">>, AsOuterBodyJson)),
     [{name, OrgRecord#org_return.org#organization.name},
      {editmode, AsJson}].
 
@@ -40,7 +40,7 @@ get_listings_json() ->
 
 get_prefetch() ->
     OrgList = ghostlight_db:get_org_listings(),
-    [ {[{<<"id">>, Id},{<<"name">>, Name}]} || #organization{id=Id, name=Name} <- OrgList ].
+    [ [{<<"id">>, Id},{<<"name">>, Name}] || #organization{id=Id, name=Name} <- OrgList ].
 
 get_json(OrgId) ->
     OrgRecord = ghostlight_db:get_org(OrgId, markdown),
@@ -150,7 +150,7 @@ record_to_json(#org_return{
     ]).
 
 
-json_to_record({Organization}) ->
+json_to_record(Organization) ->
     OrgId = proplists:get_value(<<"id">>, Organization, null),
     OrgName = proplists:get_value(<<"name">>, Organization, null),
     OrgDescription = proplists:get_value(<<"description">>, Organization, null),
@@ -174,14 +174,14 @@ json_to_record({Organization}) ->
        external_links=ExternalLinks
     }.
 
-decode_member({Member}) ->
+decode_member(Member) ->
     Description = proplists:get_value(<<"description">>, Member, null),
     Person = ghostlight_people:json_to_record(proplists:get_value(<<"person">>, Member)),
     #org_member{
        member=Person,
        description=Description
     }.
-decode_employee({Emp}) ->
+decode_employee(Emp) ->
     Description = proplists:get_value(<<"description">>, Emp, null),
     Title = proplists:get_value(<<"title">>, Emp, null),
     Person = ghostlight_people:json_to_record(proplists:get_value(<<"person">>, Emp)),

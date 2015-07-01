@@ -24,13 +24,13 @@
       },
       "directors": [{"name": "Ashley Brooke Monroe"}],
       "onstage": [
-        { "performer" : {"name": "Sydney Blaxill"} },
-        { "performer" : {"name": "Sam Garber"} },
-        { "performer" : {"name": "Alex J. Gould"} },
-        { "performer" : {"name": "Kerry Ipema"} },
-        { "performer" : {"name": "Edan Jacob Levy"} },
-        { "performer" : {"name": "Cristina Pitter"} },
-        { "performer" : {"name": "Neil Redfield"} }
+        { "performer" : {"name": "Sydney Blaxill"}, "role": "Katie" },
+        { "performer" : {"name": "Sam Garber"}, "role": "Will" },
+        { "performer" : {"name": "Alex J. Gould"}, "role": "Colin" },
+        { "performer" : {"name": "Kerry Ipema"}, "role": "Janice" },
+        { "performer" : {"name": "Edan Jacob Levy"}, "role": "Brendan" },
+        { "performer" : {"name": "Cristina Pitter"}, "role": "Diana" },
+        { "performer" : {"name": "Neil Redfield"}, "role": "Pete" }
       ]
     },
     {

@@ -15,7 +15,8 @@
 
 external_links_json_to_record(Json) when is_list(Json) ->
     case proplists:get_value(<<"social">>, Json) of
-        {SocialBlock} ->
+        undefined -> #external_links{};
+        SocialBlock ->
             #external_links{
                 website = proplists:get_value(<<"website">>, SocialBlock, null),
                 email_address = proplists:get_value(<<"email">>, SocialBlock, null),
@@ -31,8 +32,7 @@ external_links_json_to_record(Json) when is_list(Json) ->
                 gplus = proplists:get_value(<<"gplus">>, SocialBlock, null),
                 patreon = proplists:get_value(<<"patreon">>, SocialBlock, null),
                 newplayx = proplists:get_value(<<"newplayx">>, SocialBlock, null)
-            };
-        undefined -> #external_links{}
+            }
     end.
 
 external_links_record_to_proplist(null) -> [];
@@ -106,7 +106,7 @@ external_links_record_to_json(
     json_with_valid_values(Filtered).
 
 
-person_or_org_json_to_record({Object}) ->
+person_or_org_json_to_record(Object) ->
     case proplists:get_value(<<"person">>, Object, null) of
         null ->
             Org = proplists:get_value(<<"org">>, Object, null),
@@ -117,10 +117,10 @@ person_or_org_json_to_record({Object}) ->
 
 person_or_org_record_to_json(Person=#person{}) ->
   PersonJson = ghostlight_people:record_to_json(Person),
-  {[{<<"person">>, PersonJson}]};
+  [{<<"person">>, PersonJson}];
 person_or_org_record_to_json(Org=#organization{}) ->
   OrgJson = ghostlight_org:record_to_json(Org),
-  {[{<<"org">>, OrgJson}]}.
+  [{<<"org">>, OrgJson}].
 
 %% iso8601 is pretty great, and epgsql are pretty great, but they don't play well together.
 %% Namely, epgsql returns dates where the seconds value is a float, which iso8601 doesn't 
@@ -134,10 +134,9 @@ remove_float_from_date({{Year, Month, Day}, {Hour ,Min, Second}}) ->
 
 
 json_with_valid_values(Candidates) ->
-    Inclusions = lists:filter(fun({_K, V}) ->
-                                  suitable_to_show(V)
-                              end, Candidates),
-    {Inclusions}.
+    lists:filter(fun({_K, V}) ->
+                     suitable_to_show(V)
+                 end, Candidates).
 
 proplist_with_valid_values(Candidates) ->
     lists:filter(fun({_K, V}) ->
@@ -148,7 +147,6 @@ proplist_with_valid_values(Candidates) ->
 %% Helps us filter out unshowable values.
 suitable_to_show(<<"">>) -> false;
 suitable_to_show([]) -> false;
-suitable_to_show({[]}) -> false;
 suitable_to_show(null) -> false;
 suitable_to_show(undefined) -> false;
 suitable_to_show(_) -> true.
@@ -186,4 +184,3 @@ handle_error_with(Req, Headers, StatusCode, Template) ->
               end,
     Headers2 = augment_request_header(NewBody, Headers),
     cowboy_req:reply(StatusCode, Headers2, NewBody, Req).
-

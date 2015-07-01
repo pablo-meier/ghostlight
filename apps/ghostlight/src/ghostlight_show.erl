@@ -29,7 +29,7 @@ get_listings_html() ->
 
 edit_html(ShowId) ->
     ShowRecord = ghostlight_db:get_show(ShowId, markdown),
-    AsJson = jiffy:encode(record_to_json(ShowRecord)),
+    AsJson = jsx:encode(record_to_json(ShowRecord)),
     [{name, ShowRecord#show.title},
      {editmode, AsJson}].
 
@@ -39,7 +39,7 @@ get_listings_json() ->
 
 get_prefetch() ->
     ShowList = ghostlight_db:get_show_listings(),
-    [ {[{<<"id">>, Id},{<<"title">>, Title}]} || #show{id=Id, title=Title} <- ShowList ].
+    [ [{<<"id">>, Id},{<<"title">>, Title}] || #show{id=Id, title=Title} <- ShowList ].
 
 get_json(ShowId) ->
     ShowRecord = ghostlight_db:get_show(ShowId),
@@ -168,12 +168,13 @@ offstage_as_json(#offstage{
         {<<"contributor">>, ghostlight_people:record_to_json(Person)}
     ]).
 
-json_to_record({Decoded}) ->
+json_to_record(Decoded) ->
+    ShowId = proplists:get_value(<<"id">>, Decoded, undefined),
     Title = proplists:get_value(<<"title">>, Decoded),
     SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),
     Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded)),
     Producers = [ ghostlight_utils:person_or_org_json_to_record(Producer)
-                  || Producer <- proplists:get_value(<<"producers">>, Decoded)],
+                  || Producer <- proplists:get_value(<<"producers">>, Decoded, [])],
     Performances = lists:map(fun performance_json_to_record/1, proplists:get_value(<<"performances">>, Decoded)),
 
     ExternalLinks = ghostlight_utils:external_links_json_to_record(Decoded),
@@ -184,6 +185,7 @@ json_to_record({Decoded}) ->
                                description=proplists:get_value(<<"description">>, Link, null)} || {Link} <- Press],
 
     #show{
+        id = ShowId,
         title = Title,
         special_thanks = SpecialThanks,
         dates = Dates,
@@ -194,7 +196,7 @@ json_to_record({Decoded}) ->
         press_links=PressLinks
     }.
 
-performance_json_to_record({Proplist}) ->
+performance_json_to_record(Proplist) ->
     Work = ghostlight_work:json_to_record(proplists:get_value(<<"work">>, Proplist)),
     Onstage = lists:map(fun onstage_json_to_record/1, proplists:get_value(<<"onstage">>, Proplist, [])),
     Offstage = [ offstage_json_to_record(Offstage) || Offstage <- proplists:get_value(<<"offstage">>, Proplist, []) ],

@@ -30,7 +30,7 @@ get_listings_html() ->
 
 edit_html(PersonId) ->
     PersonRecord = ghostlight_db:get_person(PersonId, markdown),
-    AsJson = jiffy:encode(record_to_json(PersonRecord)),
+    AsJson = jsx:encode(record_to_json(PersonRecord)),
     [{name, PersonRecord#person_return.person#person.name},
      {editmode, AsJson}].
 
@@ -41,7 +41,7 @@ get_listings_json() ->
 
 get_prefetch() ->
     PersonList = ghostlight_db:get_person_listings(),
-    [ {[{<<"id">>, Id},{<<"name">>, Name}]} || #person{id=Id, name=Name} <- PersonList ].
+    [ [{<<"id">>, Id},{<<"name">>, Name}] || #person{id=Id, name=Name} <- PersonList ].
 
 get_json(PersonId) ->
     PersonRecord = ghostlight_db:get_person(PersonId),
@@ -189,7 +189,7 @@ person_or_org_to_proplist(#organization {
     [{is_org, true}, {id, OrgId}, {name, OrgName}].
 
 
-json_to_record({Person}) ->
+json_to_record(Person) ->
     PersonId = proplists:get_value(<<"id">>, Person, null),
     PersonName = proplists:get_value(<<"name">>, Person, null),
     PersonDescription = proplists:get_value(<<"description">>, Person, null),

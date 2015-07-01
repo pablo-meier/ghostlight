@@ -98,6 +98,7 @@
       <tr>
         <th><strong>Production</strong></th>
         <th><strong>Producers</strong></th>
+        <th><strong>Piece</strong></th>
         <th><strong>Job</strong></th>
         <th><strong>Opening Night</strong></th>
       </tr>
@@ -110,6 +111,7 @@
             {% if producer.is_org %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last and not offstage.producers|length == 2 %},  {% endif %}
           {% endfor %}
         </td>
+        <td><a href="/works/{{ offstage.work_id }}">{{ offstage.work_title }}</a></td>
         <td><strong>{{ offstage.job }}</strong></td>
         <td>{{ offstage.opening|date:"n/j/o" }}</td>
       </tr>

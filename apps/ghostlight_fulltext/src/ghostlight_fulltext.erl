@@ -89,8 +89,15 @@ find(TextFragment) when is_list(TextFragment) ->
     case erlastic_search:search(?INDEX_NAME, Decoded) of
       {ok, Proplists} ->
         HitListing = proplists:get_value(<<"hits">>, Proplists, []),
+        lager:info("~p~n", [HitListing]),
         Hits = proplists:get_value(<<"hits">>, HitListing, []),
-        Hits;
+        lager:info("~p~n", [Hits]),
+        Sources = [ { proplists:get_value(<<"_type">>, Hit),
+                      proplists:get_value(<<"_source">>, Hit, [])} || Hit <- Hits ],
+        lager:info("~p~n", [Sources]),
+        Cleaned = [ clean(Source) || Source <- Sources ],
+        lager:info("~p~n", [Cleaned]),
+        Cleaned;
       {error, Error} ->
         lager:error("Error returned from ES: ~p~n", [Error]),
         error
@@ -99,6 +106,12 @@ find(TextFragment) when is_list(TextFragment) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+
+clean({<<"shows">>, Show}) -> {show, ghostlight_show:json_to_record(Show)};
+clean({<<"works">>, Work}) -> {work, ghostlight_work:json_to_record(Work)};
+clean({<<"organizations">>, Org}) -> {organization, ghostlight_org:json_to_record(Org)};
+clean({<<"people">>, Person}) -> {person, ghostlight_people:json_to_record(Person)}.
 
 
 -record(index_config, {
@@ -170,7 +183,7 @@ populate_index(#index_config{
           }) ->
     ResourceList = apply(ghostlight_db, ListingsCall, []),
     AlmostReady = [ {IdFun(Resource), ResourceModule:record_to_json(Resource)} || Resource <- ResourceList],
-    AsStrings = [ {ResourceId, jiffy:encode(ResourceProplist)} || {ResourceId, ResourceProplist} <- AlmostReady],
+    AsStrings = [ {ResourceId, jsx:encode(ResourceProplist)} || {ResourceId, ResourceProplist} <- AlmostReady],
     lists:foreach(fun({ResourceId, ResourceJSON}) ->
                           erlastic_search:index_doc_with_id(?INDEX_NAME, TypeName, ResourceId, ResourceJSON)
                   end, AsStrings).

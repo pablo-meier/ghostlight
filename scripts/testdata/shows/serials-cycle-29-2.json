@@ -84,12 +84,12 @@
       },
       "directors": [{"name": "Ashley Brooke Monroe"}],
       "onstage": [
-        { "performer" : {"name": "Sydney Blaxill"} },
-        { "performer" : {"name": "Alex J. Gould"} },
-        { "performer" : {"name": "Kerry Ipema"} },
-        { "performer" : {"name": "Cristina Pitter"} },
-        { "performer" : {"name": "Neil Redfield"} },
-        { "performer" : {"name": "Tessa Slovis"} }
+        { "performer" : {"name": "Sydney Blaxill"}, "role": "Katie" },
+        { "performer" : {"name": "Alex J. Gould"}, "role": "Colin" },
+        { "performer" : {"name": "Kerry Ipema"}, "role": "Janice" },
+        { "performer" : {"name": "Cristina Pitter"}, "role": "Diana" },
+        { "performer" : {"name": "Neil Redfield"}, "role": "Pete" },
+        { "performer" : {"name": "Tessa Slovis"}, "role": "Lucy" }
       ]
     }
   ]

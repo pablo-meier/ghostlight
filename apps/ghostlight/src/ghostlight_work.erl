@@ -31,7 +31,7 @@ get_listings_html() ->
 edit_html(WorkId) ->
     WorkRecord = ghostlight_db:get_work(WorkId, markdown),
     {AsJsonProplist} = record_to_json(WorkRecord),
-    AsJson = jiffy:encode(proplists:get_value(<<"work">>, AsJsonProplist)),
+    AsJson = jsx:encode(proplists:get_value(<<"work">>, AsJsonProplist)),
     [{title, WorkRecord#work_return.work#work.title},
      {editmode, AsJson}].
 
@@ -41,7 +41,7 @@ get_listings_json() ->
 
 get_prefetch() ->
     WorkList = ghostlight_db:get_work_listings(),
-    [ {[{<<"id">>, Id},{<<"title">>, Title}]} || #work{id=Id, title=Title} <- WorkList ].
+    [ [{<<"id">>, Id},{<<"title">>, Title}] || #work{id=Id, title=Title} <- WorkList ].
 
 get_json(WorkId) ->
     WorkRecord = ghostlight_db:get_work(WorkId, markdown),
@@ -144,7 +144,7 @@ record_to_json(#work_return{
     ]).
 
 
-json_to_record({Proplist}) ->
+json_to_record(Proplist) ->
     CollabOrg = case proplists:get_value(<<"collaborating_org">>, Proplist, null) of
                     null -> null;
                     Org -> ghostlight_org:json_to_record(Org)

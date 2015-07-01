@@ -134,19 +134,19 @@ resource_to_json(Req, State) ->
     catch
         throw:not_found -> pass_on_error(404, Req2, State);
         error:Err -> 
-            lager:error("ERROR! ~n~p", [Err]),
+            lager:error("ERROR: ~p, ~p~n", [Err, erlang:get_stacktrace()]),
             pass_on_error(500, Req2, State)
     end.
 
 make_appropriate_json(undefined, Module) ->
     ToEncode = Module:get_listings_json(),
-    jiffy:encode({ToEncode});
+    jsx:encode(ToEncode);
 make_appropriate_json(<<"prefetch">>, Module) ->
     ToEncode = Module:get_prefetch(),
-    jiffy:encode(ToEncode);
+    jsx:encode(ToEncode);
 make_appropriate_json(Id, Module) ->
     ToEncode = Module:get_json(Id),
-    jiffy:encode(ToEncode).
+    jsx:encode(ToEncode).
 
 
 %%% @private
@@ -163,7 +163,7 @@ resource_to_html(Req, State) ->
     catch
         throw:not_found -> pass_on_error(404, Req2, State);
         error:Err ->
-            lager:error("ERROR! ~n~p", [Err]),
+            lager:error("ERROR: ~p, ~p~n", [Err, erlang:get_stacktrace()]),
             pass_on_error(500, Req2, State)
     end.
 
@@ -196,7 +196,7 @@ post_resource(Req, State) ->
     #render_pack{module = Module} = get_renderpack(ResourceName),
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     Req3 = cowboy_req:set_meta(response_type, json, Req2),
-    AsJson = jiffy:decode(RequestBody),
+    AsJson = jsx:decode(RequestBody),
     Record = Module:json_to_record(AsJson),
     Method = cowboy_req:method(Req3),
     Id = Module:get_id(Record),
@@ -206,29 +206,29 @@ post_resource(Req, State) ->
     catch
         throw:not_found -> pass_on_error(404, Req3, State);
         error:Err ->
-            lager:error("ERROR: ~p~n", [Err]),
+            lager:error("ERROR: ~p, ~p~n", [Err, erlang:get_stacktrace()]),
             pass_on_error(500, Req2, State)
     end.
 
 
 make_appropriate_json(null, <<"POST">>, Module, Record) ->
     NewId = Module:post_json(Record),
-    Response = jiffy:encode({[{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(NewId)}]}),
+    Response = jsx:encode([{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(NewId)}]),
     {true, Response};
 make_appropriate_json(_Else, <<"POST">>, _Module, _Record) ->
-    Body = jiffy:encode({[{<<"error">>, <<"You may not insert with the field 'id'.">>}]}),
+    Body = jsx:encode([{<<"error">>, <<"You may not insert with the field 'id'.">>}]),
     {false, Body};
 make_appropriate_json(null, <<"PUT">>, _Module, _Record) ->
-    Body = jiffy:encode({[{<<"error">>, <<"You must PUT on an existing resource.">>}]}),
+    Body = jsx:encode([{<<"error">>, <<"You must PUT on an existing resource.">>}]),
     {false, Body};
 make_appropriate_json(_Else, <<"PUT">>, Module, Record) ->
     Success = Module:update_json(Record),
     case Success of
         true ->
-            Response = jiffy:encode({[{<<"status">>, ok}]}),
+            Response = jsx:encode([{<<"status">>, ok}]),
             {true, Response};
         false ->
-            Body = jiffy:encode({[{<<"error">>, <<"An error occurred.">>}]}),
+            Body = jsx:encode([{<<"error">>, <<"An error occurred.">>}]),
             {false, Body}
     end.
 

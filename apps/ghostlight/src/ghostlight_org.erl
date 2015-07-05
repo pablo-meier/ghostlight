@@ -29,7 +29,7 @@ get_listings_html() ->
 
 edit_html(OrgId) ->
     OrgRecord = ghostlight_db:get_org(OrgId, markdown),
-    {AsOuterBodyJson} = record_to_json(OrgRecord),
+    AsOuterBodyJson = record_to_json(OrgRecord),
     AsJson = jsx:encode(proplists:get_value(<<"org">>, AsOuterBodyJson)),
     [{name, OrgRecord#org_return.org#organization.name},
      {editmode, AsJson}].

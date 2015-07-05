@@ -218,11 +218,18 @@ record_to_json(#person_return{
     ghostlight_utils:json_with_valid_values(lists:append([
         PersonArr,
         [{<<"authored">>, [ ghostlight_work:record_to_json(Work) || Work <- Authored ]},
-         {<<"directed">>, [ ghostlight_work:record_to_json(Work) || Work <- Directed ]},
+         {<<"directed">>, [ ghostlight_show:record_to_json(Show) || Show <- Directed ]},
          {<<"onstage">>, [ ghostlight_show:record_to_json(Show) || Show <- Onstage ]},
          {<<"offstage">>, [ ghostlight_show:record_to_json(Show) || Show <- Offstage ]},
-         {<<"organizations">>, [ ghostlight_org:record_to_json(Org) || Org <- Orgs ]}]
+         {<<"organizations">>, [ org_work_to_json(Org) || Org <- Orgs ]}]
     ])).
+
+
+org_work_to_json(#org_work{org_id=OrgId, org_name=Name, title=Title}) ->
+    ghostlight_utils:json_with_valid_values(
+      [{<<"id">>, OrgId},
+       {<<"name">>, Name},
+       {<<"title">>, Title}]).
 
 
 record_to_json_shared(#person{

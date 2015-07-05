@@ -33,10 +33,7 @@
     q = <<"">>     :: binary(),
     exact = false  :: true | false,
 
-    includes = [works,
-                shows,
-                organizations,
-                people] :: list(works | shows | organizations | people)
+    includes = default_includes() :: list(works | shows | organizations | people)
 }).
 
 init(Req, _Opts) ->
@@ -104,8 +101,10 @@ get_params(Params) ->
         includes = Includes
     }.
 
+
 parse_exact(<<"true">>) -> true;
 parse_exact(_) -> false.
+
 
 parse_includes(Bin) when is_binary(Bin) and byte_size(Bin) < 50 ->
     Includes = binary:split(Bin, <<",">>),
@@ -114,6 +113,7 @@ parse_includes(Bin) when is_binary(Bin) and byte_size(Bin) < 50 ->
         false -> default_includes()
     end;
 parse_includes(_) -> default_includes().
+
 
 is_viable_include(<<"works">>) -> true;
 is_viable_include(<<"shows">>) -> true;

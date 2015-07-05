@@ -126,6 +126,7 @@ person_or_org_record_to_json(Org=#organization{}) ->
 %% Namely, epgsql returns dates where the seconds value is a float, which iso8601 doesn't 
 %% pattern match for. We truncate it out to let them play together.
 erl_date_to_iso8601({}) -> undefined;
+erl_date_to_iso8601(null) -> undefined;
 erl_date_to_iso8601(Date) ->
     iso8601:format(remove_float_from_date(Date)).
 

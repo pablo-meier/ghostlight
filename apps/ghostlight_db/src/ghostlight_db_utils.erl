@@ -120,6 +120,7 @@ external_links_sql_to_record(Links) ->
                         end
                 end, #external_links{}, Links).
 
+normalize_link(null) -> null;
 normalize_link(Link) ->
     case re:run(Link, "^http://") of
         nomatch -> list_to_binary("http://" ++ binary_to_list(Link));

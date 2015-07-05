@@ -250,7 +250,7 @@ get_renderpack(ResourceName) ->
                                   | {get_template, Module::module()}
                                   | {get_listing_template, Module::module()}
                                   | {update_template , Module::module()}.
--spec register(Options :: list(list(ghostlight_rest_resource()))) -> none().
+-spec register(Options :: list(list(ghostlight_rest_resource()))) -> #{}.
 %% @doc Allows a module to register itself as a resource.
 register(ResourceSpecs) ->
     lists:foldl(fun (Option, Accum) ->

@@ -30,7 +30,7 @@ get_listings_html() ->
 
 edit_html(WorkId) ->
     WorkRecord = ghostlight_db:get_work(WorkId, markdown),
-    {AsJsonProplist} = record_to_json(WorkRecord),
+    AsJsonProplist = record_to_json(WorkRecord),
     AsJson = jsx:encode(proplists:get_value(<<"work">>, AsJsonProplist)),
     [{title, WorkRecord#work_return.work#work.title},
      {editmode, AsJson}].
@@ -64,7 +64,7 @@ record_to_proplist(#work_return{
                                authors = Authors,
                                description = Description,
                                minutes_long = MinutesLong,
-                               collaborating_org = CollabOrg
+                               collaborating_orgs = CollabOrg
                            },
                        shows=Shows}) ->
 
@@ -156,6 +156,6 @@ json_to_record(Proplist) ->
                    || Author <- proplists:get_value(<<"authors">>, Proplist) ],
        description = proplists:get_value(<<"description">>, Proplist, null),
        minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null),
-       collaborating_org = CollabOrg
+       collaborating_orgs = [CollabOrg]
     }.
 

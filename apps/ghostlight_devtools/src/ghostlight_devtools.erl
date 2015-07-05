@@ -9,7 +9,11 @@
          terminate/2,
          code_change/3]).
 
--export([trigger/0]).
+-export([trigger/0,
+         update_css/1,
+         update_js/1,
+         update_erlydtl/1,
+         update_erl_src/1]).
 
 -define(SERVER, ?MODULE).
 -define(DEVTOOLS_JAVA_NODE, 'jerry_duty@Sancho.local').

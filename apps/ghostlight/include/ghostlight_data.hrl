@@ -4,7 +4,7 @@
 %% we try to define a '0 type' for each record so we don't get surprising
 %% 'undefined's. 
 
--type datetime() :: {{integer(), integer(), integer()}, {integer(), integer(), float()}}.
+-type datetime() :: tuple(Date::calendar:date(), Time::calendar:time()) | null.
 -type organization_parent() :: {id, binary()}.
 
 -record(external_links, {
@@ -51,10 +51,10 @@
     id = <<"">>                        :: binary(),
     name = <<"">>                      :: binary(),
     tagline = <<"">>                   :: binary(),
-    description = null                 :: binary(),
+    description = <<"">>               :: binary(),
     parent = {id, <<"">>}              :: organization_parent(),
     vanity_name = <<"">>               :: binary(),
-    date_founded = {}                  :: datetime(),
+    date_founded = null                :: datetime(),
     external_links = #external_links{} :: #external_links{},
     members = []                       :: list(#org_member{}),
     employees = []                     :: list(#org_employee{}),
@@ -66,7 +66,7 @@
     title = <<"">>             :: binary(),
     authors = []               :: list(#person{}) | list(#organization{}),
     description = null         :: null | binary(),
-    collaborating_org = null   :: null | #organization{},
+    collaborating_orgs = []    :: [#organization{}],
     minutes_long = null        :: null | integer()
 }).
 

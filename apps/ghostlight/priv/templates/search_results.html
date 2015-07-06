@@ -26,11 +26,21 @@
           {% include "work_widget.html" %}
         {% endwith %}
 
-      {% elif result.type == "org" %}
+      {% elif result.type == "organization" %}
         <h3>Org!</h3>
+        {% with org=result.data %}
+          {% include "org_widget.html" %}
+        {% endwith %}
 
       {% else %}
         <h3>Person!</h3>
+        {% with person=result.data %}
+        <div class="row">
+            <div class="small-12 columns">
+                <a href="/people/{{ person.person_id }}">{{ person.person_name }}</a>
+            </div>
+        </div>
+        {% endwith %}
       {% endif %}
 
     {% endfor %}

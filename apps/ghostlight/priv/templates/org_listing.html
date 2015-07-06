@@ -5,20 +5,8 @@
 {% block content %}
   <h1>Organizations</h1>
 
-  <table>
-      <tr>
-          <th>Organization</th>
-          <th>Tagline</th>
-          <th>Description</th>
-      </tr>
-
-      {% for org in orgs %}
-      <tr>
-          <td><a href="/organizations/{{ org.org_id }}">{{ org.name }}</a></td>
-          <td>{% autoescape off %}{{ org.tagline }}{% endautoescape %}</td>
-          <td>{% autoescape off %}{{ org.description }}{% endautoescape %}</td>
-      </tr>
-      {% endfor %}
-  </table>
+  {% for org in orgs %}
+    {% include "org_widget.html" %}
+  {% endfor %}
   
 {% endblock %}

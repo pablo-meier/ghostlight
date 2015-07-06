@@ -93,7 +93,7 @@ proplist_of({Type=show, Show}) ->
 proplist_of({Type=work, Work}) ->
     [{<<"type">>, Type},
      {<<"data">>, ghostlight_work:record_to_proplist(Work)}];
-proplist_of({Type=org, Org}) ->
+proplist_of({Type=organization, Org}) ->
     [{<<"type">>, Type},
      {<<"data">>, ghostlight_org:record_to_proplist(Org)}];
 proplist_of({Type=person, Person}) ->

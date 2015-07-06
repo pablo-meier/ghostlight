@@ -5,26 +5,7 @@
 {% block content %}
   <h1>Pieces</h1>
 
-  <table>
-      <tr>
-          <th>Title</th>
-          <th>Authors</th>
-      </tr>
-
-      {% for work in works %}
-      <tr>
-          <td><a href="/works/{{ work.work_id }}">{{ work.title }}</a></td>
-          <td>
-          {% for author in work.authors %}
-            {% if author.type == "person" %}
-                <a href="/people/{{ author.id }}">{{ author.name }}</a><br />
-            {% else %}
-                <a href="/organizations/{{ author.id }}">{{ author.name }}</a><br />
-            {% endif %}
-          {% endfor %}
-          </td>
-      </tr>
-      {% endfor %}
-  </table>
-  
+  {% for work in works %}
+    {% include "work_widget.html" %}
+  {% endfor %}
 {% endblock %}

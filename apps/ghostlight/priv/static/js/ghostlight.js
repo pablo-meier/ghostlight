@@ -2,6 +2,7 @@
 
 $(document).ready(function(){
 
+// Set up Autocomplete
 function makeBloodhoundFor(options) {
   var resource = options.resource;
   var field = options.field;

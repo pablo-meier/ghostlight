@@ -1,0 +1,14 @@
+  {% comment %}
+    Basic widget to display a Work as a Foundation Row.
+
+    Params: Work proplist, called 'work'.
+  {% endcomment %}
+
+  <div class="row text-left">
+    <div class="small-12 columns">
+        <strong><em><a href="/works/{{ work.work_id }}">{{ work.title }}</a></em></strong>, by 
+      {% for author in work.authors %}
+        {% if forloop.last and not forloop.first %} and {% endif %}
+        {% if author.type == "person" %}<a href="/people/{{ author.id }}">{{ author.name }}</a>{% else %}<a href="/organizations/{{ author.id }}">{{ author.name }}</a>{% endif %}{% if not forloop.last and work.authors|length != 2 %},  {% endif %}{% if forloop.last %}.{% endif %}{% endfor %}
+    </div>
+  </div>

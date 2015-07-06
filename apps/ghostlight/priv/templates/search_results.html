@@ -19,6 +19,10 @@
 
       {% elif result.type == "work" %}
         <h3>Piece!</h3>
+        {% with work=result.data %}
+          {% include "work_widget.html" %}
+        {% endwith %}
+
       {% elif result.type == "org" %}
         <h3>Org!</h3>
       {% else %}

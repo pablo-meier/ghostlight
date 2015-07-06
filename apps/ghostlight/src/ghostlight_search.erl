@@ -37,12 +37,21 @@
 }).
 
 init(Req, _Opts) ->
+    ensure_method(Req, cowboy_req:method(Req)).
+
+%%% @doc Proceeds with the request if it's a get. Else, we return 405
+%%% Method not allowed.
+ensure_method(Req, <<"GET">>) ->
     Req2 = cowboy_req:set_meta(response_type, html, Req),
     Params = get_params(cowboy_req:parse_qs(Req2)),
     Response = gather_content(Params),
 
     ReturnType = cowboy_req:header(<<"accept">>, Req2, <<"text/html">>),
-    deliver(ReturnType, Response, Req2).
+    deliver(ReturnType, Response, Req2);
+
+ensure_method(Req, _) ->
+    Req2 = cowboy_req:reply(405, Req),
+    {ok, Req2, []}.
 
 
 %%% @doc Determines what content to return to the requester — Make no request

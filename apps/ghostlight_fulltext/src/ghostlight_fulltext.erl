@@ -76,14 +76,16 @@ find(TextFragment) when is_list(TextFragment) ->
 "
 {
   \"query\": {
-    \"multi_match\": { 
-      \"query\": \"~s\", 
-      \"fields\": [\"*.title\"]
-    } 
-  } 
+    \"bool\": {
+      \"should\": [
+        { \"match_phrase_prefix\": { \"title\": ~p }},
+        { \"match_phrase_prefix\": { \"name\":  ~p }}
+      ]
+    }
+  }
 }
 ",
-    Query = erlang:iolist_to_binary(io_lib:format(QueryBase, [TextFragment])),
+    Query = erlang:iolist_to_binary(io_lib:format(QueryBase, [TextFragment, TextFragment])),
     lager:info("Query is ~p~n", [Query]),
     Decoded = jsx:decode(Query),
     case erlastic_search:search(?INDEX_NAME, Decoded) of
@@ -109,7 +111,7 @@ find(TextFragment) when is_list(TextFragment) ->
 
 
 clean({<<"shows">>, Show}) -> {show, ghostlight_show:json_to_record(Show)};
-clean({<<"works">>, Work}) -> {work, ghostlight_work:json_to_record(Work)};
+clean({<<"pieces">>, Work}) -> {work, ghostlight_work:json_to_record(Work)};
 clean({<<"organizations">>, Org}) -> {organization, ghostlight_org:json_to_record(Org)};
 clean({<<"people">>, Person}) -> {person, ghostlight_people:json_to_record(Person)}.
 

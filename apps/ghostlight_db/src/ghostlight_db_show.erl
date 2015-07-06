@@ -39,14 +39,14 @@ db_to_record(
         id = ShowId,
         title = Title,
         special_thanks = SpecialThanks,
-        dates = [ iso8601:parse(Date) || Date <- jiffy:decode(Dates) ],
+        dates = [ iso8601:parse(Date) || Date <- jsx:decode(Dates) ],
         description = Description,
-        hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- jiffy:decode(Hosts) ],
+        hosts = [ #person{id=HostId, name=HostName} || {HostId, HostName} <- jsx:decode(Hosts) ],
         producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
-                    || Producer <- jiffy:decode(Producers) ],
-        performances = [ parse_performance(Performance) || Performance <- jiffy:decode(Performances) ],
-        external_links=ghostlight_db_utils:external_links_sql_to_record(jiffy:decode(External)),
-        press_links=format_press_links(jiffy:decode(Press))
+                    || Producer <- jsx:decode(Producers) ],
+        performances = [ parse_performance(Performance) || Performance <- jsx:decode(Performances) ],
+        external_links=ghostlight_db_utils:external_links_sql_to_record(jsx:decode(External)),
+        press_links=format_press_links(jsx:decode(Press))
       }.
 
  
@@ -56,10 +56,10 @@ db_listings_to_record_list(Results) ->
          title=ShowTitle,
          description=ShowDescription,
          producers=[ ghostlight_db_utils:parse_person_or_org(Producer) 
-                    || Producer <- jiffy:decode(ShowProducers) ],
-         dates = [ iso8601:parse(Date) || Date <- jiffy:decode(ShowDates) ],
+                    || Producer <- jsx:decode(ShowProducers) ],
+         dates = [ iso8601:parse(Date) || Date <- jsx:decode(ShowDates) ],
          performances=[ performance_from_work_json(Work)
-                        || Work <- jiffy:decode(WorksJson) ]
+                        || Work <- jsx:decode(WorksJson) ]
         }
      || {
         ShowId,
@@ -222,11 +222,11 @@ fold_over_performances(Performances, ShowId, WorksWithIds, State) ->
 
 format_press_links(PressLinks) ->
     [ #press_link{
-         link = proplists:get_value(<<"link">>, Unwrapped) ,
-         description = proplists:get_value(<<"description">>, Unwrapped)
-      } || {Unwrapped} <- PressLinks ].
+         link = proplists:get_value(<<"link">>, Link),
+         description = proplists:get_value(<<"description">>, Link)
+      } || Link <- PressLinks ].
 
-parse_performance({Proplist}) ->
+parse_performance(Proplist) ->
     #performance{
        work = #work{
                  id = proplists:get_value(<<"work_id">>, Proplist),
@@ -241,24 +241,24 @@ parse_performance({Proplist}) ->
        description = proplists:get_value(<<"description">>, Proplist, [])
     }.
 
-parse_onstage({Onstage}) ->
+parse_onstage(Onstage) ->
     Person = parse_person(proplists:get_value(<<"performer">>, Onstage)),
     Role = proplists:get_value(<<"role">>, Onstage),
     #onstage{ role=Role, person=Person }.
  
-parse_offstage({Offstage}) ->
+parse_offstage(Offstage) ->
     Entity = ghostlight_db_utils:parse_person_or_org(proplists:get_value(<<"entity">>, Offstage)),
     Job = proplists:get_value(<<"job">>, Offstage),
     #offstage{ contributor=Entity, job=Job}.
 
-parse_person({Person}) ->
+parse_person(Person) ->
     #person{
        id = proplists:get_value(<<"id">>, Person),
        name = proplists:get_value(<<"name">>, Person)
     }.
 
 
-performance_from_work_json({WorkJson}) ->
+performance_from_work_json(WorkJson) ->
     Id = proplists:get_value(<<"work_id">>, WorkJson),
     Title = proplists:get_value(<<"title">>, WorkJson),
     Authors = proplists:get_value(<<"authors">>, WorkJson),
@@ -271,8 +271,8 @@ performance_from_work_json({WorkJson}) ->
     }.
 
 %% Very odd, but this row in an object keyed on 'row'? FIXME.
-author_from_json({Author}) ->
-    {Info} = proplists:get_value(<<"row">>, Author),
+author_from_json(Author) ->
+    Info = proplists:get_value(<<"row">>, Author),
     case proplists:get_value(<<"type">>, Info) of
         <<"person">> ->
             #person{

@@ -36,7 +36,7 @@ null_if_unspecified(<<"">>) -> null;
 null_if_unspecified(Else) -> Else.
 
 decode_not_null(null) -> [];
-decode_not_null(Expr) -> jiffy:decode(Expr).
+decode_not_null(Expr) -> jsx:decode(Expr).
 
 markdown_or_null(null) -> null;
 markdown_or_null(Body) when is_binary(Body) ->
@@ -84,7 +84,7 @@ good_result({ok, _}) -> true;
 good_result(_Else) -> false.
 
 
-parse_person_or_org({Entity}) ->
+parse_person_or_org(Entity) ->
     Id = proplists:get_value(<<"id">>, Entity, null),
     Name = proplists:get_value(<<"name">>, Entity, null),
     case proplists:get_value(<<"type">>, Entity, null) of
@@ -96,7 +96,7 @@ parse_person_or_org({Entity}) ->
 
 
 external_links_sql_to_record(Links) ->
-    lists:foldl(fun({Proplist}, Accum) ->
+    lists:foldl(fun(Proplist, Accum) ->
                         Link = normalize_link(proplists:get_value(<<"link">>, Proplist, null)),
                         Type = proplists:get_value(<<"type">>, Proplist, null),
                         case Link of 

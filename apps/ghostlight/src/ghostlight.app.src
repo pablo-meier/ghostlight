@@ -12,7 +12,7 @@
     ghostlight_fulltext,
     ghostlight_markdown,
     iso8601,
-    jiffy,
+    jsx,
     kernel,
     lager,
     stdlib

@@ -71,7 +71,7 @@ db_listings_to_record_list(Results) ->
          description=Description
         } || {OrgId, OrgName, Tagline, Description} <- Results].
 
-parse_member({Member}, Format) ->
+parse_member(Member, Format) ->
     DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
     #org_member{
        member = #person {
@@ -82,7 +82,7 @@ parse_member({Member}, Format) ->
     }.
 
 
-parse_employee({Employee}, Format) ->
+parse_employee(Employee, Format) ->
     DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
     #org_employee{
        person = #person {
@@ -94,7 +94,7 @@ parse_employee({Employee}, Format) ->
     }.
 
 
-parse_show_abbrev({Show}) ->
+parse_show_abbrev(Show) ->
     #show{
        id = proplists:get_value(<<"show_id">>, Show),
        title = proplists:get_value(<<"title">>, Show),

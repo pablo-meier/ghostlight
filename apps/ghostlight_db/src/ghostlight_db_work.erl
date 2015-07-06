@@ -44,19 +44,19 @@ db_to_record(
        work=#work{
                id=WorkId,
                title=Title,
-               authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jiffy:decode(Authors) ],
+               authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jsx:decode(Authors) ],
                description=Description,
                minutes_long=MinutesLong,
-               collaborating_orgs=[ parse_org(Org) || Org <- jiffy:decode(CollaboratingOrgs) ]
+               collaborating_orgs=[ parse_org(Org) || Org <- jsx:decode(CollaboratingOrgs) ]
             },
-       shows=[ parse_show(Show) || Show <- jiffy:decode(Productions) ]
+       shows=[ parse_show(Show) || Show <- jsx:decode(Productions) ]
     }.
 
 db_listings_to_record_list(Response) ->
     [ #work{
           id=WorkId,
           title=WorkTitle,
-          authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jiffy:decode(Authors) ]
+          authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jsx:decode(Authors) ]
       } || {WorkId, WorkTitle, Authors} <- Response].
 
 
@@ -82,14 +82,14 @@ get_inserts(#work{title=Title,
     {WorkInserts, WorkUUID}.
 
 
-parse_org({Org}) ->
+parse_org(Org) ->
     #organization{
        id = proplists:get_value(<<"org_id">>, Org),
        name = proplists:get_value(<<"name">>, Org)
     }.
 
 
-parse_show({Show}) ->
+parse_show(Show) ->
     #show{
        id = proplists:get_value(<<"show_id">>, Show),
        title = proplists:get_value(<<"title">>, Show),

@@ -60,7 +60,7 @@ db_to_record(
     AuthorList = [#work{
                      id = proplists:get_value(<<"work_id">>, Work),
                      title = proplists:get_value(<<"name">>, Work)
-                  } || {Work} <- ghostlight_db_utils:decode_not_null(Authorships)],
+                  } || Work <- ghostlight_db_utils:decode_not_null(Authorships)],
 
     OnstageList = [#show{
                       id = proplists:get_value(<<"show_id">>, Show),
@@ -73,10 +73,10 @@ db_to_record(
                                         onstage = [#onstage {
                                                      role = proplists:get_value(<<"role">>, RoleObj)
                                                   }]
-                                     } || {RoleObj} <- proplists:get_value(<<"roles">>, Show)],
+                                     } || RoleObj <- proplists:get_value(<<"roles">>, Show)],
                       producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)],
                       dates=[ iso8601:parse(proplists:get_value(<<"opening_night">>, Show)) ]
-                   } || {Show} <- ghostlight_db_utils:decode_not_null(Onstage)],
+                   } || Show <- ghostlight_db_utils:decode_not_null(Onstage)],
 
     OffstageList = [#show{
                        id = proplists:get_value(<<"show_id">>, Show),
@@ -89,10 +89,10 @@ db_to_record(
                                          offstage = [#offstage {
                                                       job = proplists:get_value(<<"job">>, RoleObj)
                                                      }]
-                                      } || {RoleObj} <- proplists:get_value(<<"jobs">>, Show)],
+                                      } || RoleObj <- proplists:get_value(<<"jobs">>, Show)],
                        producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)],
                        dates=[ iso8601:parse(proplists:get_value(<<"opening_night">>, Show)) ]
-                    } || {Show} <- ghostlight_db_utils:decode_not_null(Offstage)],
+                    } || Show <- ghostlight_db_utils:decode_not_null(Offstage)],
 
     DirectorList = [#show{
                        id = proplists:get_value(<<"show_id">>, Show),
@@ -102,20 +102,20 @@ db_to_record(
                                                    id = proplists:get_value(<<"work_id">>, RoleObj),
                                                    title = proplists:get_value(<<"name">>, RoleObj)
                                                 }
-                                      } || {RoleObj} <- proplists:get_value(<<"works">>, Show)],
+                                      } || RoleObj <- proplists:get_value(<<"works">>, Show)],
                        producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)],
                        dates=[ iso8601:parse(proplists:get_value(<<"opening_night">>, Show)) ]
-                    } || {Show} <- ghostlight_db_utils:decode_not_null(Director)],
+                    } || Show <- ghostlight_db_utils:decode_not_null(Director)],
 
     EmployeeList = [ #org_work {
                         org_id = proplists:get_value(<<"org_id">>, Emp),
                         org_name = proplists:get_value(<<"name">>, Emp),
                         title = proplists:get_value(<<"title">>, Emp)
-                     } || {Emp} <- ghostlight_db_utils:decode_not_null(Employee)],
+                     } || Emp <- ghostlight_db_utils:decode_not_null(Employee)],
     MemberList = [ #organization{
                       id = proplists:get_value(<<"org_id">>, Mem),
                       name = proplists:get_value(<<"name">>, Mem)
-                   } || {Mem} <- ghostlight_db_utils:decode_not_null(Member)],
+                   } || Mem <- ghostlight_db_utils:decode_not_null(Member)],
 
     ProducerList = [#show{
                        id = proplists:get_value(<<"show_id">>, Show),
@@ -126,8 +126,8 @@ db_to_record(
                                                    id = proplists:get_value(<<"work_id">>, RoleObj),
                                                    title = proplists:get_value(<<"name">>, RoleObj)
                                                 }
-                                      } || {RoleObj} <- proplists:get_value(<<"works">>, Show)]
-                    } || {Show} <- ghostlight_db_utils:decode_not_null(Producer)],
+                                      } || RoleObj <- proplists:get_value(<<"works">>, Show)]
+                    } || Show <- ghostlight_db_utils:decode_not_null(Producer)],
 
     ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
 

@@ -60,10 +60,7 @@ ensure_method(Req, _) ->
 gather_content(#ghost_params{q = <<"">>}) ->
     [];
 gather_content(#ghost_params{q=Query, exact=_Exact, includes=_Includes}) ->
-    lager:info("Query is ~p~n", [Query]),
-    Response = ghostlight_fulltext:find(Query),
-    lager:info("Response is ~p~n", [Response]),
-    Response.
+    ghostlight_fulltext:find(Query).
 
 
 %%% @doc Takes and formats the data to return appropriately to the requester,
@@ -78,7 +75,6 @@ deliver(<<"application/json">>, Response, Req) ->
 %% Default to HTML
 deliver(_, Response, Req) ->
     Proplist = [{results, [ proplist_of(SearchResult) || SearchResult <- Response ]}],
-    lager:info("~n~n~n~n~p~n~n~n", [Proplist]),
     {ok, Body} = search_results_template:render(Proplist),
     Req2 = cowboy_req:reply(200,
                             [{<<"content-type">>, <<"text/html; charset=utf-8">>}],

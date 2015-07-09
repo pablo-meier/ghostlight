@@ -34,7 +34,13 @@ init([]) ->
             permanent,
             5000,
             worker,
-            [ghostlight_resource]}]}}.
+            [ghostlight_resource]},
+          {static_listener,
+            {ghostlight_static, start_link, []},
+            permanent,
+            5000,
+            worker,
+            [ghostlight_static]}]}}.
 
 %%====================================================================
 %% Internal functions

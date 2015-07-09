@@ -31,7 +31,7 @@ function setTypeaheadOptionsFor(options) {
       return input[field];
     },
     templates: {
-      header: '<strong>' + displayName + '</strong>',
+      header: '<div class="suggestion-header"><strong>' + displayName + '</strong></div>',
       suggestion: Handlebars.compile('<div class="suggestion"><strong><a href="http://localhost:8080/' + resourceName + '/{{id}}">{{' + field +'}}</a></strong></div>')
     },
     source: bloodhound 
@@ -64,6 +64,10 @@ var orgs = setTypeaheadOptionsFor(orgOptions);
 var people = setTypeaheadOptionsFor(peopleOptions);
 var works = setTypeaheadOptionsFor(workOptions);
 
-$('.searchdiv .typeahead').typeahead(null, shows, orgs, people, works);
+var options = {
+  hint: false
+};
+
+$('.searchdiv .typeahead').typeahead(options, shows, orgs, people, works);
 
 });

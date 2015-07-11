@@ -111,7 +111,7 @@ parse_exact(<<"true">>) -> true;
 parse_exact(_) -> false.
 
 
-parse_includes(Bin) when is_binary(Bin) and byte_size(Bin) < 50 ->
+parse_includes(Bin) when is_binary(Bin), byte_size(Bin) < 50 ->
     Includes = binary:split(Bin, <<",">>),
     case lists:all(fun is_viable_include/1, Includes) of
         true -> [ list_to_atom(binary_to_list(X)) || X <- Includes ];

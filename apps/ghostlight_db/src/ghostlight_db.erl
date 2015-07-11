@@ -32,7 +32,9 @@
          get_work/2,
          get_work_listings/0,
          insert_work/1,
-         update_work/1
+         update_work/1,
+
+         resolve_vanity/2
         ]).
 
 -export([fix_dups/0]).
@@ -46,7 +48,12 @@
 
                 person_de_dupes,
                 org_de_dupes,
-                work_de_dupes
+                work_de_dupes,
+
+                show_get_vanity,
+                org_get_vanity,
+                person_get_vanity,
+                work_get_vanity
                 }).
 
 start_link() ->
@@ -99,6 +106,28 @@ handle_call(fix_dups, _From, State=#state{connection=C,
                   end, WorkRows),
 
     {reply, ok, State};
+
+handle_call({vanity, Resource, Name},
+            _From,
+            State=#state{connection=C,
+                         show_get_vanity=ShowGetVanity,
+                         org_get_vanity=OrgGetVanity,
+                         person_get_vanity=PersonGetVanity,
+                         work_get_vanity=WorkGetVanity}) ->
+
+    Stmt = case Resource of
+               shows -> ShowGetVanity;
+               organizations -> OrgGetVanity;
+               people -> PersonGetVanity;
+               works -> WorkGetVanity
+           end,
+
+    Response = case epgsql:execute_batch(C, [{Stmt, [Name]}]) of
+                   [{ok, []}] -> throw(not_found);
+                   [{ok, [{Id}]}] -> Id;
+                   _ -> error
+               end,
+    {reply, Response, State};
 
 
 handle_call(_Request, _From, State) ->
@@ -167,6 +196,18 @@ insert_person(Person) ->
 update_person(Person) ->
     ghostlight_db_resource:update(ghostlight_db_person, Person).
 
+resolve_vanity(_, undefined) -> undefined;
+resolve_vanity(Resource, Id) ->
+    case ghostlight_db_utils:is_valid_uuid(Id) of
+        true -> Id;
+        false -> resolve_resource_vanity(Resource, Id)
+    end.
+
+resolve_resource_vanity(people, Name) -> gen_server:call(?MODULE, {vanity, people, Name});
+resolve_resource_vanity(organizations, Name) -> gen_server:call(?MODULE, {vanity, organizations, Name});
+resolve_resource_vanity(shows, Name) -> gen_server:call(?MODULE, {vanity, shows, Name});
+resolve_resource_vanity(works, Name) -> gen_server:call(?MODULE, {vanity, works, Name}).
+
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
@@ -206,13 +247,23 @@ prepare_statements(C) ->
     {ok, WorkParsed2} = epgsql:parse(C, "consolidate_ii", "UPDATE performances SET work_id = $1 WHERE work_id = $2", [uuid, uuid]),
     {ok, WorkParsed3} = epgsql:parse(C, "consolidate_iii", "DELETE FROM works WHERE work_id = $2", [uuid]),
     WorkDeDupes = [WorkParsed1, WorkParsed2, WorkParsed3],
- 
+    
+    {ok, ShowGetVanity} = epgsql:parse(C, "show_vanity", "SELECT show_id FROM shows WHERE vanity_name = $1", [text]),
+    {ok, OrgGetVanity} = epgsql:parse(C, "org_vanity", "SELECT org_id FROM organizations WHERE vanity_name = $1", [text]),
+    {ok, PersonGetVanity} = epgsql:parse(C, "person_vanity", "SELECT person_id FROM users WHERE vanity_name = $1", [text]),
+    {ok, WorkGetVanity} = epgsql:parse(C, "work_vanity", "SELECT work_id FROM works WHERE vanity_name = $1", [text]),
+
     State = #state{connection=C,
                    begin_statement=BeginStmt,
                    commit_statement=CommitStmt,
                    person_de_dupes=PplDeDupes,
                    org_de_dupes=OrgDeDupes,
-                   work_de_dupes=WorkDeDupes
+                   work_de_dupes=WorkDeDupes,
+
+                   show_get_vanity=ShowGetVanity,
+                   org_get_vanity=OrgGetVanity,
+                   person_get_vanity=PersonGetVanity,
+                   work_get_vanity=WorkGetVanity
                    },
     State.
 

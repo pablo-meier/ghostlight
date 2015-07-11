@@ -1,6 +1,8 @@
-%%% @doc Wrapper around the Cowboy REST endpoint to handle common callback values,
+%%% @doc
+%%% Wrapper around the Cowboy REST endpoint to handle common callback values,
 %%% since every resource will take the same content-types, allow the same methods,
 %%% etc.
+%%% @end
 -module(ghostlight_resource).
 -behaviour(gen_server).
 
@@ -34,6 +36,12 @@
             update_template
          }).
 
+-record(resource_request, {
+          resource :: works | people | shows | organizations,
+          command  :: edit | listing | get,
+          id       :: binary() | undefined
+       }).
+
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
@@ -41,19 +49,19 @@ start_link() ->
 init([]) ->
     Resources = 
         [
-         [{resource_name, "people"},
+         [{resource_name, people},
           {module, ghostlight_people},
           {template_base, person}],
 
-         [{resource_name, "shows"},
+         [{resource_name, shows},
           {module, ghostlight_show},
           {template_base, show}],
 
-         [{resource_name, "organizations"},
+         [{resource_name, organizations},
           {module, ghostlight_org},
           {template_base, org}],
 
-         [{resource_name, "works"},
+         [{resource_name, works},
           {module, ghostlight_work},
           {template_base, work}]
         ],
@@ -127,6 +135,7 @@ resource_to_json(Req, State) ->
     Req2 = cowboy_req:set_meta(response_type, json, Req),
     ResourceName = cowboy_req:binding(resource, Req2),
     Id = cowboy_req:binding(resource_id, Req2),
+
     try
         #render_pack{module = Module} = get_renderpack(ResourceName),
         Body = make_appropriate_json(Id, Module),
@@ -152,10 +161,11 @@ make_appropriate_json(Id, Module) ->
 %%% @private
 resource_to_html(Req, State) ->
     Req2 = cowboy_req:set_meta(response_type, html, Req),
-    ResourceName = cowboy_req:binding(resource, Req2),
-    Id = cowboy_req:binding(resource_id, Req2),
-    Command = cowboy_req:binding(command, Req2),
-
+    #resource_request {
+        resource=ResourceName,
+        id=Id,
+        command=Command
+    } = resolve_resource_request(Req2),
     try
         RenderPack = get_renderpack(ResourceName),
         Body = make_appropriate_html(Id, Command, RenderPack),
@@ -168,26 +178,54 @@ resource_to_html(Req, State) ->
     end.
 
 
-make_appropriate_html(undefined, undefined, #render_pack{module=Module,
-                                                         get_listing_template=ListingTemplate}) ->
+make_appropriate_html(_, listing, #render_pack{module=Module,
+                                               get_listing_template=ListingTemplate}) ->
     Proplist = Module:get_listings_html(),
     {ok, Body} = ListingTemplate:render(Proplist),
     Body;
 make_appropriate_html(<<"new">>, _, #render_pack{update_template=UpdateTemplate}) ->
     {ok, Body} = UpdateTemplate:render([]),
     Body;
-make_appropriate_html(Id, undefined,#render_pack{module=Module,
+make_appropriate_html(Id, get,#render_pack{module=Module,
                                                  get_template=GetTemplate}) ->
     Proplist = Module:get_html(Id),
     {ok, Body} = GetTemplate:render(Proplist),
     Body;
-make_appropriate_html(Id, <<"edit">>, #render_pack{module=Module,
+make_appropriate_html(Id, edit, #render_pack{module=Module,
                                                    update_template=UpdateTemplate} ) ->
     Proplist = Module:edit_html(Id),
     {ok, Body} = UpdateTemplate:render(Proplist),
     Body.
 
 
+resolve_resource_request(Req) ->
+    {ResourceName, Id} = name_and_id(Req),
+    Command = get_command(cowboy_req:binding(command, Req), Id),
+    #resource_request {
+        resource=ResourceName,
+        command=Command,
+        id=Id
+    }.
+
+get_command(<<"edit">>, _) -> edit;
+get_command(undefined, undefined) -> listing;
+get_command(_, _) -> get.
+
+name_and_id(Req) ->
+    case valid_resource(cowboy_req:binding(resource, Req)) of
+        {ok, Resource} -> 
+            UUID = ghostlight_db:resolve_vanity(Resource, cowboy_req:binding(resource_id, Req)),
+            {Resource, UUID};
+        {vanity, Id} ->
+            UUID = ghostlight_db:resolve_vanity(people, Id),
+            {people, UUID}
+    end.
+
+valid_resource(<<"people">>) -> {ok, people};
+valid_resource(<<"shows">>) -> {ok, shows};
+valid_resource(<<"organizations">>) -> {ok, organizations};
+valid_resource(<<"works">>) -> {ok, works};
+valid_resource(Id) -> {vanity, Id}.
 
 
 %%% @private
@@ -245,7 +283,7 @@ get_renderpack(ResourceName) ->
     end.
 
 %% External API
--type ghostlight_rest_resource() :: {resource_name, Name::binary()}
+-type ghostlight_rest_resource() :: {resource_name, Name::atom()}
                                   | {module, Module::module()}
                                   | {get_template, Module::module()}
                                   | {get_listing_template, Module::module()}
@@ -259,7 +297,7 @@ register(ResourceSpecs) ->
                 end, maps:new(), ResourceSpecs).
 
 register_resource(Options) ->
-    Name = ensure_binary(proplists:get_value(resource_name, Options)),
+    Name = proplists:get_value(resource_name, Options),
     Module = proplists:get_value(module, Options),
     [
      {get_template, GetHtml},
@@ -275,10 +313,6 @@ register_resource(Options) ->
     },
     {Name, Pack}.
 
-
--spec ensure_binary(Bin :: string() | binary()) -> binary().
-ensure_binary(Bin) when is_list(Bin) -> list_to_binary(Bin);
-ensure_binary(Bin) when is_binary(Bin) -> Bin.
 
 make_template_names(Basename) ->
     AsString = atom_to_list(Basename),

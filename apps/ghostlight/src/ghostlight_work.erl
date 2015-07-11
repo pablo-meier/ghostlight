@@ -152,6 +152,7 @@ json_to_record(Proplist) ->
     #work {
        id = proplists:get_value(<<"id">>, Proplist, null),
        title = proplists:get_value(<<"title">>, Proplist),
+       vanity_name = ghostlight_utils:vanity_name_json_to_binary(Proplist),
        authors = [ ghostlight_utils:person_or_org_json_to_record(Author)
                    || Author <- proplists:get_value(<<"authors">>, Proplist) ],
        description = proplists:get_value(<<"description">>, Proplist, null),

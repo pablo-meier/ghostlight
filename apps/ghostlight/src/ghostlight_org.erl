@@ -156,6 +156,8 @@ json_to_record(Organization) ->
     OrgDescription = proplists:get_value(<<"description">>, Organization, null),
     OrgTagline = proplists:get_value(<<"tagline">>, Organization, null),
 
+    Vanity = ghostlight_utils:vanity_name_json_to_binary(Organization),
+
     Members = proplists:get_value(<<"members">>, Organization, []),
     DecodedMembers = [ decode_member(Member) || Member <- Members ],
 
@@ -167,6 +169,7 @@ json_to_record(Organization) ->
     #organization{
        id=OrgId,
        name=OrgName,
+       vanity_name=Vanity,
        tagline=OrgTagline,
        description=OrgDescription,
        members=DecodedMembers,

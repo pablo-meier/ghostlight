@@ -125,3 +125,6 @@ Major approaches:
 
 ## Fuck referrer spam
 http://veithen.github.io/2015/01/21/referrer-spam.html
+
+## Elasticsearch on SmartOS
+https://docs.joyent.com/images/smartos/elasticsearch

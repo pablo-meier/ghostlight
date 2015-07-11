@@ -184,14 +184,17 @@ json_to_record(Decoded) ->
     PressLinks = [ #press_link{link=proplists:get_value(<<"link">>, Link, null),
                                description=proplists:get_value(<<"description">>, Link, null)} || {Link} <- Press],
 
+    Vanity = ghostlight_utils:vanity_name_json_to_binary(Decoded),
+
     #show{
-        id = ShowId,
-        title = Title,
-        special_thanks = SpecialThanks,
-        dates = Dates,
-        producers = Producers,
-        hosts = Hosts,
-        performances = Performances,
+        id=ShowId,
+        title=Title,
+        vanity_name=Vanity,
+        special_thanks=SpecialThanks,
+        dates=Dates,
+        producers=Producers,
+        hosts=Hosts,
+        performances=Performances,
         external_links=ExternalLinks,
         press_links=PressLinks
     }.

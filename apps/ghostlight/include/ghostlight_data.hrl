@@ -32,6 +32,7 @@
 -record(person, {
     id = <<"">>           :: binary(),
     name = <<"">>         :: binary(),
+    vanity_name = null    :: null | binary(),
     external_links = null :: null | #external_links{},
     description = null    :: null | binary()
 }).
@@ -50,10 +51,10 @@
 -record(organization, {
     id = <<"">>                        :: binary(),
     name = <<"">>                      :: binary(),
+    vanity_name = null                 :: null | binary(),
     tagline = <<"">>                   :: binary(),
     description = <<"">>               :: binary(),
     parent = {id, <<"">>}              :: organization_parent(),
-    vanity_name = <<"">>               :: binary(),
     date_founded = null                :: datetime(),
     external_links = #external_links{} :: #external_links{},
     members = []                       :: list(#org_member{}),
@@ -64,6 +65,7 @@
 -record(work, {
     id = <<"">>                :: binary(),
     title = <<"">>             :: binary(),
+    vanity_name = null         :: null | binary(),
     authors = []               :: list(#person{}) | list(#organization{}),
     description = null         :: null | binary(),
     collaborating_orgs = []    :: [#organization{}],
@@ -93,6 +95,7 @@
 -record(show, {
     id = null               :: binary(),
     title = <<"">>          :: binary(),
+    vanity_name = null      :: null | binary(),
     producers = []          :: list(#person{} | #organization{}),
     performances = []       :: list(#performance{}),
     special_thanks = null   :: null | binary(),

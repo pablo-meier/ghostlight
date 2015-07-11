@@ -75,7 +75,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 terminate(Reason, #db_state{connection=C}) ->
-    lager:error("DB server (ORGS) terminating: ~p", [Reason]),
+    lager:error("DB server (RESOURCE) terminating: ~p", [Reason]),
     epgsql:close(C).
 
 code_change(_OldVsn, State, _Extra) ->

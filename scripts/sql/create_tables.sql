@@ -32,12 +32,14 @@ CREATE TABLE IF NOT EXISTS users (
     last_login timestamp with TIME ZONE NOT NULL,
     date_joined timestamp with TIME ZONE NOT NULL
 );
+CREATE INDEX ON users_vanity_names ON users(vanity_name);
 
 -- Organizations that put on shows.
 CREATE TABLE IF NOT EXISTS organizations (
     org_id UUID PRIMARY KEY,
     parent_org UUID,
     name text NOT NULL,
+    vanity_name TEXT UNIQUE,
     tagline_src TEXT,
     tagline_markdown TEXT,
     description_src TEXT,
@@ -46,6 +48,7 @@ CREATE TABLE IF NOT EXISTS organizations (
     date_founded date,
     visibility TEXT NOT NULL DEFAULT 'public'
 );
+CREATE INDEX ON orgs_vanity_names ON organizations(vanity_name);
 
 -- Festivals are collections of shows, like Fringe, Serials, or Asking For Trouble.
 -- Each show is different, but they are linked.
@@ -59,6 +62,7 @@ CREATE TABLE IF NOT EXISTS festivals (
 -- Shows, per above. If it's got a program, it's a show.
 CREATE TABLE IF NOT EXISTS shows (
     show_id UUID PRIMARY KEY,
+    vanity_name TEXT UNIQUE,
     title text NOT NULL,
     festival_id UUID REFERENCES festivals(festival_id),
     description_src TEXT,
@@ -66,6 +70,7 @@ CREATE TABLE IF NOT EXISTS shows (
     special_thanks TEXT,
     date_created TIMESTAMP WITH TIME ZONE NOT NULL
 );
+CREATE INDEX ON shows_vanity_names ON shows(vanity_name);
 
 CREATE TABLE IF NOT EXISTS producers (
     show_id UUID NOT NULL REFERENCES shows(show_id),
@@ -79,6 +84,7 @@ CREATE TABLE IF NOT EXISTS producers (
 -- Works, per above. If you can get a script, it's a work.
 CREATE TABLE IF NOT EXISTS works (
     work_id UUID PRIMARY KEY,
+    vanity_name TEXT UNIQUE,
     title TEXT NOT NULL,
     description_src TEXT,
     description_markdown TEXT,
@@ -89,6 +95,7 @@ CREATE TABLE IF NOT EXISTS works (
     minutes_long INTEGER,
     acl TEXT NOT NULL DEFAULT 'public'
 );
+CREATE INDEX ON works_vanity_names ON works(vanity_name);
 
 
 -- A unit of performance of a SHOW, per above. If it's got a cast, it's a performance.

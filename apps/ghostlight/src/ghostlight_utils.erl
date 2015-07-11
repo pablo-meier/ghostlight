@@ -4,6 +4,7 @@
          external_links_json_to_record/1,
          external_links_record_to_proplist/1,
          external_links_record_to_json/1,
+         vanity_name_json_to_binary/1,
          json_with_valid_values/1,
          handle_errors/4,
          proplist_with_valid_values/1,
@@ -34,6 +35,17 @@ external_links_json_to_record(Json) when is_list(Json) ->
                 newplayx = proplists:get_value(<<"newplayx">>, SocialBlock, null)
             }
     end.
+
+
+vanity_name_json_to_binary(Json) when is_list(Json) ->
+    validate_vanity(proplists:get_value(<<"vanity">>, Json, null)).
+
+validate_vanity(null) -> null;
+validate_vanity(Vanity) when is_binary(Vanity), byte_size(Vanity) < 25 ->
+    matches_vanity_pattern(re:run(Vanity, "^[a-zA-Z0-9_.]+$")).
+
+matches_vanity_pattern({match, Value}) -> Value;
+matches_vanity_pattern(nomatch) -> throw(invalid_vanity_name_format).
 
 external_links_record_to_proplist(null) -> [];
 external_links_record_to_proplist(

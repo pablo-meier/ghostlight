@@ -1,0 +1,128 @@
+{
+  "title" : "At The Table",
+  "dates" : ["2015-06-13T20:30:00.000Z",
+             "2015-06-19T20:30:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "Fault Line Theatre",
+        "description" : "**Fault Line Theatre** creates and produces socially relevant, character-driven plays for today’s audiences. By employing the best members of our artistic community, **Fault Line Theatre** strives both to challenge veteran theatergoers and welcome those new to the art form."
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "At The Table",
+        "authors": [{"person": {"name": "Michael Perlman"}}],
+        "description": "What happens in a changing America when those at the center of the conversation suddenly find themselves on the periphery, and those who have been marginalized begin to have their voices heard? _AT THE TABLE_ tells the story of a diverse group of friends on their annual retreat away from the city. Expecting good times and casual conversation, as liquor flows and tongues loosen, what emerges is a struggle to define their own identities. No subject is taboo and no issue is safe. While exploring who they believe themselves to be, they discover how others see them and where they stand."
+      },
+      "directors": [{"name": "Michael Perlman"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Rachel Christopher"},
+          "role": "Lauren"
+        },
+        {
+          "performer" : {"name": "Craig Wesley Divino"},
+          "role": "Stuart"
+        },
+        {
+          "performer" : {"name": "Claire Karpen"},
+          "role": "Chris"
+        },
+        {
+          "performer" : {"name": "Jimmy King"},
+          "role": "Elliot"
+        },
+        {
+          "performer" : {"name": "Ben Mehl"},
+          "role": "Lief"
+        },
+        {
+          "performer" : {"name": "Aaron Rossini"},
+          "role": "Nate"
+        },
+        {
+          "performer" : {"name": "Jude Sandy"},
+          "role": "Nicholas"
+        },
+        {
+          "performer" : {"name": "Stacey Yen"},
+          "role": "Sophie"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "Izzy Fields" }},
+          "job" : "Costume Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "John Eckert" }},
+          "job" : "Lighting Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Elizabeth Goodman" }},
+          "job" : "Production Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Tristan Jeffers" }},
+          "job" : "Set Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Chad Raines" }},
+          "job" : "Sound Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Nicole Santiago" }},
+          "job" : "Stage Management Intern, Deck Crew"
+        },
+        {
+          "contributor" : {"person": {"name" : "Sean M. Daniels" }},
+          "job" : "Production Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jenn Tash" }},
+          "job" : "Technical Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jill Rafson" }},
+          "job" : "Dramaturg"
+        },
+        {
+          "contributor" : {"org": {"name" : "Matt Ross PR" }},
+          "job" : "Press Representative"
+        },
+        {
+          "contributor" : {"person": {"name" : "Becky Phillips" }},
+          "job" : "Props"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alie Rose Dachis" }},
+          "job" : "Poster Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Matt Clevy" }},
+          "job" : "Communications Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "John Racioppo" }},
+          "job" : "Communications"
+        },
+        {
+          "contributor" : {"person": {"name" : "Adam Suritz" }},
+          "job" : "Communications Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Craig Wesley Divino" }},
+          "job" : "Co-Artistic Director"
+        },
+        {
+          "contributor" : {"person": {"name" : "Aaron Rossini" }},
+          "job" : "Co-Artistic Director"
+        }
+      ]
+    }
+  ]
+}

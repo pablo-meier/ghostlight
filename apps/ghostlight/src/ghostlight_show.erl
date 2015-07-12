@@ -215,7 +215,7 @@ performance_json_to_record(Proplist) ->
        description = Description
     }.
 
-onstage_json_to_record({Onstage}) ->
+onstage_json_to_record(Onstage) ->
     Performer = ghostlight_people:json_to_record(proplists:get_value(<<"performer">>, Onstage)),
     Role = proplists:get_value(<<"role">>, Onstage),
     #onstage{
@@ -223,7 +223,7 @@ onstage_json_to_record({Onstage}) ->
       role = Role
     }.
 
-offstage_json_to_record({Offstage}) ->
+offstage_json_to_record(Offstage) ->
     Contributor = ghostlight_utils:person_or_org_json_to_record(proplists:get_value(<<"contributor">>, Offstage)),
     Job = proplists:get_value(<<"job">>, Offstage),
     #offstage{

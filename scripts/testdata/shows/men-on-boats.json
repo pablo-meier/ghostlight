@@ -1,0 +1,120 @@
+{
+  "title" : "Men on Boats",
+  "dates" : [
+             "2015-06-19T20:30:00.000Z",
+             "2015-06-29T16:00:00.000Z"
+             ],
+
+  "producers": [
+    {
+      "org" : {
+        "name": "Clubbed Thumb",
+        "description" : "Clubbed Thumb commissions, develops and produces funny, strange and provocative new plays by living American writers. Since its founding in 1996, the company has earned five Obies including the Ross Wetzsteon Award for sustained artistic excellence. We have presented plays in every form of development, including over 90 full productions.\n\nOur plays vary in style and content, but are always intermission-less, 90 minutes or under, and un-produced in New York City. They feature substantial and challenging roles for both men and women, are questioning, formally inventive, theatrical, and, somewhere in the text, they contain a sense of humor. While our emphasis is emerging artists, we provide a home for artists at all stages of their careers to make unique work and take risks in a safe and well-supported environment.\n\nIn 19 seasons many now well-established playwrights, including Sarah Ruhl, Gina Gionfriddo, Jordan Harrison, Lisa D’Amour and Rinne Groff made their New York and in some cases professional debut in Summerworks. Accolades awarded our alumni artists include the Pulitzer short-list, Tony, MacArthur, Steinberg, Kesselring, as well as numerous Susan Smith Blackburn, Guggenheim, Whiting and Obie Awards. In 2014 alone work that has been developed with Clubbed Thumb has been produced at Playwrights Horizons, Mark Taper Forum, Actor’s Theater of Louisville, South Coast Rep, Victory Gardens, Tricycle Theater in London, San Francisco Playhouse, and more.\n\n### PRODUCTION\n\nEvery June we present Summerworks, our annual festival of new plays and our cornerstone programming. The festival features productions of three new plays, a night of devised work made for the occasion and readings by our early-career writers. In 2015 we will present our 20th Summerworks."
+      }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Men on Boats",
+        "authors" : [{"person": {"name": "Jaclyn Backhaus"}}],
+        "description": "Ten explorers. Four boats. One grand canyon. A true(ish) story.",
+        "minutes_long": 90
+      },
+      "directors": [{"name": "Will Davis"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Jess Barbagallo"},
+          "role" : "Old Shady"
+        },
+        {
+          "performer" : {"name": "Becca Blackwell"},
+          "role" : "Hawkins"
+        },
+        {
+          "performer" : {"name": "Hannah Cabell"},
+          "role" : "OG"
+        },
+        {
+          "performer" : {"name": "Danielle Davenport"},
+          "role" : "Hall"
+        },
+        {
+          "performer" : {"name": "Danaya Esperanza"},
+          "role" : "Seneca"
+        },
+        {
+          "performer" : {"name": "Donnetta Lavinia Grays"},
+          "role" : "Sumner"
+        },
+        {
+          "performer" : {"name": "Birgit Huppuch"},
+          "role" : "Goodman"
+        },
+        {
+          "performer" : {"name": "Layla Khoshnoudi"},
+          "role" : "Bradley"
+        },
+        {
+          "performer" : {"name": "Kelly McAndrew"},
+          "role" : "Powell"
+        },
+        {
+          "performer" : {"name": "Kristen Sieh"},
+          "role" : "Dunn"
+        }
+      ],
+      "offstage" : [
+        {
+            "contributor" : {"person": {"name" : "Arnulfo Maldonado" }},
+            "job" : "Scenic Design"
+        },
+        {
+            "contributor" : {"person": {"name" : "Solomon Weisbard" }},
+            "job" : "Lighting Design"
+        },
+        {
+            "contributor" : {"person": {"name" : "Ásta Bennie Hostetter" }},
+            "job" : "Costume Designer"
+        },
+        {
+            "contributor" : {"org": {"name" : "Jane Shaw" }},
+            "job" : "Sound Design"
+        },
+        {
+            "contributor" : {"person": {"name" : "Sunneva Stapleton" }},
+            "job" : "Production Stage Manager"
+        },
+        {
+            "contributor" : {"person": {"name" : "Avery Reed" }},
+            "job" : "Costume Assistant"
+        },
+        {
+            "contributor" : {"person": {"name" : "Alex Hansen" }},
+            "job" : "Props Assistant"
+        },
+        {
+            "contributor" : {"org": {"name" : "Ilana Khanin" }},
+            "job" : "Assistant Stage Manager"
+        },
+        {
+            "contributor" : {"person": {"name" : "Danielle Santos" }},
+            "job" : "Assistant Director"
+        },
+        {
+            "contributor" : {"person": {"name" : "Allie Freed" }},
+            "job" : "Production Assistant"
+        },
+        {
+            "contributor" : {"person": {"name" : "Colette Girardin" }},
+            "job" : "Production Assistant"
+        },
+        {
+            "contributor" : {"person": {"name" : "Laakan McHardy" }},
+            "job" : "Production Assistant"
+        }
+      ]
+    }
+  ]
+}

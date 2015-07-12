@@ -133,7 +133,10 @@ content_types_accepted(Req, State) ->
 %%% @private
 resource_to_json(Req, State) ->
     Req2 = cowboy_req:set_meta(response_type, json, Req),
-    ResourceName = cowboy_req:binding(resource, Req2),
+    ResourceName = case valid_resource(cowboy_req:binding(resource, Req2)) of
+                       {ok, Res} -> Res;
+                       _ -> poop
+                   end,
     Id = cowboy_req:binding(resource_id, Req2),
 
     try
@@ -230,7 +233,10 @@ valid_resource(Id) -> {vanity, Id}.
 
 %%% @private
 post_resource(Req, State) ->
-    ResourceName = cowboy_req:binding(resource, Req),
+    ResourceName = case valid_resource(cowboy_req:binding(resource, Req)) of
+                       {ok, Res} -> Res;
+                       _ -> poop
+                   end,
     #render_pack{module = Module} = get_renderpack(ResourceName),
     {ok, RequestBody, Req2} = cowboy_req:body(Req),
     Req3 = cowboy_req:set_meta(response_type, json, Req2),
@@ -249,7 +255,7 @@ post_resource(Req, State) ->
     end.
 
 
-make_appropriate_json(null, <<"POST">>, Module, Record) ->
+make_appropriate_json(undefined, <<"POST">>, Module, Record) ->
     NewId = Module:post_json(Record),
     Response = jsx:encode([{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(NewId)}]),
     {true, Response};

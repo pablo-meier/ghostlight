@@ -1,0 +1,79 @@
+{
+  "title" : "Singles in Agriculture",
+  "dates" : ["2015-06-12T20:30:00.000Z",
+             "2015-06-14T14:00:00.000Z",
+             "2015-06-21T20:00:00.000Z",
+             "2015-07-01T19:00:00.000Z"],
+  "producers": [
+    {
+      "org" : {
+        "name": "The Brick Theater",
+        "description" : "The Brick Theater, Inc is a not-for-profit theater company dedicated to nurturing the work of emerging artists at its performance space in Williamsburg, Brooklyn—The Brick.\n\nThe Brick presents world premieres, monthly performance series, and seasonal festivals, expanding Williamsburg’s profile as a destination for cutting-edge art and entertainment.\n\nThe Brick continues to seek new artists and projects, to provide them with a creative home, and to serve as Williamsburg’s primary incubator of innovative theater arts. "
+      }
+    },
+    {
+      "person": { "name": "Jessika Doyel" }
+    }
+  ],
+
+  "performances": [
+    {
+      "work" : {
+        "title" : "Singles in Agriculture",
+        "authors": [{"person": {"name": "Abby Rosebrock"}}],
+        "minutes_long" : 80,
+        "description": "Priscilla is a resilient young army widow who loves Modern Family and talks to her pygmy goats; Joel is an Oklahoma dairy farmer who still hasn't shaken the tent-revival dogmas of his youth. On their last night together at the annual dating convention for Singles in Agriculture, Priscilla angles for sex, while Joel pursues his own, mysterious intent.\n\n Inspired by research on the real-life organization, Singles in Agriculture (O’Neill Finalist, 2015) offers glimpses into a rural landscape where social isolation and economic exploitation intensify the hopes, anxieties, and losses that we all sign up for when we search for love. "
+      },
+      "directors": [{"name": "Stephanie Ward"}],
+      "onstage": [
+        {
+          "performer" : {"name": "Graeme Gillis"},
+          "role" : "Joel"
+        },
+        {
+          "performer" : {"name": "Abby Rosebrock"},
+          "role" : "Priscilla"
+        },
+        {
+          "performer" : {"name": "Dawn McGee"},
+          "role" : "Lois"
+        }
+      ],
+      "offstage" : [
+        {
+          "contributor" : {"person": {"name" : "David Hyman" }},
+          "job" : "Costume Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Alberto Ruiz" }},
+          "job" : "Lighting Design, Props Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Rena René Waits" }},
+          "job" : "Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Jen Price Fick" }},
+          "job" : "Set Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Daniel Melnick" }},
+          "job" : "Sound Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Brad Mead" }},
+          "job" : "Logo Design"
+        },
+        {
+          "contributor" : {"person": {"name" : "Haley Carter" }},
+          "job" : "Assistant Stage Manager"
+        },
+        {
+          "contributor" : {"person": {"name" : "Raul Hernandez" }},
+          "job" : "Assistant Stage Manager"
+        }
+
+      ]
+    }
+  ]
+}

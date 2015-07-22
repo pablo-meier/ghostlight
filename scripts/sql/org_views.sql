@@ -7,13 +7,22 @@ CREATE VIEW performances_in_show AS
     SELECT 
         s.show_id,
         (SELECT to_json(array_agg(show_works)) AS performances
-         FROM (SELECT 
-                   (w.work_id, w.title)::titled_pair AS work
-                   FROM works w
-                   INNER JOIN performances p USING (work_id)
-                   INNER JOIN shows s2 USING (show_id)
-                   WHERE s2.show_id = s.show_id
-                   ORDER BY p.performance_order) AS show_works)
+         FROM (SELECT
+                 (w.work_id,
+                  w.title,
+                  to_json(ARRAY(SELECT (CASE WHEN a.person_id IS NULL
+                                  THEN json_build_object('organization',  (a.org_id, o.name)::named_pair)
+                                  ELSE json_build_object('person', (a.person_id, p.name)::named_pair)
+                                END)
+                      FROM authorship a
+                      LEFT OUTER JOIN people p USING (person_id)
+                      LEFT OUTER JOIN organizations o USING (org_id)
+                      WHERE a.work_id = w.work_id)))::work_and_authors AS work
+                  FROM works w
+                  INNER JOIN performances p USING (work_id)
+                  INNER JOIN shows s2 USING (show_id)
+                  WHERE s2.show_id = s.show_id
+                  ORDER BY p.performance_order) AS show_works)
     FROM shows s;
 
 

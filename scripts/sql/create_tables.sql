@@ -238,13 +238,10 @@ CREATE TABLE IF NOT EXISTS show_hosts (
 -- These types are for the queries we do on the resources, which will often require
 -- composite data.
 
-CREATE TYPE person_pair AS (id UUID, name TEXT);
-CREATE TYPE org_pair AS (org_id UUID, name TEXT);
-CREATE TYPE work_pair AS (work_id UUID, title TEXT);
-CREATE TYPE show_pair AS (work_id UUID, title TEXT);
-
 CREATE TYPE named_pair AS (id UUID, name TEXT);
 CREATE TYPE titled_pair AS (id UUID, title TEXT);
+
+CREATE TYPE work_and_authors AS (id UUID, title TEXT, authors JSON);
 
 CREATE TYPE external_link AS (link TEXT, type link_type);
 CREATE TYPE press_link AS (link TEXT, description TEXT);

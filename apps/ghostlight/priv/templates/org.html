@@ -31,7 +31,7 @@
       <tr>
         <td>
           {% for performance in show.performances %}
-          <a href="/works/{{ performance.work_id }}">{{ performance.work_title }}</a><br />
+          <em><a href="/works/{{ performance.work_id }}">{{ performance.work_title }}</a></em><br />
           {% endfor %}
         </td>
         <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>

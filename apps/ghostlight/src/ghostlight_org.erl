@@ -159,10 +159,10 @@ json_to_record(Organization) ->
     Vanity = ghostlight_utils:vanity_name_json_to_binary(Organization),
 
     Members = proplists:get_value(<<"members">>, Organization, []),
-    DecodedMembers = [ decode_member(Member) || Member <- Members ],
+    DecodedMembers = [ decode_member(Member) || Member <- ghostlight_utils:default_list(Members) ],
 
     Employees = proplists:get_value(<<"employees">>, Organization, []),
-    DecodedEmployees = [ decode_employee(Emp) || Emp <- Employees ],
+    DecodedEmployees = [ decode_employee(Emp) || Emp <- ghostlight_utils:default_list(Employees) ],
 
     ExternalLinks = ghostlight_utils:external_links_json_to_record(Organization),
 

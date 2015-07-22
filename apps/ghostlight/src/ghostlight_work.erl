@@ -154,7 +154,7 @@ json_to_record(Proplist) ->
        title = proplists:get_value(<<"title">>, Proplist),
        vanity_name = ghostlight_utils:vanity_name_json_to_binary(Proplist),
        authors = [ ghostlight_utils:person_or_org_json_to_record(Author)
-                   || Author <- proplists:get_value(<<"authors">>, Proplist) ],
+                   || Author <- proplists:get_value(<<"authors">>, Proplist, []) ],
        description = proplists:get_value(<<"description">>, Proplist, null),
        minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null),
        collaborating_orgs = CollabOrg

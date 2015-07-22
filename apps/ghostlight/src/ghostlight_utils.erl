@@ -7,6 +7,7 @@
          vanity_name_json_to_binary/1,
          json_with_valid_values/1,
          handle_errors/4,
+         default_list/1,
          proplist_with_valid_values/1,
          person_or_org_json_to_record/1,
          person_or_org_record_to_json/1,
@@ -164,13 +165,19 @@ suitable_to_show(null) -> false;
 suitable_to_show(undefined) -> false;
 suitable_to_show(_) -> true.
 
+
 remove_null(null) -> <<"">>;
 remove_null(E) -> E.
+
+
+default_list(X) when is_list(X) -> X;
+default_list(_) -> [].
 
 
 augment_request_header(Body, Headers) ->
     NewValue = {<<"content-length">>, integer_to_list(iolist_size(Body))},
     lists:keyreplace(<<"content-length">>, 1, Headers, NewValue).
+
 
 handle_errors(400, _Headers, _Body, Req) ->
     Req;

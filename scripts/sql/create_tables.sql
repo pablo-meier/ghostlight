@@ -89,8 +89,8 @@ CREATE TABLE IF NOT EXISTS works (
     description_src TEXT,
     description_markdown TEXT,
 
-    -- Sometimes a work is made 'with' an org. Think You On The Moors Now with TRE, etc.
-    collaborating_org_id UUID REFERENCES organizations(org_id),
+    -- Sometimes a work is made 'with' orgs. Think 'You On The Moors Now' with TRE, etc.
+    collaborating_orgs_id UUID[] REFERENCES organizations(org_id),
 
     minutes_long INTEGER,
     acl TEXT NOT NULL DEFAULT 'public'
@@ -240,7 +240,11 @@ CREATE TABLE IF NOT EXISTS show_hosts (
 
 CREATE TYPE person_pair AS (id UUID, name TEXT);
 CREATE TYPE org_pair AS (org_id UUID, name TEXT);
-CREATE TYPE work_pair AS (work_id UUID, name TEXT);
+CREATE TYPE work_pair AS (work_id UUID, title TEXT);
+CREATE TYPE show_pair AS (work_id UUID, title TEXT);
+
+CREATE TYPE named_pair AS (id UUID, name TEXT);
+CREATE TYPE titled_pair AS (id UUID, title TEXT);
 
 CREATE TYPE external_link AS (link TEXT, type link_type);
 CREATE TYPE press_link AS (link TEXT, description TEXT);

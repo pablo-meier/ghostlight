@@ -172,10 +172,10 @@ json_to_record(Decoded) ->
     ShowId = proplists:get_value(<<"id">>, Decoded, undefined),
     Title = proplists:get_value(<<"title">>, Decoded),
     SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),
-    Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded)),
+    Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded, [])),
     Producers = [ ghostlight_utils:person_or_org_json_to_record(Producer)
                   || Producer <- proplists:get_value(<<"producers">>, Decoded, [])],
-    Performances = lists:map(fun performance_json_to_record/1, proplists:get_value(<<"performances">>, Decoded)),
+    Performances = lists:map(fun performance_json_to_record/1, proplists:get_value(<<"performances">>, Decoded, [])),
 
     ExternalLinks = ghostlight_utils:external_links_json_to_record(Decoded),
     Hosts = [ ghostlight_people:json_to_record(Host) || Host <- proplists:get_value(<<"hosts">>, Decoded, []) ],

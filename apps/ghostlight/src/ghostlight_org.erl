@@ -68,17 +68,8 @@ record_to_proplist(#org_return{
                          external_links=ExternalLinks
                      },
                      shows_produced=Shows}) ->
-  ShowProplist = [ [{show_id, ShowId},
-                    {show_title, ShowTitle},
-                    {performances, [ [{work_id, WorkId}, {work_title, WorkTitle}] 
-                                       || #performance{work=#work{id=WorkId, title=WorkTitle}} <- Performances ]},
-                    {first_show, lists:last(Dates)},
-                    {last_show, lists:nth(1, Dates)}
-                   ] || #show{ id=ShowId,
-                               title=ShowTitle,
-                               performances=Performances,
-                               dates=Dates
-                             } <- Shows ],
+
+  ShowProplist = [ ghostlight_show:record_to_proplist(Show) || Show <- Shows],
   EmployeesProplist = [ [{person_id, PersonId},
                          {person_name, PersonName},
                          {person_description, ghostlight_utils:remove_null(EmpDescription)},

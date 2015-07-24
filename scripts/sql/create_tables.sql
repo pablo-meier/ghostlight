@@ -88,14 +88,15 @@ CREATE TABLE IF NOT EXISTS works (
     title TEXT NOT NULL,
     description_src TEXT,
     description_markdown TEXT,
-
-    -- Sometimes a work is made 'with' orgs. Think 'You On The Moors Now' with TRE, etc.
-    collaborating_orgs_id UUID[] REFERENCES organizations(org_id),
-
     minutes_long INTEGER,
-    acl TEXT NOT NULL DEFAULT 'public'
 );
 CREATE INDEX works_vanity_names ON works(vanity_name);
+
+-- Sometimes a work is made 'with' orgs. Think 'You On The Moors Now' with TRE, etc.
+CREATE TABLE IF NOT EXISTS work_collaborating_orgs (
+    work_id UUID REFERENCES works(work_id) NOT NULL,
+    org_id UUID REFERENCES organizations(org_id) NOT NULL,
+);
 
 -- A unit of performance of a SHOW, per above. If it's got a cast, it's a performance.
 CREATE TABLE IF NOT EXISTS performances (

@@ -17,7 +17,7 @@
 
 external_links_json_to_record(Json) when is_list(Json) ->
     case proplists:get_value(<<"social">>, Json) of
-        undefined -> #external_links{};
+        undefined -> null;
         SocialBlock ->
             #external_links{
                 website = proplists:get_value(<<"website">>, SocialBlock, null),

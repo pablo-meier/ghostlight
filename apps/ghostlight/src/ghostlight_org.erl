@@ -84,7 +84,7 @@ record_to_proplist(#org_return{
                       {person_name, PersonName},
                       {person_description, ghostlight_utils:remove_null(MemDescription)}] 
                         || #org_member { description=MemDescription,
-                                         member=#person{
+                                         person=#person{
                                              id=PersonId,
                                              name=PersonName
                                          }
@@ -172,7 +172,7 @@ decode_member(Member) ->
     Description = proplists:get_value(<<"description">>, Member, null),
     Person = ghostlight_people:json_to_record(proplists:get_value(<<"person">>, Member)),
     #org_member{
-       member=Person,
+       person=Person,
        description=Description
     }.
 decode_employee(Emp) ->
@@ -185,7 +185,7 @@ decode_employee(Emp) ->
        description=Description
     }.
 
-member_to_json(#org_member{member=Person, description=Desc}) ->
+member_to_json(#org_member{person=Person, description=Desc}) ->
     ghostlight_utils:json_with_valid_values([
         {<<"person">>, ghostlight_people:record_to_json(Person)},
         {<<"description">>, Desc}

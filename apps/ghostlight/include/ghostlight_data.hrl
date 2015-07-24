@@ -30,15 +30,15 @@
 }).
 
 -record(person, {
-    id = <<"">>           :: binary(),
-    name = <<"">>         :: binary(),
+    id = null             :: null | binary(),
+    name = null           :: null | binary(),
     vanity_name = null    :: null | binary(),
     external_links = null :: null | #external_links{},
     description = null    :: null | binary()
 }).
 
 -record(org_member, {
-    member             :: #person{},
+    person             :: #person{},
     description = null :: null | binary()
 }).
 
@@ -49,11 +49,11 @@
 }).
 
 -record(organization, {
-    id = <<"">>                        :: binary(),
+    id = null                          :: null | binary(),
     name = <<"">>                      :: binary(),
     vanity_name = null                 :: null | binary(),
-    tagline = <<"">>                   :: binary(),
-    description = <<"">>               :: binary(),
+    tagline = null                     :: null | binary(),
+    description = null                 :: null | binary(),
     parent = {id, <<"">>}              :: organization_parent(),
     date_founded = null                :: datetime(),
     external_links = #external_links{} :: #external_links{},

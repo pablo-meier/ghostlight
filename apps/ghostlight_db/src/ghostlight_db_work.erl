@@ -29,7 +29,6 @@ db_to_record(
      {ok, [{
         WorkId,
         Title,
-        CollaboratingOrgs,
         Authors,
         DescriptionSrc,
         DescriptionMarkdown,
@@ -46,8 +45,7 @@ db_to_record(
                title=Title,
                authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jsx:decode(Authors) ],
                description=Description,
-               minutes_long=MinutesLong,
-               collaborating_orgs=[ parse_org(Org) || Org <- jsx:decode(CollaboratingOrgs) ]
+               minutes_long=MinutesLong
             },
        shows=[ parse_show(Show) || Show <- jsx:decode(Productions) ]
     }.
@@ -63,30 +61,17 @@ db_listings_to_record_list(Response) ->
 get_inserts(#work{title=Title,
                   authors=Authors,
                   description=Description,
-                  collaborating_orgs=Orgs,
                   minutes_long=MinutesLong},
             State=#db_state{insert_work_statement=IW,
                             insert_authorship_statement=IA}) ->
     WorkUUID = ghostlight_db_utils:fresh_uuid(),
     AuthorshipInserts = lists:flatten([ get_author_inserts(WorkUUID, Author, IA, State) || Author <- Authors ]),
-    {OrgInserts, OrgId} = case Orgs of
-                              [] -> {[], null};
-                              [Org] -> ghostlight_db_org:get_inserts(Org, State)
-                          end,
 
     Markdowned = ghostlight_db_utils:markdown_or_null(Description),
 
-    WorkInserts = lists:append([ OrgInserts,
-                                 [{IW, [WorkUUID, Title, Description, Markdowned, OrgId, MinutesLong, <<"public">>]}],
+    WorkInserts = lists:append([ [{IW, [WorkUUID, Title, Description, Markdowned, MinutesLong, <<"public">>]}],
                                  AuthorshipInserts]),
     {WorkInserts, WorkUUID}.
-
-
-parse_org(Org) ->
-    #organization{
-       id = proplists:get_value(<<"org_id">>, Org),
-       name = proplists:get_value(<<"name">>, Org)
-    }.
 
 
 parse_show(Show) ->
@@ -111,7 +96,6 @@ get_author_inserts(WorkId, Org=#organization{}, Stmt, State) ->
 get_update_commands(#work{id=WorkId,
                           title=Title,
                           description=DescSrc,
-                          collaborating_orgs=CollabOrgs,
                           minutes_long=MinutesLong,
                           authors=Authors},
                     State=#db_state{update_work_statement=UW,
@@ -121,23 +105,16 @@ get_update_commands(#work{id=WorkId,
     DescMarkdown = ghostlight_db_utils:markdown_or_null(DescSrc),
     AuthorshipInserts = lists:flatten([ get_author_inserts(WorkId, Author, IA, State) || Author <- Authors ]),
 
-    {CollabOrgInserts, CollabOrgId} = case CollabOrgs of
-                                          [] -> {[], null};
-                                          [CollabOrg] -> ghostlight_db_org:get_inserts(CollabOrg, State)
-                                      end,
-
     lager:info("WorkId is ~p~n", [WorkId]),
-    lager:info("CInserts ~p~n, OrgId ~p~n", [CollabOrgInserts, CollabOrgId]),
 
-    lists:append([ CollabOrgInserts,
-                   [{UW, [Title, DescSrc, DescMarkdown, CollabOrgId, MinutesLong, WorkId]},
+    lists:append([ [{UW, [Title, DescSrc, DescMarkdown, MinutesLong, WorkId]},
                     {DA, [WorkId]}],
                    AuthorshipInserts]).
 
 
 prepare_statements(C, State) ->
-    WorksSql = "INSERT INTO works (work_id, title, description_src, description_markdown, collaborating_org_id, minutes_long, acl) VALUES($1, $2, $3, $4, $5, $6, $7)", 
-    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, text, uuid, int8, text]),
+    WorksSql = "INSERT INTO works (work_id, title, description_src, description_markdown, minutes_long, acl) VALUES($1, $2, $3, $4, $5, $6)", 
+    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, text, int8, text]),
     AuthorshipSql = "INSERT INTO authorship (work_id, person_id, org_id) VALUES($1, $2, $3)",
     {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid, uuid]),
 
@@ -146,9 +123,6 @@ prepare_statements(C, State) ->
 SELECT
     w.work_id,
     w.title,
-    array_to_json(ARRAY(SELECT (o.org_id, o.name)::org_pair 
-                        FROM organizations o
-                        WHERE o.org_id = w.collaborating_org_id)) AS collaborating_org,
     array_to_json(ARRAY(SELECT (CASE WHEN a.person_id IS NULL
                                    THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
                                    ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
@@ -194,8 +168,8 @@ FROM works AS w
 ORDER BY w.title ASC",
     {ok, GetWorkListings} = epgsql:parse(C, "get_work_listings", GetWorkListingsSql, []),
 
-    UpdateWorkSql = "UPDATE works SET title = $1, description_src = $2, description_markdown = $3, collaborating_org_id = $4, minutes_long = $5 WHERE work_id = $6",
-    {ok, UpdateWork} = epgsql:parse(C, "update_work", UpdateWorkSql, [text, text, text, uuid, int8, uuid]),
+    UpdateWorkSql = "UPDATE works SET title = $1, description_src = $2, description_markdown = $3, minutes_long = $4 WHERE work_id = $5",
+    {ok, UpdateWork} = epgsql:parse(C, "update_work", UpdateWorkSql, [text, text, text, int8, uuid]),
     DeleteAuthorsSql = "DELETE FROM authorship WHERE work_id = $1",
     {ok, DeleteAuthors} = epgsql:parse(C, "delete_authorship", DeleteAuthorsSql, [uuid]),
 

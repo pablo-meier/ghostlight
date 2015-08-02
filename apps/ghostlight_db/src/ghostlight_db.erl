@@ -238,10 +238,9 @@ prepare_statements(C) ->
     {ok, OrgParsed4} = epgsql:parse(C, "consolidate_d", "UPDATE org_members SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
     {ok, OrgParsed5} = epgsql:parse(C, "consolidate_e", "UPDATE performance_offstage SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
     {ok, OrgParsed6} = epgsql:parse(C, "consolidate_f", "UPDATE producers SET org_id = $1 WHERE org_id = $2", [uuid, uuid]),
-    {ok, OrgParsed7} = epgsql:parse(C, "consolidate_g", "UPDATE works SET collaborating_org_id = $1 WHERE collaborating_org_id = $2", [uuid, uuid]),
-    {ok, OrgParsed8} = epgsql:parse(C, "consolidate_h", "DELETE FROM organizations WHERE org_id = $2", [uuid]),
+    {ok, OrgParsed7} = epgsql:parse(C, "consolidate_h", "DELETE FROM organizations WHERE org_id = $2", [uuid]),
     OrgDeDupes = [OrgParsed1, OrgParsed2, OrgParsed3, OrgParsed4, OrgParsed5,
-                  OrgParsed6, OrgParsed7, OrgParsed8],
+                  OrgParsed6, OrgParsed7],
 
     {ok, WorkParsed1} = epgsql:parse(C, "consolidate_i", "DELETE FROM authorship WHERE work_id = $2", [uuid]),
     {ok, WorkParsed2} = epgsql:parse(C, "consolidate_ii", "UPDATE performances SET work_id = $1 WHERE work_id = $2", [uuid, uuid]),

@@ -3,7 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <h1 class="text-center"><em>{{ title }}</em></h1>
+  <h1><em>{{ title }}</em></h1>
   <h3>By
     {% for author in authors %}
     {% if author.type == "org" %}<a href="/organization/{{ author.id }}">{{ author.name }}</a>{% else %}<a href="/people/{{ author.id }}">{{ author.name }}</a>{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</h3>
@@ -19,7 +19,7 @@
   {% endif %}
 
   {% if shows %}
-  <h2 class="text-center">Production History:</h2>
+  <h2>Production History:</h2>
   <ul>
     {% for show in shows %}
     <li>

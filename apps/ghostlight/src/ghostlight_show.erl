@@ -19,9 +19,12 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
+%%% Callback API
+
 get_html(ShowId) ->
     ShowRecord = ghostlight_db:get_show(ShowId),
-    record_to_proplist(ShowRecord).
+    Proplist = record_to_proplist(ShowRecord),
+    make_detail_proplist(Proplist).
 
 get_listings_html() ->
     ShowList = ghostlight_db:get_show_listings(),
@@ -53,6 +56,9 @@ edit_json(ShowRecord) ->
 
 get_id(#show{id=Id}) -> Id.
 
+
+%%% Data conversion
+
 record_to_proplist(#show{
                      id=ShowId,
                      title=Title,
@@ -68,19 +74,20 @@ record_to_proplist(#show{
     FirstDate = lists:nth(1, Dates),
     LastDate = lists:last(Dates),
 
-    [{id, ShowId},
-     {title, Title},
-     {producers, [ ghostlight_utils:person_or_org_record_to_proplist(Producer) || Producer <- Producers ]},
-     {special_thanks, SpecialThanks},
-     {dates, Dates},
-     {opening, FirstDate},
-     {closing, LastDate},
-     {hosts, [ ghostlight_people:record_to_proplist(Host) || Host <- Hosts]},
-     {press, [ [{link, Url}, {description, LinkDesc}] || #press_link{link=Url, description=LinkDesc} <- PressLinks]},
-     {description, ghostlight_utils:remove_null(Description)},
-     {links, ghostlight_utils:external_links_record_to_proplist(ExternalLinks)},
-     {performances, [ performance_to_proplists(Performance) || Performance <- Performances ] }
-    ].
+    ghostlight_utils:proplist_with_valid_values(
+      [{id, ShowId},
+       {title, Title},
+       {producers, [ ghostlight_utils:person_or_org_record_to_proplist(Producer) || Producer <- Producers ]},
+       {special_thanks, SpecialThanks},
+       {dates, Dates},
+       {opening, FirstDate},
+       {closing, LastDate},
+       {hosts, [ ghostlight_people:record_to_proplist(Host) || Host <- Hosts]},
+       {press, [ [{link, Url}, {description, LinkDesc}] || #press_link{link=Url, description=LinkDesc} <- PressLinks]},
+       {description, Description},
+       {links, ghostlight_utils:external_links_record_to_proplist(ExternalLinks)},
+       {performances, [ performance_to_proplists(Performance) || Performance <- Performances ] }
+      ]).
 
 
 performance_to_proplists(#performance{ 
@@ -90,21 +97,20 @@ performance_to_proplists(#performance{
                              directors=Directors,
                              directors_note=DirectorsNote,
                              description=Description}) ->
-    [{work, ghostlight_work:record_to_proplist(Work)},
-     {directors_note, ghostlight_utils:remove_null(DirectorsNote)},
-     {description, ghostlight_utils:remove_null(Description)},
-     {directors, [ ghostlight_people:record_to_proplist(Director) || Director <- Directors ]},
-     {onstage, onstage_as_proplists(Onstage)},
-     {offstage, offstage_as_proplists(Offstage)}].
+    ghostlight_utils:proplist_with_valid_values(
+      [{work, ghostlight_work:record_to_proplist(Work)},
+       {directors_note, DirectorsNote},
+       {description, Description},
+       {directors, [ ghostlight_people:record_to_proplist(Director) || Director <- Directors ]},
+       {onstage, [ onstage_as_proplist(Performer) || Performer <- Onstage ]},
+       {offstage, [ offstage_as_proplist(Person) || Person <- Offstage ]}]).
 
-onstage_as_proplists(OnstageList) ->
-    [ [{name, Name},
-       {role, ghostlight_utils:remove_null(Role)},
-       {person_id, PersonId}] || #onstage{ person=#person{id = PersonId, name = Name}, role = Role} <- OnstageList].
-offstage_as_proplists(OnstageList) ->
-    [ [{name, Name},
-       {job, Job},
-       {person_id, PersonId}] || #offstage{ contributor=#person{id = PersonId, name = Name}, job = Job} <- OnstageList].
+
+onstage_as_proplist(#onstage{ person=Person, role=Role}) ->
+    [{role, Role}] ++ ghostlight_people:record_to_proplist(Person).
+offstage_as_proplist(#offstage{ contributor=Person, job=Job}) ->
+    [{job, Job}] ++ ghostlight_people:record_to_proplist(Person).
+
 
 record_to_json(#show{
                   id=ShowId,
@@ -213,3 +219,27 @@ offstage_json_to_record(Offstage) ->
       contributor = Contributor,
       job = Job 
     }.
+
+%%% Helpers
+
+
+%%% @doc The templates need to have a bit more data when deciding how to present information,
+%%% this function adds properties to the proplist that are specific to the detail HTML template
+%%% and won't be needed if others call `record_to_proplist` on the data type.
+make_detail_proplist(Proplist) ->
+    Performances = proplists:get_value(performances, Proplist),
+    TaggedForRoles = [ tag_roles_in_cast(Performance) || Performance <- Performances ],
+    substitute_property(performances, Proplist, TaggedForRoles).
+
+
+tag_roles_in_cast(Performance) ->
+    Onstage = proplists:get_value(onstage, Performance, []),
+    NoRoles = lists:all(fun (X) -> proplists:get_value(role, X) =:= null end, Onstage),
+    case NoRoles of
+        true -> Performance ++ [{no_roles, true}];
+        false -> Performance
+    end.
+
+
+substitute_property(Key, Lst, Replacement) ->
+    proplists:delete(Key, Lst) ++ [{Key, Replacement}].

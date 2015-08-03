@@ -6,6 +6,7 @@ body {
 
 h1, h2, h3, h4, h5, .title {
     font-family: 'Ovo', serif;
+    text-align: center;
 }
 
 #footer {
@@ -15,12 +16,10 @@ h1, h2, h3, h4, h5, .title {
 }
 
 /* Search bar */
-
 .suggestion, .suggestion-header {
     background: white;
     width: 650px;
 }
-
 
 /* FORMS */
 

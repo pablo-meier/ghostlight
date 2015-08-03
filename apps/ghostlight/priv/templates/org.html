@@ -3,7 +3,7 @@
 {% block title %}{{ name }}{% endblock %}
 
 {% block content %}
-  <h1 class="text-center">{{ name }}</h1>
+  <h1>{{ name }}</h1>
 
   {% if tagline %}
   {% autoescape off %}
@@ -19,7 +19,7 @@
     {% endautoescape %}
   {% endif %}
 
-  <h2 class="text-center">Shows produced</h2>
+  <h2>Shows produced</h2>
   {% if shows %}
     {% for show in shows %}
       {% include "show_widget.html" %}

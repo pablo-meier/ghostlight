@@ -30,8 +30,7 @@
     <!-- If only one performance, author(s) here -->
     <h3>Presented by
         {% for producer in producers %}
-          {% if forloop.last and not forloop.first %} and {% endif %}
-          {% if producer.type == "org" %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last and producers|length != 2 %},  {% endif %}
+          {% if producer.type == "org" %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% include "comma_list.html" %}
         {% endfor %}</h3>
 
   {% include "social_media.html" %}
@@ -40,7 +39,7 @@
 
   {% if hosts %}
     <p>Hosted by {% for host in hosts %}
-    <a href="/people/{{ host.person_id }}">{{ host.person_name }}</a>&nbsp;
+    <a href="/people/{{ host.id }}">{{ host.name }}</a>&nbsp;
     {% endfor %}</p>
   {% endif %}
 
@@ -61,31 +60,34 @@
   <hr />
       <h3><a href="/works/{{ performance.work.work_id }}"><em>{{ performance.work.title }}</em></a></h3>
       <h5>by {% for author in performance.work.authors %}
-              {% if forloop.last and not forloop.first %} and {% endif %}<a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% if not forloop.last %},  {% endif %}
-              {% endfor %} </h5>
+               <a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% include "comma_list.html" %}
+             {% endfor %}</h5>
       <h5> Directed by 
       {% for director in performance.directors %}
-          {% if forloop.last and not forloop.first %} and {% endif %}
-          <a href="/people/{{ director.person_id }}">{{ director.name }}</a>{% if not forloop.last and producers|length != 2 %}, {% endif %}
+        <a href="/people/{{ director.person_id }}">{{ director.name }}</a>{% include "comma_list.html" %}
       {% endfor %}</h5>
 
       {% if performance.description %}
         {% autoescape off %} {{ performance.description }} {% endautoescape %}
       {% endif %}
 
-      <h5>Starring</h5>
-      <table>
+      {% if performance.no_roles %}
+        <p>With {% for onstage in performance.onstage %} <a href="/people/{{ onstage.id }}">{{ onstage.name }}</a>{% include "comma_list.html" %}{% endfor %}
+      {% else %}
+        <h5>Starring</h5>
+        <table>
+          <tr>
+              <th><strong>Role<strong></th>
+              <th><strong>Performer</strong></th>
+          </tr>
+        {% for onstage in performance.onstage %}
         <tr>
-            <th><strong>Role<strong></th>
-            <th><strong>Performer</strong></th>
+            <td>{{ onstage.role }}</td>
+            <td><a href="/people/{{ onstage.id }}">{{ onstage.name }}</a></td>
         </tr>
-      {% for onstage in performance.onstage %}
-      <tr>
-          <td>{{ onstage.role }}</td>
-          <td><a href="/people/{{ onstage.person_id }}">{{ onstage.name }}</a></td>
-      </tr>
-      {% endfor %} <!-- for onstage -->
-      </table>
+        {% endfor %} <!-- for onstage -->
+        </table>
+      {% endif %}
 
       {% if performance.offstage %}
       <h5>Creative Team</h5>
@@ -95,10 +97,10 @@
               <td>Contributor</td>
           </tr>
       {% for offstage in performance.offstage %}
-        <tr>
-            <td>{{ offstage.job }}</td>
-            <td><a href="/people/{{ offstage.person_id }}">{{ offstage.name }}</a></td>
-        </tr>
+          <tr>
+              <td>{{ offstage.job }}</td>
+              <td><a href="/people/{{ offstage.id }}">{{ offstage.name }}</a></td>
+          </tr>
       {% endfor %}
       </table>
       {% endif %}

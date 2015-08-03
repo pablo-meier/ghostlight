@@ -14,14 +14,14 @@
   {% endif %}
 
   {% if onstage_list %}
-    <h2 class="text-center" id="onstage">Performances</h2>
+    <h2 class="text-center" id="performance">Performance</h2>
     {% for show in onstage_list %}
       {% include "show_widget.html" %}
     {% endfor %}
   {% endif %}
 
   {% if director %}
-    <h2 class="text-center" id="directorships">Directorships</h2>
+    <h2 class="text-center" id="director">Director</h2>
     {% for show in director %}
       {% include "show_widget.html" %}
     {% endfor %}
@@ -42,7 +42,7 @@
   {% endif %}
 
   {% if authorship %}
-    <h2 class="text-center" id="authorships">Authorship</h2>
+    <h2 class="text-center" id="authorship">Authorship</h2>
     <ul>
     {% for work in authorship %}
       {% include "work_widget.html" %}
@@ -51,7 +51,7 @@
   {% endif %}
 
   {% if org_employee %}
-    <h2 class="text-center" id="member">Staff of</h2>
+    <h2 class="text-center" id="staff">Staff of</h2>
     {% for org in org_employee %}
       {% include "org_widget.html" %}
     {% endfor %}

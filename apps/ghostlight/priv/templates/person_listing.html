@@ -3,19 +3,17 @@
 {% block title %}People{% endblock %}
 
 {% block content %}
-  <h1>People</h1>
+  <h1 class="text-center">People</h1>
 
   <table>
       {% for person in people %}
       {% cycle 'first' 'second' 'third' 'last' as index silent %}
         {% if index == 'first' %}
-        <tr>
-            <td class="text-center"><a href="/people/{{ person.person_id }}">{{ person.person_name }}</a></td>
-        {% elif index == 'last' %}
-            <td class="text-center"><a href="/people/{{ person.person_id }}">{{ person.person_name }}</a></td>
-        </tr>
-        {% else %}
-            <td class="text-center"><a href="/people/{{ person.person_id }}">{{ person.person_name }}</a></td>
+            <tr class="row">
+        {% endif %}
+                <td class="text-center small-3 columns"><a href="/people/{{ person.person_id }}">{{ person.person_name }}</a></td>
+        {% if index == 'last' %}
+            </tr>
         {% endif %}
       {% endfor %}
   </table>

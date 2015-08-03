@@ -24,6 +24,7 @@
       {% endif %}
     </div>
   </div>
+
   {% if show.description %}
   <div class="row">
     <div class="small-12 large-12 columns text-center">
@@ -35,8 +36,9 @@
     <div class="small-12 large-12 columns">
       {% if show.performances %}
         {% for performance in show.performances %}
-        <p><a href="/works/{{ performance.work.work_id }}"><em>{{ performance.work.title }}</em></a>{% if performance.work.authors %}, by {% for author in performance.work.authors %}
-        {% if forloop.last and not forloop.first %} and {% endif %}<a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% if not forloop.last %},  {% endif %}{% endfor %}{% endif %}</p>
+          <p><a href="/works/{{ performance.work.work_id }}"><em>{{ performance.work.title }}</em></a>{% if performance.work.authors %}, by {% for author in performance.work.authors %}
+          {% if forloop.last and not forloop.first %} and {% endif %}<a href="/people/{{ author.person_id }}">{{ author.name }}</a>{% if not forloop.last %},  {% endif %}{% endfor %}{% endif %}{% if show.role %}, as <strong>{{show.role}}</strong>.{% endif %}{% if show.job %}, as <strong>{{ show.job }}</strong>.{% endif %}
+       </p>
         {% endfor %}
       {% endif %}
     </div>

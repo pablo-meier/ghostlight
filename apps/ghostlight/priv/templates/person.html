@@ -3,7 +3,7 @@
 {% block title %}{{ name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ name }}</h1>
+  <h1 class="text-center">{{ name }}</h1>
 
   {% include "social_media.html" %}
 
@@ -14,147 +14,53 @@
   {% endif %}
 
   {% if onstage_list %}
-    <h3>Performer in…</h3>
-    <table>
-      <tr>
-        <th><strong>Production</strong></th>
-        <th><strong>Producers</strong></th>
-        <th><strong>Piece</strong></th>
-        <th><strong>Role</strong></th>
-        <th><strong>Opening Night</strong></th>
-      </tr>
-    {% for onstage in onstage_list %}
-      <tr>
-        <td><a href="/shows/{{ onstage.show_id }}">{{ onstage.show_title }}</a></td>
-        <td>
-          {% for producer in onstage.producers %}
-            {% if forloop.last and not forloop.first %} and {% endif %}
-            {% if producer.is_org %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last and not onstage.producers|length == 2 %},  {% endif %}
-          {% endfor %}
-        </td>
-        <td><a href="/works/{{ onstage.work_id }}">{{ onstage.work_title }}</a></td>
-        <td><strong>{{ onstage.role }}</strong></td>
-        <td>{{ onstage.opening|date:"n/j/o" }}</td>
-      </tr>
+    <h2 class="text-center" id="onstage">Performances</h2>
+    {% for show in onstage_list %}
+      {% include "show_widget.html" %}
     {% endfor %}
-    </table>
   {% endif %}
 
   {% if director %}
-    <h3>Director of…</h3>
-    <table>
-      <tr>
-        <th><strong>Production</strong></th>
-        <th><strong>Producers</strong></th>
-        <th><strong>Piece</strong></th>
-        <th><strong>Opening Night</strong></th>
-      </tr>
-      {% for show in director %}
-      <tr>
-          <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>
-          <td>
-          {% for producer in show.producers %}
-            {% if forloop.last and not forloop.first %} and {% endif %}
-            {% if producer.is_org %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last and not show.producers|length == 2 %},  {% endif %}
-          {% endfor %}
-          </td>
-          <td>
-              {% for work in show.performances %}
-                  <a href="/works/{{ work.work_id }}">{{ work.work_title }}</a>
-                  {% if not forloop.last %}<br />{% endif %}
-              {% endfor %}
-          <td>{{ show.opening|date:"n/j/o" }}</td>
-      </tr>
-      {% endfor %}
-    </table>
+    <h2 class="text-center" id="directorships">Directorships</h2>
+    {% for show in director %}
+      {% include "show_widget.html" %}
+    {% endfor %}
   {% endif %}
 
   {% if producer %}
-    <h3>Producer of…</h3>
-    <table>
-      <tr>
-        <th><strong>Production</strong></th>
-        <th><strong>Piece(s)</strong></th>
-        <th><strong>Opening Night</strong></th>
-      </tr>
-      {% for show in producer %}
-      <tr>
-          <td><a href="/shows/{{ show.show_id }}">{{ show.show_title }}</a></td>
-          <td>{% for work in show.performances %}
-                  <a href="/works/{{ work.work_id }}">{{ work.work_title }}</a>
-                  {% if not forloop.last %}<br />{% endif %}
-              {% endfor %}
-          </td>
-          <td>{{ show.opening|date:"n/j/o" }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-
+    <h2 class="text-center" id="producer">Producer</h2>
+    {% for show in producer %}
+      {% include "show_widget.html" %}
+    {% endfor %}
   {% endif %}
 
   {% if offstage_list %}
-    <h3>Worked on…</h3>
-    <table>
-      <tr>
-        <th><strong>Production</strong></th>
-        <th><strong>Producers</strong></th>
-        <th><strong>Piece</strong></th>
-        <th><strong>Job</strong></th>
-        <th><strong>Opening Night</strong></th>
-      </tr>
-    {% for offstage in offstage_list %}
-      <tr>
-        <td><a href="/shows/{{ offstage.show_id }}">{{ offstage.show_title }}</a></td>
-        <td>
-          {% for producer in offstage.producers %}
-            {% if forloop.last and not forloop.first %} and {% endif %}
-            {% if producer.is_org %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last and not offstage.producers|length == 2 %},  {% endif %}
-          {% endfor %}
-        </td>
-        <td><a href="/works/{{ offstage.work_id }}">{{ offstage.work_title }}</a></td>
-        <td><strong>{{ offstage.job }}</strong></td>
-        <td>{{ offstage.opening|date:"n/j/o" }}</td>
-      </tr>
+    <h2 class="text-center" id="offstage">Offstage Work</h2>
+    {% for show in offstage_list %}
+      {% include "show_widget.html" %}
     {% endfor %}
-    </table>
   {% endif %}
 
   {% if authorship %}
-    <h3>Author of…</h3>
+    <h2 class="text-center" id="authorships">Authorship</h2>
     <ul>
-    {% for piece in authorship %}
-      <li><a href="/works/{{ piece.work_id }}">{{ piece.title }}</a></li>
+    {% for work in authorship %}
+      {% include "work_widget.html" %}
     {% endfor %}
     </ul>
   {% endif %}
 
   {% if org_employee %}
-    <h3>Staff of…</h3>
-    <table>
-      <tr>
-        <th><strong>Organization</strong></th>
-        <th><strong>Role</strong></th>
-      </tr>
+    <h2 class="text-center" id="member">Staff of</h2>
     {% for org in org_employee %}
-      <tr>
-        <td><a href="/organizations/{{ org.org_id }}">{{ org.org_name }}</a></td>
-        <td>{{ org.position }}</td>
-      </tr>
+      {% include "org_widget.html" %}
     {% endfor %}
-    </table>
   {% endif %}
 
   {% if org_member %}
-    <h3>Member of…</h3>
-    <table>
-      <tr>
-        <th><strong>Organization</strong></th>
-      </tr>
-    {% for member in org_member %}
-      <tr>
-        <td><a href="/organizations/{{ member.org_id }}">{{ member.org_name }}</a></td>
-      </tr>
+    <h2 class="text-center" id="member">Membership</h2>
+    {% for org in org_member %}
+      {% include "org_widget.html" %}
     {% endfor %}
-    </table>
   {% endif %}
 {% endblock %}

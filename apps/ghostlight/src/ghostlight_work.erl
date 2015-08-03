@@ -58,18 +58,9 @@ get_id(#work{id=Id}) -> Id.
 
 
 record_to_proplist(#work_return{
-                       work=#work{
-                               id = WorkId,
-                               title = WorkTitle,
-                               authors = Authors,
-                               description = Description,
-                               minutes_long = MinutesLong,
-                               collaborating_orgs = CollabOrg
-                           },
+                       work=Work,
                        shows=Shows}) ->
 
-  AuthorsProplist = [ [{author_id, AuthorId},
-                       {author_name, AuthorName}] || #person{id=AuthorId, name=AuthorName} <- Authors ],
   ShowsProplist = [ [{show_id, ShowId},
                      {show_title, ShowTitle},
                      {producers, [ org_or_person_to_proplist(Producer) ||
@@ -80,42 +71,30 @@ record_to_proplist(#work_return{
                              producers=Producers
                          } <- Shows ],
 
-  CollabOrgProplist = case CollabOrg of
-                          [] ->
-                              undefined;
-                          [#organization{
-                              id=CollabOrgId,
-                              name=CollabOrgName
-                            }] -> 
-                              [{org_id, CollabOrgId}, {org_name, CollabOrgName}]
-                      end,
-
-
-  [{id, WorkId},
-   {title, WorkTitle},
-   {authors, AuthorsProplist},
-   {description, Description},
-   {minutes_long, MinutesLong},
-   {collab_org, CollabOrgProplist},
-   {shows, ShowsProplist}];
+  record_to_proplist(Work) ++ [{shows, ShowsProplist}];
 
 record_to_proplist(#work{
                       id = WorkId,
                       title=WorkTitle,
-                      authors=Authors
-                     }) ->
-    [{<<"work_id">>, WorkId},
-     {<<"title">>, WorkTitle},
-     {<<"authors">>, [ org_or_person_to_proplist(Author) || Author <- Authors ]}].
+                      authors=Authors,
+                      description = Description,
+                      minutes_long = MinutesLong
+                   }) ->
+    [{id, WorkId},
+     {title, WorkTitle},
+     {authors, [ org_or_person_to_proplist(Author) || Author <- Authors ]},
+     {description, Description},
+     {minutes_long, MinutesLong}].
+
 
 org_or_person_to_proplist(#organization{id=Id, name=Name}) ->
-    [{<<"type">>, <<"org">>},
-     {<<"id">>, Id},
-     {<<"name">>, Name}];
+    [{type, <<"org">>},
+     {id, Id},
+     {name, Name}];
 org_or_person_to_proplist(#person{id=Id, name=Name}) ->
-    [{<<"type">>, <<"person">>},
-     {<<"id">>, Id},
-     {<<"name">>, Name}].
+    [{type, <<"person">>},
+     {id, Id},
+     {name, Name}].
 
 
 record_to_json(#work{

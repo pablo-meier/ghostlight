@@ -104,7 +104,7 @@ record_to_proplist(#organization{
                        tagline=Tagline,
                        description=Description
                    }) ->
-    [{org_id, Id},
+    [{id, Id},
      {name, Name},
      {tagline, ghostlight_utils:remove_null(Tagline)},
      {description, ghostlight_utils:remove_null(Description)}].

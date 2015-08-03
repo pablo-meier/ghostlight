@@ -59,7 +59,7 @@ db_to_record(
 
     AuthorList = [#work{
                      id = proplists:get_value(<<"work_id">>, Work),
-                     title = proplists:get_value(<<"name">>, Work)
+                     title = proplists:get_value(<<"title">>, Work)
                   } || Work <- ghostlight_db_utils:decode_not_null(Authorships)],
 
     OnstageList = [#show{
@@ -100,7 +100,7 @@ db_to_record(
                        performances = [#performance{
                                          work = #work {
                                                    id = proplists:get_value(<<"work_id">>, RoleObj),
-                                                   title = proplists:get_value(<<"name">>, RoleObj)
+                                                   title = proplists:get_value(<<"title">>, RoleObj)
                                                 }
                                       } || RoleObj <- proplists:get_value(<<"works">>, Show)],
                        producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)],
@@ -124,7 +124,7 @@ db_to_record(
                        performances = [#performance{
                                          work = #work {
                                                    id = proplists:get_value(<<"work_id">>, RoleObj),
-                                                   title = proplists:get_value(<<"name">>, RoleObj)
+                                                   title = proplists:get_value(<<"title">>, RoleObj)
                                                 }
                                       } || RoleObj <- proplists:get_value(<<"works">>, Show)]
                     } || Show <- ghostlight_db_utils:decode_not_null(Producer)],

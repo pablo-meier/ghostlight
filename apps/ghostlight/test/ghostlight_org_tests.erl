@@ -1,5 +1,6 @@
 -module(ghostlight_org_tests).
 -include_lib("eunit/include/eunit.hrl").
+
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
 %% Test the JSON to record for various org configs

@@ -70,44 +70,30 @@ record_to_proplist(#show{
 
     [{id, ShowId},
      {title, Title},
-     {producers, [ producer_to_proplist(Producer) || Producer <- Producers ]},
+     {producers, [ ghostlight_utils:person_or_org_record_to_proplist(Producer) || Producer <- Producers ]},
      {special_thanks, SpecialThanks},
      {dates, Dates},
      {opening, FirstDate},
      {closing, LastDate},
-     {hosts, [ [{<<"host_id">>, HostId}, {<<"host_name">>, HostName}] || #person{id=HostId, name=HostName} <- Hosts]},
-     {press, [ [{<<"link">>, Url}, {<<"description">>, LinkDesc}] || #press_link{link=Url, description=LinkDesc} <- PressLinks]},
+     {hosts, [ ghostlight_people:record_to_proplist(Host) || Host <- Hosts]},
+     {press, [ [{link, Url}, {description, LinkDesc}] || #press_link{link=Url, description=LinkDesc} <- PressLinks]},
      {description, ghostlight_utils:remove_null(Description)},
      {links, ghostlight_utils:external_links_record_to_proplist(ExternalLinks)},
      {performances, [ performance_to_proplists(Performance) || Performance <- Performances ] }
     ].
 
-producer_to_proplist(#organization{id=OrgId, name=OrgName}) ->
-    [{producer_id, OrgId},
-     {producer_name, OrgName},
-     {is_org, true}];
-producer_to_proplist(#person{id=PersonId, name=Name}) ->
-    [{producer_id, PersonId},
-     {producer_name, Name},
-     {is_org, false}].
 
 performance_to_proplists(#performance{ 
-                             work=#work{
-                                 id = WorkId,
-                                 title = WorkTitle,
-                                 authors = WorkAuthors
-                             },
+                             work=Work,
                              onstage=Onstage,
                              offstage=Offstage,
                              directors=Directors,
                              directors_note=DirectorsNote,
                              description=Description}) ->
-    [{work, [{title, WorkTitle},
-             {work_id, WorkId},
-             {authors, personlist_as_proplist(WorkAuthors)}]},
+    [{work, ghostlight_work:record_to_proplist(Work)},
      {directors_note, ghostlight_utils:remove_null(DirectorsNote)},
      {description, ghostlight_utils:remove_null(Description)},
-     {directors, personlist_as_proplist(Directors)},
+     {directors, [ ghostlight_people:record_to_proplist(Director) || Director <- Directors ]},
      {onstage, onstage_as_proplists(Onstage)},
      {offstage, offstage_as_proplists(Offstage)}].
 
@@ -119,9 +105,6 @@ offstage_as_proplists(OnstageList) ->
     [ [{name, Name},
        {job, Job},
        {person_id, PersonId}] || #offstage{ contributor=#person{id = PersonId, name = Name}, job = Job} <- OnstageList].
-personlist_as_proplist(DirectorList) ->
-    [ [{name, Name},
-       {person_id, PersonId}] || #person{id = PersonId, name = Name} <- DirectorList].
 
 record_to_json(#show{
                   id=ShowId,

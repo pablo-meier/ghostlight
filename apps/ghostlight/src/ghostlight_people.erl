@@ -104,8 +104,8 @@ record_to_proplist(#person{
                       id=PersonId,
                       name=PersonName
                    }) ->
-    [{person_name, PersonName},
-     {person_id, PersonId}].
+    [{id, PersonId},
+     {name, PersonName}].
 
 
 make_onstage_proplist(Show = #show{ performances=[#performance{

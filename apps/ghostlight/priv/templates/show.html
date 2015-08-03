@@ -31,7 +31,7 @@
     <h3>Presented by
         {% for producer in producers %}
           {% if forloop.last and not forloop.first %} and {% endif %}
-          {% if producer.is_org %}<a href="/organizations/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% else %}<a href="/people/{{ producer.producer_id }}">{{ producer.producer_name }}</a>{% endif %}{% if not forloop.last and producers|length != 2 %},  {% endif %}
+          {% if producer.type == "org" %}<a href="/organizations/{{ producer.id }}">{{ producer.name }}</a>{% else %}<a href="/people/{{ producer.id }}">{{ producer.name }}</a>{% endif %}{% if not forloop.last and producers|length != 2 %},  {% endif %}
         {% endfor %}</h3>
 
   {% include "social_media.html" %}
@@ -40,7 +40,7 @@
 
   {% if hosts %}
     <p>Hosted by {% for host in hosts %}
-    <a href="{{ host.host_id }}">{{ host.host_name }}</a>&nbsp;
+    <a href="/people/{{ host.person_id }}">{{ host.person_name }}</a>&nbsp;
     {% endfor %}</p>
   {% endif %}
 

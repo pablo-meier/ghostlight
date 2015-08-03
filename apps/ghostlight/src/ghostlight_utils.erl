@@ -11,6 +11,7 @@
          proplist_with_valid_values/1,
          person_or_org_json_to_record/1,
          person_or_org_record_to_json/1,
+         person_or_org_record_to_proplist/1,
          remove_null/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
@@ -134,6 +135,18 @@ person_or_org_record_to_json(Person=#person{}) ->
 person_or_org_record_to_json(Org=#organization{}) ->
   OrgJson = ghostlight_org:record_to_json(Org),
   [{<<"org">>, OrgJson}].
+
+
+person_or_org_record_to_proplist(#organization{id=Id, name=Name}) ->
+    [{type, <<"org">>},
+     {id, Id},
+     {name, Name}];
+person_or_org_record_to_proplist(#person{id=Id, name=Name}) ->
+    [{type, <<"person">>},
+     {id, Id},
+     {name, Name}].
+
+
 
 %% iso8601 is pretty great, and epgsql are pretty great, but they don't play well together.
 %% Namely, epgsql returns dates where the seconds value is a float, which iso8601 doesn't 

@@ -3,10 +3,10 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <h1><em>{{ title }}</em></h1>
+  <h1 class="text-center"><em>{{ title }}</em></h1>
   <h3>By
     {% for author in authors %}
-      <a href="/people/{{ author.author_id }}">{{ author.author_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% if collab_org %} with <a href="/organizations/{{ collab_org.org_id }}">{{ collab_org.org_name }}</a>{% endif %}.</h3>
+    {% if author.type == "org" %}<a href="/organization/{{ author.id }}">{{ author.name }}</a>{% else %}<a href="/people/{{ author.id }}">{{ author.name }}</a>{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</h3>
 
   {% if minutes_long %}
   <p><strong>{{ minutes_long }} minutes.</strong></p>
@@ -19,7 +19,7 @@
   {% endif %}
 
   {% if shows %}
-  <h3>Production History:</h3>
+  <h2 class="text-center">Production History:</h2>
   <ul>
     {% for show in shows %}
     <li>

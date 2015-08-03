@@ -56,14 +56,13 @@ edit_json(WorkRecord) ->
 get_id(#work{id=Id}) -> Id.
 
 
-
 record_to_proplist(#work_return{
                        work=Work,
                        shows=Shows}) ->
 
   ShowsProplist = [ [{show_id, ShowId},
                      {show_title, ShowTitle},
-                     {producers, [ org_or_person_to_proplist(Producer) ||
+                     {producers, [ ghostlight_utils:person_or_org_record_to_proplist(Producer) ||
                                    Producer <- Producers ]}
                     ] || #show{
                              id=ShowId,
@@ -82,19 +81,9 @@ record_to_proplist(#work{
                    }) ->
     [{id, WorkId},
      {title, WorkTitle},
-     {authors, [ org_or_person_to_proplist(Author) || Author <- Authors ]},
+     {authors, [ ghostlight_utils:person_or_org_record_to_proplist(Author) || Author <- Authors ]},
      {description, Description},
      {minutes_long, MinutesLong}].
-
-
-org_or_person_to_proplist(#organization{id=Id, name=Name}) ->
-    [{type, <<"org">>},
-     {id, Id},
-     {name, Name}];
-org_or_person_to_proplist(#person{id=Id, name=Name}) ->
-    [{type, <<"person">>},
-     {id, Id},
-     {name, Name}].
 
 
 record_to_json(#work{

@@ -108,8 +108,10 @@ db_to_record(
                     } || Show <- ghostlight_db_utils:decode_not_null(Director)],
 
     EmployeeList = [ #org_work {
-                        org_id = proplists:get_value(<<"org_id">>, Emp),
-                        org_name = proplists:get_value(<<"name">>, Emp),
+                        org = #organization {
+                            id = proplists:get_value(<<"org_id">>, Emp),
+                            name = proplists:get_value(<<"name">>, Emp)
+                        },
                         title = proplists:get_value(<<"title">>, Emp)
                      } || Emp <- ghostlight_db_utils:decode_not_null(Employee)],
     MemberList = [ #organization{

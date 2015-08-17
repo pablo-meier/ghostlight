@@ -60,8 +60,8 @@
 }).
 
 -record(work, {
-    id = <<"">>                :: binary(),
-    title = <<"">>             :: binary(),
+    id = null                  :: null | binary(),
+    title = null               :: null | binary(),
     vanity_name = null         :: null | binary(),
     authors = []               :: list(#person{}) | list(#organization{}),
     description = null         :: null | binary(),
@@ -105,9 +105,8 @@
 
 
 -record(org_work, {
-  org_id = <<"">>   :: binary(),
-  org_name = <<"">> :: binary(),
-  title = <<"">>    :: binary()
+  org = throw(org_work_without_org) :: #organization{},
+  title = <<"">>                    :: binary()
 }).
 
 %% Tentative about this -- should we be defining records per-call? I dislike the granularity

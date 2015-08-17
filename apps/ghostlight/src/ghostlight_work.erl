@@ -11,7 +11,9 @@
          get_id/1,
          post_json/1,
          edit_json/1,
-         json_to_record/1
+         json_to_record/1,
+
+         validate_work/1
         ]).
 
 -export([record_to_json/1,
@@ -128,3 +130,24 @@ json_to_record(Proplist) ->
        collaborating_orgs = CollabOrg
     }.
 
+
+validate_work(#work{ id = null, title = null }) ->
+    throw(work_missing_identifying_information);
+validate_work(W=#work{ id = null, title = _ }) ->
+    validate_work_body(W);
+validate_work(W=#work{ id = Id, title = _ }) ->
+    case ghostlight_db_utils:is_valid_uuid(Id) of
+        true -> validate_work_body(W);
+        false -> throw(not_valid_uuid)
+    end.
+
+validate_work_body(W=#work {
+                        authors = Authors,
+                        vanity_name = Vanity
+                     }) ->
+    ghostlight_utils:validate_vanity_name(Vanity),
+    [ validate_author(Author) || Author <- Authors ],
+    W.
+
+validate_author(P=#person{}) -> ghostlight_people:validate_person(P);
+validate_author(O=#organization{}) -> ghostlight_org:validate_org(O).

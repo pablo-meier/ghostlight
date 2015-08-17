@@ -49,7 +49,7 @@ person_validate_id_test() ->
    ghostlight_people:validate_person(#person{id = <<"87ac576a-5645-400a-90e3-60e8f717a889">>}).
 
 person_validate_throws_no_identification_test() ->
-  ?assertException(throw, person_missing_identifying_information, ghostlight_people:validate_person(#person{})).
+   ?assertException(throw, person_missing_identifying_information, ghostlight_people:validate_person(#person{})).
 person_validate_id_bad_test() ->
    ?assertException(throw, not_valid_uuid, ghostlight_people:validate_person(#person{id = <<"STTTEEEEEVEEEEE">>})).
 

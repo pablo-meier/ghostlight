@@ -84,8 +84,10 @@ record_to_proplist(#person_return{
 
     OrgProplist = [ [{id, OrgId},
                      {name, OrgName},
-                     {position, Position}] || #org_work{org_id=OrgId,
-                                                        org_name=OrgName,
+                     {position, Position}] || #org_work{org=#organization{
+                                                               id=OrgId,
+                                                               name=OrgName
+                                                        },
                                                         title=Position} <- OrgsEmp ],
 
     MemProplist = [ ghostlight_org:record_to_proplist(Org) || Org <- OrgsMem ],
@@ -166,7 +168,11 @@ record_to_json(#person_return{
     ])).
 
 
-org_work_to_json(#org_work{org_id=OrgId, org_name=Name, title=Title}) ->
+org_work_to_json(#org_work{org=#organization{
+                                  id = OrgId,
+                                  name = Name
+                           },
+                           title=Title}) ->
     ghostlight_utils:json_with_valid_values(
       [{<<"id">>, OrgId},
        {<<"name">>, Name},

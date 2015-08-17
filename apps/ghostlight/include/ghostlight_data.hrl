@@ -5,7 +5,6 @@
 %% 'undefined's. 
 
 -type datetime() :: tuple(Date::calendar:date(), Time::calendar:time()) | null.
--type organization_parent() :: {id, binary()}.
 
 -record(external_links, {
     website = null             :: null | binary(),
@@ -38,28 +37,26 @@
 }).
 
 -record(org_member, {
-    person             :: #person{},
-    description = null :: null | binary()
+    person = throw(empty_person_in_org_member) :: #person{},
+    description = null                         :: null | binary()
 }).
 
 -record(org_employee, {
-    person             :: #person{},
-    title = null       :: null | binary(),
-    description = null :: null | binary()
+    person = throw(empty_person_in_org_employee) :: #person{},
+    title = null                                 :: null | binary(),
+    description = null                           :: null | binary()
 }).
 
 -record(organization, {
     id = null                          :: null | binary(),
-    name = <<"">>                      :: binary(),
+    name = null                        :: null | binary(),
     vanity_name = null                 :: null | binary(),
     tagline = null                     :: null | binary(),
     description = null                 :: null | binary(),
-    parent = {id, <<"">>}              :: organization_parent(),
-    date_founded = null                :: datetime(),
+    date_founded = null                :: null | datetime(),
     external_links = #external_links{} :: #external_links{},
     members = []                       :: list(#org_member{}),
-    employees = []                     :: list(#org_employee{}),
-    visibility = <<"public">>          :: binary()
+    employees = []                     :: list(#org_employee{})
 }).
 
 -record(work, {

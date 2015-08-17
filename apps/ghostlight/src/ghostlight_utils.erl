@@ -1,14 +1,20 @@
 -module(ghostlight_utils).
 
 -export([erl_date_to_iso8601/1,
+
          external_links_json_to_record/1,
          external_links_record_to_proplist/1,
          external_links_record_to_json/1,
+         validate_external_links/1,
+
          vanity_name_json_to_binary/1,
+         validate_vanity_name/1,
+
          json_with_valid_values/1,
+         proplist_with_valid_values/1,
+
          handle_errors/4,
          default_list/1,
-         proplist_with_valid_values/1,
          person_or_org_json_to_record/1,
          person_or_org_record_to_json/1,
          person_or_org_record_to_proplist/1,
@@ -40,11 +46,12 @@ external_links_json_to_record(Json) when is_list(Json) ->
 
 
 vanity_name_json_to_binary(Json) when is_list(Json) ->
-    validate_vanity(proplists:get_value(<<"vanity">>, Json, null)).
+    validate_vanity_name(proplists:get_value(<<"vanity">>, Json, null)).
 
-validate_vanity(null) -> null;
-validate_vanity(Vanity) when is_binary(Vanity), byte_size(Vanity) < 25 ->
-    matches_vanity_pattern(re:run(Vanity, "^[a-zA-Z0-9_.]+$")).
+validate_vanity_name(null) -> null;
+validate_vanity_name(Vanity) when is_binary(Vanity), byte_size(Vanity) < 25 ->
+    matches_vanity_pattern(re:run(Vanity, "^[a-zA-Z0-9_.]+$"));
+validate_vanity_name(_) -> throw(invalid_vanity_name_format).
 
 matches_vanity_pattern({match, Value}) -> Value;
 matches_vanity_pattern(nomatch) -> throw(invalid_vanity_name_format).
@@ -116,8 +123,51 @@ external_links_record_to_json(
                  {<<"gplus">>, GPlus},
                  {<<"patreon">>, Patreon},
                  {<<"newplayx">>, NewPlayX}],
-    Filtered = lists:filter(fun({_, V}) -> V =/= null end, Candidate),
-    json_with_valid_values(Filtered).
+    json_with_valid_values(Candidate).
+
+
+%% Ideally we could re-use regexes rather than compile them each time,
+%% but let's just ship this kitten.
+validate_external_links(null) -> ok;
+validate_external_links(#external_links{
+        website=_Website,
+        email_address=_Email,
+        blog=_Blog,
+        mailing_list=_Newsletter,
+        facebook=Facebook,
+        twitter=Twitter,
+        instagram=Instagram,
+        vimeo=_Vimeo,
+        youtube=YouTube,
+        pinterest=Pinterest,
+        tumblr=Tumblr,
+        gplus=_GPlus,
+        patreon=_Patreon,
+        newplayx=_NewPlayX}) ->
+    ToTry = [
+        {Facebook, "^(https?://)?(www\\.)?facebook\\.com", facebook},
+        {Twitter, "^(https?://)?(www\\.)?twitter\\.com", twitter},
+        {Instagram, "^(https?://)?(www\\.)?instagram\\.com", instagram},
+        {Pinterest, "^(https?://)?(www\\.)?pinterest\\.com", pinterest},
+        {YouTube, "^(https?://)?(www\\.)?youtube\\.com", youtube},
+        {Tumblr, "^(https?://)?(www\\.)?[a-z0-9-]+\\.tumblr\\.com", tumblr}
+    ],
+    Tried = [ try_external(Candidate, ToMatch, Symb) || {Candidate, ToMatch, Symb} <- ToTry ],
+    case lists:filter(fun ({X, _}) -> X =/= ok end, Tried) of
+        [] -> ok;
+        Else ->
+            Errored = [ Symb || {_, Symb} <- Else ],
+            throw({external_error, Errored})
+    end.
+
+
+try_external(null, _, _) -> {ok, not_specified};
+try_external(Candidate, ToMatch, Symb) ->
+    case re:run(Candidate, ToMatch, [caseless]) of
+        nomatch -> {fail, Symb};
+        error -> {error, Symb};
+        _ -> {ok, Symb}
+    end.
 
 
 person_or_org_json_to_record(Object) ->
@@ -187,11 +237,6 @@ default_list(X) when is_list(X) -> X;
 default_list(_) -> [].
 
 
-augment_request_header(Body, Headers) ->
-    NewValue = {<<"content-length">>, integer_to_list(iolist_size(Body))},
-    lists:keyreplace(<<"content-length">>, 1, Headers, NewValue).
-
-
 handle_errors(400, _Headers, _Body, Req) ->
     Req;
 handle_errors(401, _Headers, _Body, Req) ->  %% Unauthorized
@@ -217,3 +262,8 @@ handle_error_with(Req, Headers, StatusCode, Template) ->
               end,
     Headers2 = augment_request_header(NewBody, Headers),
     cowboy_req:reply(StatusCode, Headers2, NewBody, Req).
+
+
+augment_request_header(Body, Headers) ->
+    NewValue = {<<"content-length">>, integer_to_list(iolist_size(Body))},
+    lists:keyreplace(<<"content-length">>, 1, Headers, NewValue).

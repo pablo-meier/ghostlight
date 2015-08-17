@@ -11,7 +11,9 @@
          get_id/1,
          post_json/1,
          edit_json/1,
-         json_to_record/1
+         json_to_record/1,
+
+         validate_org/1
         ]).
 
 -export([record_to_json/1,
@@ -157,7 +159,7 @@ json_to_record(Organization) ->
 
     ExternalLinks = ghostlight_utils:external_links_json_to_record(Organization),
 
-    #organization{
+    validate_org(#organization{
        id=OrgId,
        name=OrgName,
        vanity_name=Vanity,
@@ -166,7 +168,7 @@ json_to_record(Organization) ->
        members=DecodedMembers,
        employees=DecodedEmployees,
        external_links=ExternalLinks
-    }.
+    }).
 
 decode_member(Member) ->
     Description = proplists:get_value(<<"description">>, Member, null),
@@ -197,3 +199,30 @@ employee_to_json(#org_employee{person=Person, title=Title, description=Desc}) ->
         {<<"description">>, Desc}
     ]).
 
+
+%% Test the invariants on the organization. These are:
+%% * Must have Name OR ID
+%% * If present, ID must be a UUID.
+%% * All members and employees must be valid People
+%% * External links must check out.
+%% * Vanity name must conform.
+validate_org(#organization{id = null, name = null}) ->
+    throw(org_missing_identifying_information);
+validate_org(O=#organization{ id = null, name = _}) ->
+    validate_personnel(O);
+validate_org(O=#organization{ id = Id, name = _ }) ->
+    case ghostlight_db_utils:is_valid_uuid(Id) of
+        true -> validate_personnel(O);
+        false -> throw(not_valid_uuid)
+    end.
+
+validate_personnel(O=#organization{
+                        members = Members,
+                        employees = Employees,
+                        external_links = EL,
+                        vanity_name = Vanity}) ->
+    [ ghostlight_people:validate_person(P) || #org_member{person=P} <- Members],
+    [ ghostlight_people:validate_person(P) || #org_employee{person=P} <- Employees],
+    ghostlight_utils:validate_external_links(EL),
+    ghostlight_utils:validate_vanity_name(Vanity),
+    O.

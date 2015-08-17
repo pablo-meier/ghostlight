@@ -3,13 +3,8 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
-%% Test the JSON to record for various org configs
 
-%% Full, with everything
-%% * shows produced
-%% * members
-%% * employees
-
+%%% JSON-TO-RECORD
 kitchen_sink_test() -> 
     Input = <<"
 {
@@ -101,3 +96,59 @@ kitchen_sink_test() ->
 test_json_to_record(Input, Expected) ->
     Result = ghostlight_org:json_to_record(jsx:decode(Input)),
     ?assertEqual(Expected, Result).
+
+
+%%% RECORD VALIDATION
+
+%% Minimum viability
+org_validate_id_test() ->
+    ghostlight_org:validate_org(#organization{id = <<"87ac576a-5645-400a-90e3-60e8f717a889">>}).
+org_validate_name_test() ->
+    ghostlight_org:validate_org(#organization{name = <<"Muppet Babies">>}).
+
+
+org_validate_throws_no_identification_test() ->
+   ?assertException(throw, org_missing_identifying_information, ghostlight_org:validate_org(#organization{})).
+
+org_validate_id_bad_test() ->
+    ?assertException(throw, not_valid_uuid, ghostlight_org:validate_org(#organization{id = <<"lol not an ID">>})).
+
+org_validate_bad_employee_test() ->
+    OrgToTest = #organization{
+        name = <<"A Narrow Defeat">>,
+        employees = [#org_employee{
+            person=#person{
+                 id = <<"lol">>
+            }
+        }]
+    },
+    ?assertException(throw, not_valid_uuid, ghostlight_org:validate_org(OrgToTest)).
+
+
+org_validate_bad_member_test() ->
+    OrgToTest = #organization{
+        name = <<"Bilcher's Cove">>,
+        members = [#org_member{
+            person=#person{
+                id = <<"lol">>
+            }
+        }]
+    },
+    ?assertException(throw, not_valid_uuid, ghostlight_org:validate_org(OrgToTest)).
+
+
+org_bad_external_links_test() ->
+    OrgToTest = #organization{
+        name = <<"test">>,
+        external_links = #external_links{
+            facebook = <<"http://morepaul.com">>
+        }
+    },
+    ?assertException(throw, {external_error, [facebook]}, ghostlight_org:validate_org(OrgToTest)).
+
+org_bad_vanity_name_test() ->
+    OrgToTest = #organization{
+        name = <<"test">>,
+        vanity_name = <<"IAmAVeryLongVanityNameThisKindOfThingReallyShouldntStandIThink">>
+    },
+    ?assertException(throw, invalid_vanity_name_format, ghostlight_org:validate_org(OrgToTest)).

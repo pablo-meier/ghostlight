@@ -52,20 +52,14 @@ get_inserts(#organization {
                 name=Name,
                 tagline=Tagline,
                 description=Description,
-                parent=Parent,
                 vanity_name=VanityName,
                 date_founded=DateFounded,
                 members=Members,
                 employees=Employees,
-                external_links=Links,
-                visibility=Visibility
+                external_links=Links
            }, State=#db_state{insert_org_statement=IO,
                               insert_org_external_link=OL}) ->
     OrgId = ghostlight_db_utils:fresh_uuid(),
-    ParentInsert = case Parent of
-                       {id, <<"">>} -> null;
-                       {id, Valid} -> Valid
-                   end,
 
     TaglineInsert = ghostlight_db_utils:null_if_unspecified(Tagline),
     TaglineMarkdown = ghostlight_db_utils:markdown_or_null(Tagline),
@@ -79,9 +73,9 @@ get_inserts(#organization {
     EmployeeInserts = lists:flatten( [ employee_inserts(OrgId, Employee, State) || Employee <- Employees]),
     LinkInserts = ghostlight_db_utils:external_links_inserts(OrgId, OL, Links),
 
-    OrgInserts = lists:append([ [{IO, [OrgId, ParentInsert, Name, 
+    OrgInserts = lists:append([ [{IO, [OrgId, Name, 
                                        TaglineInsert, TaglineMarkdown, DescriptionInsert, Markdowned, 
-                                       VanityNameInsert, DateFoundedInsert, Visibility]}],
+                                       VanityNameInsert, DateFoundedInsert]}],
                                 EmployeeInserts,
                                 MemberInserts,
                                 LinkInserts
@@ -133,9 +127,9 @@ get_update_commands(#organization{id=OrgId,
 
 prepare_statements(C, State) ->
     OrgsSql = "INSERT INTO organizations "
-        ++ "(org_id, parent_org, name, tagline_src, tagline_markdown, description_src, description_markdown, vanity_name, date_founded, visibility)"
-        ++ " VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9::date, $10)",
-    {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, uuid, text, text, text, text, text, date, text]),
+        ++ "(org_id, name, tagline_src, tagline_markdown, description_src, description_markdown, vanity_name, date_founded)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6, $7, $8::date)",
+    {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, uuid, text, text, text, text, text, date]),
 
     OrgEmployeeSql = "INSERT INTO org_employees "
         ++ "(org_id, person_id, title, description_src, description_markdown, date_started, date_ended)"
@@ -195,5 +189,3 @@ WHERE po.org_id = $1
 
        update_org_statement=UpdateOrg
     }.
-
-

@@ -16,59 +16,46 @@ CREATE TABLE IF NOT EXISTS people (
     name TEXT NOT NULL,
     description_src TEXT,
     description_markdown TEXT,
-    is_equity BOOLEAN,
-    photo_id UUID,
-    date_added date NOT NULL
+    date_created TIMESTAMP WITH TIME ZONE NOT NULL,
+    last_updated TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- Table for Ghostlight users. Refers to `People` for more of their details.
 CREATE TABLE IF NOT EXISTS users (
     user_id UUID PRIMARY KEY,
     person_id UUID UNIQUE NOT NULL REFERENCES people(person_id),
-    vanity_name TEXT UNIQUE,
-    email_address TEXT UNIQUE NOT NULL,
-    password_hash TEXT UNIQUE NOT NULL,
-    salt TEXT NOT NULL,
-    last_login timestamp with TIME ZONE NOT NULL,
-    date_joined timestamp with TIME ZONE NOT NULL
+    vanity_name CITEXT UNIQUE,
+    date_created TIMESTAMP WITH TIME ZONE NOT NULL,
+    last_updated TIMESTAMP WITH TIME ZONE NOT NULL
 );
 CREATE INDEX users_vanity_names ON users(vanity_name);
 
 -- Organizations that put on shows.
 CREATE TABLE IF NOT EXISTS organizations (
     org_id UUID PRIMARY KEY,
-    parent_org UUID,
     name text NOT NULL,
-    vanity_name TEXT UNIQUE,
+    vanity_name CITEXT UNIQUE,
     tagline_src TEXT,
     tagline_markdown TEXT,
     description_src TEXT,
     description_markdown TEXT,
-    vanity_name TEXT,
     date_founded date,
-    visibility TEXT NOT NULL DEFAULT 'public'
+    date_created TIMESTAMP WITH TIME ZONE NOT NULL,
+    last_updated TIMESTAMP WITH TIME ZONE NOT NULL
 );
 CREATE INDEX orgs_vanity_names ON organizations(vanity_name);
 
--- Festivals are collections of shows, like Fringe, Serials, or Asking For Trouble.
--- Each show is different, but they are linked.
-CREATE TABLE IF NOT EXISTS festivals (
-    festival_id UUID PRIMARY KEY,
-    title text NOT NULL,
-    description TEXT,
-    date_founded DATE
-);
 
 -- Shows, per above. If it's got a program, it's a show.
 CREATE TABLE IF NOT EXISTS shows (
     show_id UUID PRIMARY KEY,
-    vanity_name TEXT UNIQUE,
+    vanity_name CITEXT UNIQUE,
     title text NOT NULL,
-    festival_id UUID REFERENCES festivals(festival_id),
     description_src TEXT,
     description_markdown TEXT,
     special_thanks TEXT,
-    date_created TIMESTAMP WITH TIME ZONE NOT NULL
+    date_created TIMESTAMP WITH TIME ZONE NOT NULL,
+    last_updated TIMESTAMP WITH TIME ZONE NOT NULL
 );
 CREATE INDEX shows_vanity_names ON shows(vanity_name);
 
@@ -84,7 +71,7 @@ CREATE TABLE IF NOT EXISTS producers (
 -- Works, per above. If you can get a script, it's a work.
 CREATE TABLE IF NOT EXISTS works (
     work_id UUID PRIMARY KEY,
-    vanity_name TEXT UNIQUE,
+    vanity_name CITEXT UNIQUE,
     title TEXT NOT NULL,
     description_src TEXT,
     description_markdown TEXT,
@@ -92,11 +79,6 @@ CREATE TABLE IF NOT EXISTS works (
 );
 CREATE INDEX works_vanity_names ON works(vanity_name);
 
--- Sometimes a work is made 'with' orgs. Think 'You On The Moors Now' with TRE, etc.
-CREATE TABLE IF NOT EXISTS work_collaborating_orgs (
-    work_id UUID REFERENCES works(work_id) NOT NULL,
-    org_id UUID REFERENCES organizations(org_id) NOT NULL,
-);
 
 -- A unit of performance of a SHOW, per above. If it's got a cast, it's a performance.
 CREATE TABLE IF NOT EXISTS performances (
@@ -121,9 +103,7 @@ CREATE TABLE IF NOT EXISTS performance_directors (
 CREATE TABLE IF NOT EXISTS performance_onstage (
     performance_id UUID REFERENCES performances(performance_id) NOT NULL,
     performer_id UUID REFERENCES people(person_id) NOT NULL,
-    role TEXT DEFAULT 'Ensemble',
-    -- Maybe understudies should be a new table? Given that they can change around, like performers.
-    understudy_id UUID REFERENCES people(person_id),
+    role TEXT,
     date_started DATE,
     date_ended DATE,
     PRIMARY KEY(performance_id, performer_id)
@@ -138,7 +118,9 @@ CREATE TABLE IF NOT EXISTS performance_offstage (
     job TEXT,
     date_started DATE,
     date_ended DATE,
-    CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL)
+
+    CONSTRAINT one_entity CHECK (org_id IS NULL <> person_id IS NULL),
+    PRIMARY KEY(performance_id, person_id, org_id)
 );
 
 CREATE TABLE IF NOT EXISTS authorship (
@@ -146,7 +128,9 @@ CREATE TABLE IF NOT EXISTS authorship (
     person_id UUID REFERENCES people(person_id),
     org_id UUID REFERENCES organizations(org_id),
     author_type authorship_type[] NOT NULL DEFAULT '{Author}'::authorship_type[],
-    CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL)
+
+    CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL),
+    PRIMARY KEY(work_id, person_id, org_id)
 );
 
 CREATE TYPE authorship_type AS ENUM (
@@ -247,8 +231,8 @@ CREATE TYPE work_and_authors AS (id UUID, title TEXT, authors JSON);
 CREATE TYPE external_link AS (link TEXT, type link_type);
 CREATE TYPE press_link AS (link TEXT, description TEXT);
 
-CREATE TYPE person_or_org_label AS ENUM ( 'person', 'org');
-CREATE TYPE person_or_org AS ( type person_or_org_label, id UUID, name TEXT);
+CREATE TYPE person_or_org_label AS ENUM ('person', 'org');
+CREATE TYPE person_or_org AS (type person_or_org_label, id UUID, name TEXT);
 
 CREATE TYPE onstage_performance AS ( performer person_pair, role TEXT);
 CREATE TYPE offstage_performance AS ( entity person_or_org, job TEXT);

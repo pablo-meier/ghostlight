@@ -11,7 +11,9 @@
          get_id/1,
          post_json/1,
          edit_json/1,
-         json_to_record/1
+         json_to_record/1,
+
+         validate_person/1
         ]).
 
 -export([record_to_json/1,
@@ -134,12 +136,12 @@ json_to_record(Person) ->
     PersonDescription = proplists:get_value(<<"description">>, Person, null),
     ExternalLinks = ghostlight_utils:external_links_json_to_record(Person),
 
-    #person{
+    validate_person(#person{
        id = PersonId,
        name = PersonName,
        description = PersonDescription,
        external_links=ExternalLinks
-    }.
+    }).
 
 
 record_to_json(Person=#person{}) ->
@@ -182,3 +184,22 @@ record_to_json_shared(#person{
      {<<"description">>, Description},
      {<<"social">>, ghostlight_utils:external_links_record_to_json(Links)}
     ].
+
+
+validate_person(#person{ id = null, name = null }) ->
+    throw(person_missing_identifying_information);
+validate_person(P=#person{ id = null, name = _ }) ->
+    validate_person_body(P);
+validate_person(P=#person{ id = Id, name = _ }) ->
+    case ghostlight_db_utils:is_valid_uuid(Id) of
+        true -> validate_person_body(P);
+        false -> throw(not_valid_uuid)
+    end.
+
+validate_person_body(P=#person {
+                        external_links = EL,
+                        vanity_name = Vanity
+                     }) ->
+    ghostlight_utils:validate_external_links(EL),
+    ghostlight_utils:validate_vanity_name(Vanity),
+    P.

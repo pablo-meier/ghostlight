@@ -34,7 +34,9 @@
          insert_work/1,
          update_work/1,
 
-         resolve_vanity/2
+         resolve_vanity/2,
+
+         healthcheck/0
         ]).
 
 -export([fix_dups/0]).
@@ -129,6 +131,10 @@ handle_call({vanity, Resource, Name},
                end,
     {reply, Response, State};
 
+
+handle_call(healthcheck, _, State=#state{connection=C}) ->
+    Reply = epgsql:squery(C, "SELECT 1=1"),
+    {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -265,6 +271,12 @@ prepare_statements(C) ->
                    work_get_vanity=WorkGetVanity
                    },
     State.
+
+healthcheck() ->
+    case gen_server:call(?MODULE, healthcheck) of
+        {ok, _, _} -> ok;
+        Else -> Else
+    end.
 
 %%% SUPER SECRET FUNCTIONS
 fix_dups() ->

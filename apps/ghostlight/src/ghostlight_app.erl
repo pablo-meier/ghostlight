@@ -18,6 +18,7 @@ start(_StartType, _StartArgs) ->
     Return = ghostlight_sup:start_link(),
     initiate_listening_to_endpoints(),
     compile_all_templates(),
+    register_healthchecks(),
     Return.
 
 %%--------------------------------------------------------------------
@@ -76,3 +77,8 @@ compile_all_templates() ->
                     end
                   end, Filenames),
     ok.
+
+register_healthchecks() ->
+    ghostlight_healthchecks:register(ghostlight_db, healthcheck, <<"Postgres Connectivity">>),
+    ghostlight_healthchecks:register(ghostlight_markdown, healthcheck, <<"Markdown parser">>),
+    ghostlight_healthchecks:register(ghostlight_sanitizer, healthcheck, <<"HTML sanitizer">>).

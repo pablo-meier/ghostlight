@@ -40,7 +40,13 @@ init([]) ->
             permanent,
             5000,
             worker,
-            [ghostlight_static]}]}}.
+            [ghostlight_static]},
+          {healthchecks,
+            {ghostlight_healthchecks, start_link, []},
+            permanent,
+            5000,
+            worker,
+            [ghostlight_healthchecks]}]}}.
 
 %%====================================================================
 %% Internal functions

@@ -1,7 +1,9 @@
 -module(ghostlight_markdown).
 -behaviour(gen_server).
 
--export([start_link/0]).
+-export([start_link/0,
+         healthcheck/0]).
+
 -export([init/1,
          handle_call/3,
          handle_cast/2,
@@ -16,6 +18,22 @@
 
 -record(state, {port}).
 
+%%%===================================================================
+%%% API
+%%%===================================================================
+parse_markdown(Body) when is_binary(Body) ->
+    gen_server:call(?MODULE, {parse_markdown, Body}).
+
+healthcheck() ->
+    Output = parse_markdown(<<"**sup**">>),
+    case Output of
+        <<"<p><strong>sup</strong></p>\n">> -> ok;
+        Else -> {error, {bad_markdown_parse, Else}}
+    end.
+
+%%%===================================================================
+%%% GEN SERVER
+%%%===================================================================
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
@@ -50,13 +68,10 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
+
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-
-parse_markdown(Body) when is_binary(Body) ->
-    gen_server:call(?MODULE, {parse_markdown, Body}).
 
 create_port() ->
     case code:priv_dir(?APPNAME) of
@@ -67,4 +82,5 @@ create_port() ->
             open_port({spawn, filename:join([PrivDir, "cmark_wrapper"])},
                              [stream, exit_status])
     end.
+
 

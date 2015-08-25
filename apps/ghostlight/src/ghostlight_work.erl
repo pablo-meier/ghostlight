@@ -115,10 +115,6 @@ record_to_json(#work_return{
 
 
 json_to_record(Proplist) ->
-    CollabOrg = case proplists:get_value(<<"collaborating_org">>, Proplist, null) of
-                    null -> [];
-                    Org -> [ghostlight_org:json_to_record(Org)]
-                end,
     #work {
        id = proplists:get_value(<<"id">>, Proplist, null),
        title = proplists:get_value(<<"title">>, Proplist),
@@ -126,8 +122,7 @@ json_to_record(Proplist) ->
        authors = [ ghostlight_utils:person_or_org_json_to_record(Author)
                    || Author <- proplists:get_value(<<"authors">>, Proplist, []) ],
        description = proplists:get_value(<<"description">>, Proplist, null),
-       minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null),
-       collaborating_orgs = CollabOrg
+       minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null)
     }.
 
 

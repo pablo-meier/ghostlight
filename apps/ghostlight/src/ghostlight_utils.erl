@@ -22,6 +22,7 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
+
 external_links_json_to_record(Json) when is_list(Json) ->
     case proplists:get_value(<<"social">>, Json) of
         undefined -> null;
@@ -50,11 +51,11 @@ vanity_name_json_to_binary(Json) when is_list(Json) ->
 
 validate_vanity_name(null) -> null;
 validate_vanity_name(Vanity) when is_binary(Vanity), byte_size(Vanity) < 25 ->
-    matches_vanity_pattern(re:run(Vanity, "^[a-zA-Z0-9_.]+$"));
+    matches_vanity_pattern(Vanity, re:run(Vanity, "^[a-zA-Z0-9_.]+$"));
 validate_vanity_name(_) -> throw(invalid_vanity_name_format).
 
-matches_vanity_pattern({match, Value}) -> Value;
-matches_vanity_pattern(nomatch) -> throw(invalid_vanity_name_format).
+matches_vanity_pattern(Value, {match, _}) -> Value;
+matches_vanity_pattern(_, nomatch) -> throw(invalid_vanity_name_format).
 
 external_links_record_to_proplist(null) -> [];
 external_links_record_to_proplist(

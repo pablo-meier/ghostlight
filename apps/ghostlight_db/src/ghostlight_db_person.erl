@@ -28,7 +28,7 @@
         ]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
-
+-include("apps/ghostlight_db/include/ghostlight_db_statements.hrl").
 
 get_statement(#db_state{get_person_statement=GP}) ->
     GP.

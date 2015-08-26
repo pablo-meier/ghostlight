@@ -83,7 +83,7 @@ record_to_proplist(#show{
        {opening, FirstDate},
        {closing, LastDate},
        {hosts, [ ghostlight_people:record_to_proplist(Host) || Host <- Hosts]},
-       {press, [ [{link, Url}, {description, LinkDesc}] || #press_link{link=Url, description=LinkDesc} <- PressLinks]},
+       {press, [ [{link, Url}, {label, Label}] || #press_link{link=Url, label=Label} <- PressLinks]},
        {description, Description},
        {links, ghostlight_utils:external_links_record_to_proplist(ExternalLinks)},
        {performances, [ performance_to_proplists(Performance) || Performance <- Performances ] }
@@ -171,7 +171,7 @@ json_to_record(Decoded) ->
 
     Press = proplists:get_value(<<"press">>, Decoded, []),
     PressLinks = [ #press_link{link=proplists:get_value(<<"link">>, Link, null),
-                               description=proplists:get_value(<<"description">>, Link, null)} || {Link} <- Press],
+                               label=proplists:get_value(<<"label">>, Link, null)} || Link <- Press],
 
     Vanity = ghostlight_utils:vanity_name_json_to_binary(Decoded),
 
@@ -223,9 +223,11 @@ offstage_json_to_record(Offstage) ->
 %%% Helpers
 
 
-%%% @doc The templates need to have a bit more data when deciding how to present information,
+%%% @doc 
+%%% The templates need to have a bit more data when deciding how to present information,
 %%% this function adds properties to the proplist that are specific to the detail HTML template
 %%% and won't be needed if others call `record_to_proplist` on the data type.
+%%% @end
 make_detail_proplist(Proplist) ->
     Performances = proplists:get_value(performances, Proplist),
     TaggedForRoles = [ tag_roles_in_cast(Performance) || Performance <- Performances ],

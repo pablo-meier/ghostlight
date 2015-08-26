@@ -51,7 +51,7 @@
     <h3>Coverage</h3>
     <ul>
       {% for press_link in press %}
-      <li><a href="{{ press_link.link }}">{{ press_link.description }}</a></li>
+      <li><a href="{{ press_link.link }}">{{ press_link.label }}</a></li>
       {% endfor %}
     </ul>
   {% endif %}

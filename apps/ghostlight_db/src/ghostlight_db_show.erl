@@ -11,6 +11,7 @@
 
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
+-include("apps/ghostlight_db/include/ghostlight_db_statements.hrl").
 
 
 get_statement(#db_state{get_show_statement=GS}) ->
@@ -101,7 +102,9 @@ get_inserts(#show{title=Title,
     AllPerformanceInserts = fold_over_performances(Performances, ShowId, WorksWithId, State),
 
     HostInserts = get_host_inserts(ShowId, Hosts, State),
-    PressInserts = [ {IP, [ShowId, Link, Description]} || #press_link{link=Link, description=Description} <- PressLinks],
+    PressInserts = [ {IP, [ShowId, Link, Label]} || #press_link{link=Link,
+                                                                label=Label
+                                                    } <- PressLinks],
     LinkInserts = ghostlight_db_utils:external_links_inserts(ShowId, IL, ExternalLinks),
 
     Batch = lists:append([
@@ -223,7 +226,7 @@ fold_over_performances(Performances, ShowId, WorksWithIds, State) ->
 format_press_links(PressLinks) ->
     [ #press_link{
          link = proplists:get_value(<<"link">>, Link),
-         description = proplists:get_value(<<"description">>, Link)
+         label = proplists:get_value(<<"label">>, Link)
       } || Link <- PressLinks ].
 
 parse_performance(Proplist) ->
@@ -321,7 +324,7 @@ prepare_statements(C, State) ->
     InsertLinkSql = "INSERT INTO show_links (show_id, link, type) VALUES($1, $2, $3::link_type)",
     {ok, InsertLink} = epgsql:parse(C, "insert_show_link", InsertLinkSql, [uuid, text, text]),
 
-    InsertPressSql = "INSERT INTO press_links (show_id, link, description) VALUES($1, $2, $3)",
+    InsertPressSql = "INSERT INTO press_links (show_id, link, label) VALUES($1, $2, $3)",
     {ok, InsertPress} = epgsql:parse(C, "insert_show_press", InsertPressSql, [uuid, text, text]),
 
     %% SELECT Statements
@@ -341,7 +344,7 @@ SELECT
              LEFT OUTER JOIN people p USING (person_id)
              LEFT OUTER JOIN organizations o USING (org_id)
              WHERE prod.show_id = s.show_id ORDER BY prod.listed_order ASC)) AS producers,
-    array_to_json(ARRAY(SELECT (pl.link, pl.description)::press_link FROM press_links pl WHERE show_id = s.show_id)) AS press_links,
+    array_to_json(ARRAY(SELECT (pl.link, pl.label)::press_link FROM press_links pl WHERE show_id = s.show_id)) AS press_links,
     array_to_json(ARRAY(SELECT (sl.link, sl.type)::external_link FROM show_links sl WHERE sl.show_id = s.show_id)) AS external_links,
     array_to_json(ARRAY(SELECT sd.show_date from show_dates sd WHERE sd.show_id = s.show_id ORDER BY sd.show_date ASC)) AS dates,
     array_to_json(ARRAY(SELECT (p.person_id, p.name)::person_pair FROM people p INNER JOIN show_hosts sh USING (person_id) where sh.show_id = s.show_id)) AS hosts,

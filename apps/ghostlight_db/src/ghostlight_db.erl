@@ -41,8 +41,6 @@
 
 -export([fix_dups/0]).
 
--include("apps/ghostlight/include/ghostlight_data.hrl").
-
 -define(SERVER, ?MODULE).
 -record(state, {connection,
                 begin_statement,

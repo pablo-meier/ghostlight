@@ -10,6 +10,9 @@
 --        _An Octoroon_ starring X, directed by Y, for _An Octoroon_
 
 
+SET TIMEZONE='UTC';
+CREATE EXTENSION citext;
+
 -- Table for a person, in or out of Ghostlight.
 CREATE TABLE IF NOT EXISTS people (
     person_id UUID PRIMARY KEY,
@@ -67,6 +70,9 @@ CREATE TABLE IF NOT EXISTS producers (
 
     CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL)
 );
+CREATE INDEX show_producers ON producers(show_id);
+CREATE INDEX orgs_produced ON producers(org_id);
+CREATE INDEX people_produced ON producers(person_id);
 
 -- Works, per above. If you can get a script, it's a work.
 CREATE TABLE IF NOT EXISTS works (
@@ -95,7 +101,8 @@ CREATE TABLE IF NOT EXISTS performances (
 -- Since performances can have many directors, give them a 1-many table.
 CREATE TABLE IF NOT EXISTS performance_directors (
     performance_id UUID REFERENCES performances(performance_id) NOT NULL,
-    director_id UUID REFERENCES people(person_id) NOT NULL
+    director_id UUID REFERENCES people(person_id) NOT NULL,
+    PRIMARY KEY(performance_id, director_id)
 );
 
 
@@ -115,7 +122,7 @@ CREATE TABLE IF NOT EXISTS performance_offstage (
     performance_id UUID REFERENCES performances(performance_id) NOT NULL,
     person_id UUID REFERENCES people(person_id),
     org_id UUID REFERENCES organizations(org_id),
-    job TEXT,
+    jobs[] TEXT NOT NULL,
     date_started DATE,
     date_ended DATE,
 
@@ -127,16 +134,17 @@ CREATE TABLE IF NOT EXISTS authorship (
     work_id UUID REFERENCES works(work_id) NOT NULL,
     person_id UUID REFERENCES people(person_id),
     org_id UUID REFERENCES organizations(org_id),
-    author_type authorship_type[] NOT NULL DEFAULT '{Author}'::authorship_type[],
+    author_type authorship_type[] NOT NULL DEFAULT CAST ('{Written}' AS authorship_type[]),
 
     CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL),
     PRIMARY KEY(work_id, person_id, org_id)
 );
 
 CREATE TYPE authorship_type AS ENUM (
-    'Author',
+    'Written',
     'Book',
     'Lyrics',
+    'Choreography'
     'Music');
 
 CREATE TABLE IF NOT EXISTS show_dates (
@@ -186,31 +194,33 @@ CREATE TYPE link_type AS ENUM (
 
 
 CREATE TABLE IF NOT EXISTS org_links (
-   org_id UUID REFERENCES organizations(org_id) NOT NULL,
-   link TEXT NOT NULL,
-   type link_type NOT NULL,
-   PRIMARY KEY(org_id, type)
+    org_id UUID REFERENCES organizations(org_id) NOT NULL,
+    link TEXT NOT NULL,
+    type link_type NOT NULL,
+    PRIMARY KEY(org_id, type)
 ); 
 
 CREATE TABLE IF NOT EXISTS people_links (
-   person_id UUID REFERENCES people(person_id) NOT NULL,
-   link TEXT NOT NULL,
-   type link_type NOT NULL,
-   PRIMARY KEY(person_id, type)
+    person_id UUID REFERENCES people(person_id) NOT NULL,
+    link TEXT NOT NULL,
+    type link_type NOT NULL,
+    PRIMARY KEY(person_id, type)
 );
 
 CREATE TABLE IF NOT EXISTS show_links (
-   show_id UUID REFERENCES shows(show_id) NOT NULL,
-   link TEXT NOT NULL,
-   type link_type NOT NULL,
-   PRIMARY KEY(show_id, type)
+    show_id UUID REFERENCES shows(show_id) NOT NULL,
+    link TEXT NOT NULL,
+    type link_type NOT NULL,
+    PRIMARY KEY(show_id, type)
 );
 
 CREATE TABLE IF NOT EXISTS press_links (
-   show_id UUID REFERENCES shows(show_id) NOT NULL,
-   link TEXT NOT NULL,
-   description TEXT NOT NULL,
-   PRIMARY KEY(show_id, link)
+    show_id UUID REFERENCES shows(show_id) NOT NULL,
+    link TEXT NOT NULL,
+    label TEXT NOT NULL,
+    pull_quote TEXT NOT NULL,
+
+    PRIMARY KEY(show_id, link)
 );
 
 CREATE TABLE IF NOT EXISTS show_hosts (
@@ -229,7 +239,7 @@ CREATE TYPE titled_pair AS (id UUID, title TEXT);
 CREATE TYPE work_and_authors AS (id UUID, title TEXT, authors JSON);
 
 CREATE TYPE external_link AS (link TEXT, type link_type);
-CREATE TYPE press_link AS (link TEXT, description TEXT);
+CREATE TYPE press_link AS (link TEXT, label TEXT);
 
 CREATE TYPE person_or_org_label AS ENUM ('person', 'org');
 CREATE TYPE person_or_org AS (type person_or_org_label, id UUID, name TEXT);

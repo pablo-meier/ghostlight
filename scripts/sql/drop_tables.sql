@@ -13,7 +13,6 @@ DROP TABLE show_links CASCADE;
 DROP TABLE show_hosts CASCADE;
 DROP TABLE producers CASCADE;
 DROP TABLE shows CASCADE;
-DROP TABLE festivals CASCADE;
 DROP TABLE org_links CASCADE;
 DROP TABLE org_employees CASCADE;
 DROP TABLE org_members CASCADE;
@@ -30,5 +29,9 @@ DROP TYPE onstage_performance CASCADE;
 DROP TYPE offstage_performance CASCADE;
 DROP TYPE person_or_org CASCADE;
 DROP TYPE person_or_org_label CASCADE;
+DROP TYPE authorship_type CASCADE;
+DROP TYPE titled_pair CASCADE;
+DROP TYPE named_pair CASCADE;
 
 DROP TYPE link_type CASCADE;
+DROP EXTENSION citext;

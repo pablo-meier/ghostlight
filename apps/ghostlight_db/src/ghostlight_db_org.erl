@@ -25,18 +25,44 @@ get_statement(#db_state{get_org_statement=GO}) ->
 listings_statement(#db_state{get_org_listings=GOL}) ->
     GOL.
 
+
 db_to_record(
-  [{ok, []},
-   {ok,
-    [{OrgObj, ShowsProducedJson}]},
-    {ok, []}],
-  _Format) ->
-    Org = ghostlight_org:json_to_record(jsx:decode(OrgObj)),
-    ShowsProduced = [ ghostlight_show:json_to_record(Show)
-                      || Show <- ghostlight_db_utils:decode_not_null(ShowsProducedJson) ],
+    [{ok, []},
+     {ok,
+      [{
+        OrgId,
+        OrgName,
+        OrgTaglineSrc,
+        OrgTagline,
+        OrgDescriptionSrc,
+        OrgDescription,
+        Links,
+        ShowsProduced,
+        Employees,
+        Members
+       }]},
+     {ok, []}],
+     Format) ->
+
+    ExternalLinks = ghostlight_db_utils:external_links_sql_to_record(ghostlight_db_utils:decode_not_null(Links)),
+    MemberList = [ parse_member(Member, Format) || Member <- ghostlight_db_utils:decode_not_null(Members)],
+    EmployeeList = [ parse_employee(Employee, Format) || Employee <- ghostlight_db_utils:decode_not_null(Employees)],
+    ShowList = [ parse_show_abbrev(Show) || Show <- ghostlight_db_utils:decode_not_null(ShowsProduced) ],
+
+    Desc = case Format of html -> OrgDescription; markdown -> OrgDescriptionSrc end,
+    Tag = case Format of html -> OrgTagline; markdown -> OrgTaglineSrc end,
+
     #org_return{
-       org=Org,
-       shows_produced=ShowsProduced
+      org=#organization{
+             id=OrgId,
+             name=OrgName,
+             tagline=Tag,
+             description=Desc,
+             external_links=ExternalLinks,
+             members=MemberList,
+             employees=EmployeeList
+          },
+      shows_produced = ShowList
     }.
 
 
@@ -47,6 +73,42 @@ db_listings_to_record_list(Results) ->
          tagline=Tagline,
          description=Description
         } || {OrgId, OrgName, Tagline, Description} <- Results].
+
+
+parse_member(Member, Format) ->
+    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
+    #org_member{
+       person = #person {
+                   id = proplists:get_value(<<"person_id">>, Member),
+                   name = proplists:get_value(<<"name">>, Member)
+                },
+       description = proplists:get_value(DescType, Member, null)
+    }.
+
+
+parse_employee(Employee, Format) ->
+    DescType = case Format of html -> <<"description">>; markdown -> <<"description_src">> end,
+    #org_employee{
+       person = #person {
+                   id = proplists:get_value(<<"person_id">>, Employee),
+                   name = proplists:get_value(<<"name">>, Employee)
+                },
+       title = proplists:get_value(<<"title">>, Employee, null),
+       description = proplists:get_value(DescType, Employee, null)
+    }.
+
+
+parse_show_abbrev(Show) ->
+    #show{
+       id = proplists:get_value(<<"show_id">>, Show),
+       title = proplists:get_value(<<"title">>, Show),
+       performances = [#performance{
+                           work=#work{ id = proplists:get_value(<<"work_id">>, Work),
+                                       title = proplists:get_value(<<"name">>, Work)}}
+                       || {Work} <- proplists:get_value(<<"works">>, Show)
+                    ],
+       dates = [ iso8601:parse(Date) || Date <- proplists:get_value(<<"show_dates">>, Show) ]
+    }.
 
 
 get_inserts(#organization {
@@ -148,12 +210,48 @@ prepare_statements(C, State) ->
     GetOrgSql =
 "
 SELECT
-    po.json AS org,
-    ops.shows AS shows_produced
-FROM
-    parseable_org AS po
-    INNER JOIN org_produced_shows AS ops USING (org_id)
-WHERE po.org_id = $1
+    o.org_id,
+    o.name,
+    o.tagline_src,
+    o.tagline_markdown,
+    o.description_src,
+    o.description_markdown,
+    array_to_json(ARRAY(SELECT (ol.link, ol.type)::external_link
+                            FROM org_links ol
+                            WHERE ol.org_id = o.org_id)) AS links,
+    (
+        SELECT to_json(array_agg(prod))
+        FROM (SELECT s.show_id,
+                     s.title,
+                     array_to_json(ARRAY(SELECT (w.work_id, w.title)::titled_pair
+                                                FROM works w
+                                                INNER JOIN performances p USING (work_id)
+                                                WHERE p.show_id = s.show_id ORDER BY p.performance_order)) AS works,
+                     array_to_json(ARRAY(SELECT sd.show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY sd.show_date DESC)) AS show_dates,
+                     (
+                        SELECT show_date FROM show_dates sd WHERE sd.show_id = s.show_id ORDER BY show_date ASC LIMIT 1
+                     ) AS opening_night
+               FROM shows s
+               INNER JOIN producers USING (show_id)
+               WHERE producers.org_id = o.org_id
+               ORDER BY opening_night DESC) AS prod
+    ) AS shows_produced,
+    (
+        SELECT to_json(array_agg(emp))
+        FROM (SELECT oe.org_id, p.person_id, p.name, oe.title, oe.description_src, oe.description_markdown AS description
+              FROM org_employees oe
+              INNER JOIN people p USING (person_id)) AS emp
+        WHERE emp.org_id = o.org_id
+    ) AS employees, 
+    (
+        SELECT to_json(array_agg(mem))
+        FROM (SELECT om.org_id, p.person_id, p.name, om.description_src, om.description_markdown AS description
+              FROM org_members om
+              INNER JOIN people p USING (person_id)) AS mem
+        WHERE mem.org_id = o.org_id
+    ) AS members
+FROM organizations o
+WHERE o.org_id = $1
 ",
     {ok, GetOrg} = epgsql:parse(C, "get_org_statement", GetOrgSql, [uuid]),
 

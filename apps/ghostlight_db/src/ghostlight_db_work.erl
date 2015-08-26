@@ -113,8 +113,8 @@ get_update_commands(#work{id=WorkId,
 
 
 prepare_statements(C, State) ->
-    WorksSql = "INSERT INTO works (work_id, title, description_src, description_markdown, minutes_long, acl) VALUES($1, $2, $3, $4, $5, $6)", 
-    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, text, int8, text]),
+    WorksSql = "INSERT INTO works (work_id, title, description_src, description_markdown, minutes_long) VALUES($1, $2, $3, $4, $5)",
+    {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, text, int8]),
     AuthorshipSql = "INSERT INTO authorship (work_id, person_id, org_id) VALUES($1, $2, $3)",
     {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid, uuid]),
 

@@ -22,15 +22,12 @@ DROP TABLE people_links CASCADE;
 DROP TABLE users CASCADE;
 DROP TABLE people CASCADE;
 
-DROP TYPE org_pair CASCADE;
-DROP TYPE work_pair CASCADE;
 DROP TYPE external_link CASCADE;
 DROP TYPE press_link CASCADE;
 DROP TYPE aggregated_performance CASCADE;
 DROP TYPE production_abbrev CASCADE;
 DROP TYPE onstage_performance CASCADE;
 DROP TYPE offstage_performance CASCADE;
-DROP TYPE person_pair CASCADE;
 DROP TYPE person_or_org CASCADE;
 DROP TYPE person_or_org_label CASCADE;
 

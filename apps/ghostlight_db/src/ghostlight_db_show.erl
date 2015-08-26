@@ -192,16 +192,16 @@ get_onstage_inserts(PerformanceId, OnstageList, State=#db_state{insert_onstage_s
 
 
 get_offstage_inserts(PerformanceId, OffstageList, State=#db_state{insert_offstage_statement=IO}) ->
-    ListOfLists = lists:map(fun (#offstage{ job=Job,
+    ListOfLists = lists:map(fun (#offstage{ jobs=Jobs,
                                             contributor=Contrib}) ->
                                 case Contrib of
                                     #person{} ->
                                         {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Contrib, State),
-                                        OffstageInsert = {IO, [PerformanceId, PersonId, null, Job, null, null]},
+                                        OffstageInsert = {IO, [PerformanceId, PersonId, null, Jobs, null, null]},
                                         [PersonInserts, OffstageInsert];
                                     #organization{} ->
                                         {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Contrib, State),
-                                        OffstageInsert = {IO, [PerformanceId, null, OrgId, Job, null, null]},
+                                        OffstageInsert = {IO, [PerformanceId, null, OrgId, Jobs, null, null]},
                                         [OrgInserts, OffstageInsert]
                                 end
                             end, OffstageList),
@@ -251,8 +251,8 @@ parse_onstage(Onstage) ->
  
 parse_offstage(Offstage) ->
     Entity = ghostlight_db_utils:parse_person_or_org(proplists:get_value(<<"entity">>, Offstage)),
-    Job = proplists:get_value(<<"job">>, Offstage),
-    #offstage{ contributor=Entity, job=Job}.
+    Jobs = proplists:get_value(<<"jobs">>, Offstage),
+    #offstage{ contributor=Entity, jobs=Jobs}.
 
 parse_person(Person) ->
     #person{
@@ -300,13 +300,13 @@ prepare_statements(C, State) ->
     DirectorSql = "INSERT INTO performance_directors (performance_id, director_id) VALUES($1, $2)",
     {ok, InsertDirector} = epgsql:parse(C, "insert_performance_director", DirectorSql, [uuid, uuid]),
 
-    OnstageSql = "INSERT INTO performance_onstage (performance_id, performer_id, role, understudy_id, date_started, date_ended)"
-        ++ " VALUES($1, $2, $3, $4, $5, $6)",
-    {ok, InsertOnstage} = epgsql:parse(C, "insert_performance_onstage", OnstageSql, [uuid, uuid, text, uuid, date, date]),
+    OnstageSql = "INSERT INTO performance_onstage (performance_id, performer_id, role, date_started, date_ended)"
+        ++ " VALUES($1, $2, $3, $4, $5)",
+    {ok, InsertOnstage} = epgsql:parse(C, "insert_performance_onstage", OnstageSql, [uuid, uuid, text, date, date]),
 
-    OffstageSql = "INSERT INTO performance_offstage (performance_id, person_id, org_id, job, date_started, date_ended)"
+    OffstageSql = "INSERT INTO performance_offstage (performance_id, person_id, org_id, jobs, date_started, date_ended)"
         ++ " VALUES($1, $2, $3, $4, $5, $6)",
-    {ok, InsertOffstage} = epgsql:parse(C, "insert_performance_offstage", OffstageSql, [uuid, uuid, uuid, text, date, date]),
+    {ok, InsertOffstage} = epgsql:parse(C, "insert_performance_offstage", OffstageSql, [uuid, uuid, uuid, {array, text}, date, date]),
 
     ProducersSql = "INSERT INTO producers (show_id, org_id, person_id, listed_order) VALUES($1, $2, $3, $4)",
     {ok, InsertProducer} = epgsql:parse(C, "insert_producer", ProducersSql, [uuid, uuid, uuid, int4]),
@@ -347,7 +347,7 @@ SELECT
     array_to_json(ARRAY(SELECT (pl.link, pl.label)::press_link FROM press_links pl WHERE show_id = s.show_id)) AS press_links,
     array_to_json(ARRAY(SELECT (sl.link, sl.type)::external_link FROM show_links sl WHERE sl.show_id = s.show_id)) AS external_links,
     array_to_json(ARRAY(SELECT sd.show_date from show_dates sd WHERE sd.show_id = s.show_id ORDER BY sd.show_date ASC)) AS dates,
-    array_to_json(ARRAY(SELECT (p.person_id, p.name)::person_pair FROM people p INNER JOIN show_hosts sh USING (person_id) where sh.show_id = s.show_id)) AS hosts,
+    array_to_json(ARRAY(SELECT (p.person_id, p.name)::named_pair FROM people p INNER JOIN show_hosts sh USING (person_id) where sh.show_id = s.show_id)) AS hosts,
     array_to_json(ARRAY(SELECT (perf.performance_id,
           w.work_id, 
           w.title, 
@@ -361,17 +361,17 @@ SELECT
                 WHERE a.work_id = w.work_id),
           perf.description_markdown,
           perf.directors_note_markdown,
-          ARRAY(SELECT (p.person_id, p.name)::person_pair
+          ARRAY(SELECT (p.person_id, p.name)::named_pair
                     FROM performance_directors pd
                     INNER JOIN people p ON (pd.director_id = p.person_id)
                     WHERE pd.performance_id = perf.performance_id),
-          ARRAY(SELECT ((p.person_id, p.name)::person_pair, po.role)::onstage_performance
+          ARRAY(SELECT ((p.person_id, p.name)::named_pair, po.role)::onstage_performance
                     FROM performance_onstage po
                     INNER JOIN people p ON (p.person_id = po.performer_id)
                     WHERE po.performance_id = perf.performance_id),
           ARRAY(SELECT (CASE WHEN po.person_id IS NULL
-                            THEN (('org'::person_or_org_label, po.org_id, o.name)::person_or_org, po.job)::offstage_performance
-                            ELSE (('person'::person_or_org_label, po.person_id, p.name)::person_or_org, po.job)::offstage_performance
+                            THEN (('org'::person_or_org_label, po.org_id, o.name)::person_or_org, po.jobs)::offstage_performance
+                            ELSE (('person'::person_or_org_label, po.person_id, p.name)::person_or_org, po.jobs)::offstage_performance
                         END)
                   FROM performance_offstage po
                   LEFT OUTER JOIN organizations o USING (org_id)

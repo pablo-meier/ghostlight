@@ -27,6 +27,7 @@
 
 -define(SERVER, ?MODULE).
 -include("apps/ghostlight/include/ghostlight_data.hrl").
+-include("apps/ghostlight_db/include/ghostlight_db_statements.hrl").
 
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).

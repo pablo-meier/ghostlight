@@ -87,7 +87,7 @@ db_to_record(
                                                    title = proplists:get_value(<<"title">>, RoleObj)
                                                 },
                                          offstage = [#offstage {
-                                                      job = proplists:get_value(<<"job">>, RoleObj)
+                                                      jobs = proplists:get_value(<<"jobs">>, RoleObj)
                                                      }]
                                       } || RoleObj <- proplists:get_value(<<"jobs">>, Show)],
                        producers=[ ghostlight_db_utils:parse_person_or_org(Prod) || Prod <- proplists:get_value(<<"producers">>, Show)],
@@ -182,7 +182,7 @@ get_update_commands(#person{id=PersonId,
 
 
 prepare_statements(C, State) ->
-    PersonSql = "INSERT INTO people (person_id, name, description_src, description_markdown, photo_id, date_added) VALUES($1, $2, $3, $4, NULL, CURRENT_DATE)", 
+    PersonSql = "INSERT INTO people (person_id, name, description_src, description_markdown, date_created) VALUES($1, $2, $3, $4, CURRENT_DATE)",
     {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text, text, text]),
     PersonLinksSql = "INSERT INTO people_links (person_id, link, type) VALUES($1, $2, $3::link_type)",
     {ok, PersonLinks} = epgsql:parse(C, "insert_person_links", PersonLinksSql, [uuid, text, text]),
@@ -197,7 +197,7 @@ SELECT
     p.name,
     p.description_src,
     p.description_markdown,
-    array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
+    array_to_json(ARRAY(SELECT (w.work_id, w.title)::titled_pair
                         FROM works w 
                         INNER JOIN authorship a USING (work_id)
                         where a.person_id = p.person_id
@@ -207,7 +207,7 @@ SELECT
         SELECT to_json(array_agg(directed))
         FROM (SELECT s.show_id,
                      s.title,
-                     array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
+                     array_to_json(ARRAY(SELECT (w.work_id, w.title)::titled_pair
                                                 FROM works w
                                                 INNER JOIN performances perf USING (work_id)
                                                 INNER JOIN performance_directors pd USING (performance_id)
@@ -267,7 +267,7 @@ SELECT
         FROM (SELECT s.show_id,
                      s.title,
                      (SELECT array_agg(collected)
-                      FROM (SELECT w.work_id, w.title, po.job
+                      FROM (SELECT w.work_id, w.title, po.jobs
                                    FROM works w
                                    INNER JOIN performances perf USING (work_id)
                                    WHERE perf.show_id = s.show_id
@@ -316,7 +316,7 @@ SELECT
         SELECT to_json(array_agg(prod))
         FROM (SELECT s.show_id,
                      s.title,
-                     array_to_json(ARRAY(SELECT (w.work_id, w.title)::work_pair
+                     array_to_json(ARRAY(SELECT (w.work_id, w.title)::titled_pair
                                                 FROM works w
                                                 INNER JOIN performances p USING (work_id)
                                                 WHERE p.show_id = s.show_id

@@ -123,12 +123,12 @@ make_onstage_proplist(Show = #show{ performances=[#performance{
 
 
 make_offstage_proplist(Show= #show{ performances=[#performance{
-                                      offstage=[#offstage{ job=Job }]
+                                      offstage=[#offstage{ jobs=Jobs }]
                                   }]}) ->
     Toplevel = ghostlight_show:record_to_proplist(Show),
-    case Job of
+    case Jobs of
         null -> Toplevel;
-        _ -> [{job, Job}|Toplevel]
+        _ -> [{job, Jobs}|Toplevel]
     end.
 
 

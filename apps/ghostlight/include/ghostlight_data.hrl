@@ -76,8 +76,8 @@
 }).
 
 -record(offstage, {
-    job = <<"">>            :: binary(),
-    contributor = #person{} :: #organization{} | #person{}
+    jobs = throw(no_job_on_offstage)            :: list(binary()),
+    contributor = throw(no_creator_in_offstage) :: #organization{} | #person{}
 }).
 
 -record(performance, {

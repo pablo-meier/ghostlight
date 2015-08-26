@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS works (
     title TEXT NOT NULL,
     description_src TEXT,
     description_markdown TEXT,
-    minutes_long INTEGER,
+    minutes_long INTEGER
 );
 CREATE INDEX works_vanity_names ON works(vanity_name);
 
@@ -122,13 +122,20 @@ CREATE TABLE IF NOT EXISTS performance_offstage (
     performance_id UUID REFERENCES performances(performance_id) NOT NULL,
     person_id UUID REFERENCES people(person_id),
     org_id UUID REFERENCES organizations(org_id),
-    jobs[] TEXT NOT NULL,
+    jobs TEXT[] NOT NULL,
     date_started DATE,
     date_ended DATE,
 
     CONSTRAINT one_entity CHECK (org_id IS NULL <> person_id IS NULL),
     PRIMARY KEY(performance_id, person_id, org_id)
 );
+
+CREATE TYPE authorship_type AS ENUM (
+    'Written',
+    'Book',
+    'Lyrics',
+    'Choreography'
+    'Music');
 
 CREATE TABLE IF NOT EXISTS authorship (
     work_id UUID REFERENCES works(work_id) NOT NULL,
@@ -139,13 +146,6 @@ CREATE TABLE IF NOT EXISTS authorship (
     CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL),
     PRIMARY KEY(work_id, person_id, org_id)
 );
-
-CREATE TYPE authorship_type AS ENUM (
-    'Written',
-    'Book',
-    'Lyrics',
-    'Choreography'
-    'Music');
 
 CREATE TABLE IF NOT EXISTS show_dates (
    show_id UUID REFERENCES shows(show_id) NOT NULL,
@@ -236,16 +236,14 @@ CREATE TABLE IF NOT EXISTS show_hosts (
 CREATE TYPE named_pair AS (id UUID, name TEXT);
 CREATE TYPE titled_pair AS (id UUID, title TEXT);
 
-CREATE TYPE work_and_authors AS (id UUID, title TEXT, authors JSON);
-
 CREATE TYPE external_link AS (link TEXT, type link_type);
 CREATE TYPE press_link AS (link TEXT, label TEXT);
 
 CREATE TYPE person_or_org_label AS ENUM ('person', 'org');
 CREATE TYPE person_or_org AS (type person_or_org_label, id UUID, name TEXT);
 
-CREATE TYPE onstage_performance AS ( performer person_pair, role TEXT);
-CREATE TYPE offstage_performance AS ( entity person_or_org, job TEXT);
+CREATE TYPE onstage_performance AS (performer named_pair, role TEXT);
+CREATE TYPE offstage_performance AS (entity person_or_org, job TEXT[]);
 
 CREATE TYPE aggregated_performance AS (
     performance_id UUID,
@@ -254,7 +252,7 @@ CREATE TYPE aggregated_performance AS (
     authors person_or_org[],
     description TEXT,
     directors_note TEXT,
-    directors person_pair[],
+    directors named_pair[],
     onstage onstage_performance[],
     offstage offstage_performance[]
 );

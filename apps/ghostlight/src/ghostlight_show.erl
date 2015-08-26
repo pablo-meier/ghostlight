@@ -108,8 +108,8 @@ performance_to_proplists(#performance{
 
 onstage_as_proplist(#onstage{ person=Person, role=Role}) ->
     [{role, Role}] ++ ghostlight_people:record_to_proplist(Person).
-offstage_as_proplist(#offstage{ contributor=Person, job=Job}) ->
-    [{job, Job}] ++ ghostlight_people:record_to_proplist(Person).
+offstage_as_proplist(#offstage{ contributor=Person, jobs=Jobs}) ->
+    [{job, Jobs}] ++ ghostlight_people:record_to_proplist(Person).
 
 
 record_to_json(#show{
@@ -149,11 +149,11 @@ onstage_as_json(#onstage{
         {<<"person">>, ghostlight_people:record_to_json(Person)}
     ]).
 offstage_as_json(#offstage{
-                   job=Job,
+                   jobs=Jobs,
                    contributor=Person
                 }) ->
     ghostlight_utils:json_with_valid_values([
-        {<<"job">>, Job},
+        {<<"job">>, Jobs},
         {<<"contributor">>, ghostlight_people:record_to_json(Person)}
     ]).
 
@@ -214,10 +214,10 @@ onstage_json_to_record(Onstage) ->
 
 offstage_json_to_record(Offstage) ->
     Contributor = ghostlight_utils:person_or_org_json_to_record(proplists:get_value(<<"contributor">>, Offstage)),
-    Job = proplists:get_value(<<"job">>, Offstage),
+    Jobs = proplists:get_value(<<"jobs">>, Offstage),
     #offstage{
       contributor = Contributor,
-      job = Job 
+      jobs = Jobs
     }.
 
 %%% Helpers

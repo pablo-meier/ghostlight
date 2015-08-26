@@ -14,10 +14,13 @@
          proplist_with_valid_values/1,
 
          handle_errors/4,
-         default_list/1,
          person_or_org_json_to_record/1,
          person_or_org_record_to_json/1,
          person_or_org_record_to_proplist/1,
+         validate_person_or_org/1,
+
+         default_list/1,
+         ensure_minimum_length/3,
          remove_null/1]).
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
@@ -198,6 +201,9 @@ person_or_org_record_to_proplist(#person{id=Id, name=Name}) ->
      {name, Name}].
 
 
+validate_person_or_org(P=#person{}) -> ghostlight_people:validate_person(P);
+validate_person_or_org(O=#organization{}) -> ghostlight_org:validate_org(O).
+
 
 %% iso8601 is pretty great, and epgsql are pretty great, but they don't play well together.
 %% Namely, epgsql returns dates where the seconds value is a float, which iso8601 doesn't 
@@ -268,3 +274,11 @@ handle_error_with(Req, Headers, StatusCode, Template) ->
 augment_request_header(Body, Headers) ->
     NewValue = {<<"content-length">>, integer_to_list(iolist_size(Body))},
     lists:keyreplace(<<"content-length">>, 1, Headers, NewValue).
+
+
+ensure_minimum_length(Lst, Len, _) when length(Lst) >= Len ->
+    ok;
+ensure_minimum_length(_, _, Msg) ->
+    throw({list_not_correct_size, Msg}).
+    
+

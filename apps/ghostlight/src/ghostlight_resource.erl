@@ -255,7 +255,7 @@ post_resource(Req, State) ->
     end.
 
 
-make_appropriate_json(undefined, <<"POST">>, Module, Record) ->
+make_appropriate_json(null, <<"POST">>, Module, Record) ->
     NewId = Module:post_json(Record),
     Response = jsx:encode([{<<"status">>, <<"ok">>}, {<<"id">>, list_to_binary(NewId)}]),
     {true, Response};

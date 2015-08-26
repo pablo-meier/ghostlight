@@ -71,18 +71,19 @@ exec_batch(Batch, #db_state{connection=C,
                                    Batch,
                                    [{COMMIT, []}] ]),
     Results = epgsql:execute_batch(C, AsTransaction),
-    case all_succeeded(Results) of
-        true -> Results;
-        false ->
-            lager:error("Transaction Failed! Rolling back~n"),
-            epgsql:execute_batch(C, [{ROLLBACK, []}])
+    case failures_from(Results) of
+        [] -> Results;
+        Else ->
+            lager:error("Transaction Failed! ~p ~nRolling back…", [Else]),
+            epgsql:execute_batch(C, [{ROLLBACK, []}]),
+            throw({sql_failure, Else})
     end.
 
-all_succeeded(Results) ->
-    lists:all(fun good_result/1, Results).
+failures_from(Results) ->
+    lists:filter(fun good_result/1, Results).
 
-good_result({ok, _}) -> true;
-good_result(_Else) -> false.
+good_result({ok, _}) -> false;
+good_result(_Else) -> true.
 
 
 parse_person_or_org(Entity) ->
@@ -128,7 +129,7 @@ normalize_link(Link) ->
         _ -> Link
     end.
 
-
+external_links_inserts(_, _, null) -> [];
 external_links_inserts(OrgId,
                        Stmt,
                        #external_links{ 

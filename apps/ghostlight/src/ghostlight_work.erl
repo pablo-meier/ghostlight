@@ -141,8 +141,5 @@ validate_work_body(W=#work {
                         vanity_name = Vanity
                      }) ->
     ghostlight_utils:validate_vanity_name(Vanity),
-    [ validate_author(Author) || Author <- Authors ],
+    [ ghostlight_utils:validate_person_or_org(Author) || Author <- Authors ],
     W.
-
-validate_author(P=#person{}) -> ghostlight_people:validate_person(P);
-validate_author(O=#organization{}) -> ghostlight_org:validate_org(O).

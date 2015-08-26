@@ -143,8 +143,7 @@ CREATE TABLE IF NOT EXISTS authorship (
     org_id UUID REFERENCES organizations(org_id),
     author_type authorship_type[] NOT NULL DEFAULT CAST ('{Written}' AS authorship_type[]),
 
-    CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL),
-    PRIMARY KEY(work_id, person_id, org_id)
+    CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL)
 );
 
 CREATE TABLE IF NOT EXISTS show_dates (

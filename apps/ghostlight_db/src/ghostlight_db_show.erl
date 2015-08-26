@@ -185,7 +185,7 @@ get_onstage_inserts(PerformanceId, OnstageList, State=#db_state{insert_onstage_s
     ListOfLists = lists:map(fun (#onstage{ role=Role,
                                            person=Person }) ->
                                 {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person, State),
-                                OnstageInsert = {IO, [PerformanceId, PersonId, Role, null, null, null]},
+                                OnstageInsert = {IO, [PerformanceId, PersonId, Role, null, null]},
                                 [PersonInserts, OnstageInsert]
                             end, OnstageList),
     lists:flatten(ListOfLists).
@@ -311,8 +311,8 @@ prepare_statements(C, State) ->
     ProducersSql = "INSERT INTO producers (show_id, org_id, person_id, listed_order) VALUES($1, $2, $3, $4)",
     {ok, InsertProducer} = epgsql:parse(C, "insert_producer", ProducersSql, [uuid, uuid, uuid, int4]),
 
-    ShowSql = "INSERT INTO shows (show_id, title, special_thanks, date_created) "
-        ++ " VALUES($1, $2, $3, CURRENT_DATE)",
+    ShowSql = "INSERT INTO shows (show_id, title, special_thanks, date_created, last_updated) "
+        ++ " VALUES($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
     {ok, InsertShow} = epgsql:parse(C, "insert_show", ShowSql, [uuid, text, text]),
 
     DatesSql = "INSERT INTO show_dates (show_id, show_date) VALUES($1, $2)",

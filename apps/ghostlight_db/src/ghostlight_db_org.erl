@@ -190,9 +190,10 @@ get_update_commands(#organization{id=OrgId,
 
 prepare_statements(C, State) ->
     OrgsSql = "INSERT INTO organizations "
-        ++ "(org_id, name, tagline_src, tagline_markdown, description_src, description_markdown, vanity_name, date_founded)"
-        ++ " VALUES($1, $2, $3, $4, $5, $6, $7, $8::date)",
-    {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, uuid, text, text, text, text, text, date]),
+        ++ "(org_id, name, tagline_src, tagline_markdown, description_src, description_markdown, vanity_name, date_founded," 
+        ++ "date_created, last_updated)"
+        ++ " VALUES($1, $2, $3, $4, $5, $6, $7, $8::date, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+    {ok, InsertOrg} = epgsql:parse(C, "insert_organization", OrgsSql, [uuid, text, text, text, text, text, text, date]),
 
     OrgEmployeeSql = "INSERT INTO org_employees "
         ++ "(org_id, person_id, title, description_src, description_markdown, date_started, date_ended)"

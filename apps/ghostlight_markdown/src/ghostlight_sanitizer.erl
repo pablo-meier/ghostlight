@@ -2,7 +2,7 @@
 -export([sanitize/1,
          healthcheck/0]).
 
--define(OWASP_JAVA_NODE, 'jawbone_tower@Sancho.hsd1.pa.comcast.net').
+-define(OWASP_JAVA_NODE, 'jawbone_tower@Sancho.local').
 
 %% Takes the dirty HTML that may be Bad for the site and returns sanitized HTML.
 sanitize(Body) when is_binary(Body) ->

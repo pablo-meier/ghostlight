@@ -182,7 +182,7 @@ get_update_commands(#person{id=PersonId,
 
 
 prepare_statements(C, State) ->
-    PersonSql = "INSERT INTO people (person_id, name, description_src, description_markdown, date_created) VALUES($1, $2, $3, $4, CURRENT_DATE)",
+    PersonSql = "INSERT INTO people (person_id, name, description_src, description_markdown, date_created, last_updated) VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
     {ok, InsertPerson} = epgsql:parse(C, "insert_person", PersonSql, [uuid, text, text, text]),
     PersonLinksSql = "INSERT INTO people_links (person_id, link, type) VALUES($1, $2, $3::link_type)",
     {ok, PersonLinks} = epgsql:parse(C, "insert_person_links", PersonLinksSql, [uuid, text, text]),

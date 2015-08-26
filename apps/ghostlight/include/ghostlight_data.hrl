@@ -4,6 +4,9 @@
 %% we try to define a '0 type' for each record so we don't get surprising
 %% 'undefined's. 
 
+%% TODO: Timestamp type on datetime so that SQL will get it.
+%% TODO: collaborating_orgs on works to get nuked.
+
 -type datetime() :: tuple(Date::calendar:date(), Time::calendar:time()) | null.
 
 -record(external_links, {
@@ -91,7 +94,7 @@
 }).
 
 -record(show, {
-    id = null               :: binary(),
+    id = null               :: null | binary(),
     title = <<"">>          :: binary(),
     vanity_name = null      :: null | binary(),
     producers = []          :: list(#person{} | #organization{}),

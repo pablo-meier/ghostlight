@@ -69,7 +69,7 @@ get_inserts(#work{title=Title,
 
     Markdowned = ghostlight_db_utils:markdown_or_null(Description),
 
-    WorkInserts = lists:append([ [{IW, [WorkUUID, Title, Description, Markdowned, MinutesLong, <<"public">>]}],
+    WorkInserts = lists:append([ [{IW, [WorkUUID, Title, Description, Markdowned, MinutesLong]}],
                                  AuthorshipInserts]),
     {WorkInserts, WorkUUID}.
 

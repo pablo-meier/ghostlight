@@ -11,7 +11,9 @@
          get_id/1,
          post_json/1,
          edit_json/1,
-         json_to_record/1
+         json_to_record/1,
+
+         validate_show/1
         ]).
 
 -export([record_to_json/1,
@@ -158,7 +160,7 @@ offstage_as_json(#offstage{
     ]).
 
 json_to_record(Decoded) ->
-    ShowId = proplists:get_value(<<"id">>, Decoded, undefined),
+    ShowId = proplists:get_value(<<"id">>, Decoded, null),
     Title = proplists:get_value(<<"title">>, Decoded),
     SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),
     Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded, [])),
@@ -175,7 +177,7 @@ json_to_record(Decoded) ->
 
     Vanity = ghostlight_utils:vanity_name_json_to_binary(Decoded),
 
-    #show{
+    validate_show(#show{
         id=ShowId,
         title=Title,
         vanity_name=Vanity,
@@ -186,7 +188,7 @@ json_to_record(Decoded) ->
         performances=Performances,
         external_links=ExternalLinks,
         press_links=PressLinks
-    }.
+    }).
 
 performance_json_to_record(Proplist) ->
     Work = ghostlight_work:json_to_record(proplists:get_value(<<"work">>, Proplist)),
@@ -245,3 +247,58 @@ tag_roles_in_cast(Performance) ->
 
 substitute_property(Key, Lst, Replacement) ->
     proplists:delete(Key, Lst) ++ [{Key, Replacement}].
+
+
+%% Shows have the following restrictions:
+%% * Must have either an ID (existing) or a name (new show).
+%% * Must have at least one producer.
+%% * Must have at least one showdate.
+%% * Must have at least one performance.
+%% * Each Producer must be a valid Person or Org.
+%% * Each Performance must contain a valid work.
+%% * Must have a valid External Links.
+validate_show(#show{ id = null, title = null }) ->
+    throw(show_missing_identifying_information);
+validate_show(S=#show{ id = null, title = _ }) ->
+    validate_body(S);
+validate_show(S=#show{ id = Id }) ->
+    case ghostlight_db_utils:is_valid_uuid(Id) of
+        true -> validate_body(S);
+        false -> throw(not_valid_uuid)
+    end.
+
+validate_body(S=#show{
+    vanity_name = Vanity,
+    producers = Producers,
+    performances = Performances,   % length > 1
+    external_links = EL,
+    dates = Dates
+}) ->
+    ok,
+    ghostlight_utils:ensure_minimum_length(Producers, 1, <<"Must have at least one producer">>),
+    ghostlight_utils:ensure_minimum_length(Performances, 1, <<"Must have at least one performance">>),
+    ghostlight_utils:ensure_minimum_length(Dates, 1, <<"Must have at least one date">>),
+
+    [ ghostlight_utils:validate_person_or_org(Producer) || Producer <- Producers ],
+    [ validate_performance(Performance) || Performance <- Performances ],
+
+    ghostlight_utils:validate_external_links(EL),
+    ghostlight_utils:validate_vanity_name(Vanity),
+    S.
+
+validate_performance(#performance{
+    id = Id,
+    work = Work,
+    onstage = Onstage,
+    offstage = Offstage,
+    directors = Directors
+}) ->
+    ghostlight_work:validate_work(Work),
+    [ ghostlight_people:validate_person(Director) || Director <- Directors ],
+    [ ghostlight_people:validate_person(Person) || #onstage{person=Person} <- Onstage],
+    [ ghostlight_utils:validate_person_or_org(Creator) || #offstage{contributor=Creator} <- Offstage],
+    case {Id, ghostlight_db_utils:is_valid_uuid(Id)} of
+        {null, _} -> ok;
+        {_, true} -> ok;
+        {_, false} -> throw(not_valid_uuid)
+    end.

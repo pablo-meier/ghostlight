@@ -4,9 +4,10 @@
 
 {% block content %}
   <h1><em>{{ title }}</em></h1>
-  <h3>By
+  <h3>
     {% for author in authors %}
-    {% if author.type == "org" %}<a href="/organization/{{ author.id }}">{{ author.name }}</a>{% else %}<a href="/people/{{ author.id }}">{{ author.name }}</a>{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</h3>
+    {% if author.byline %}{{ author.byline }} by {% else %}By {% endif %}
+    {% if author.author.type == "org" %}<a href="/organization/{{ author.author.id }}">{{ author.author.name }}</a>{% else %}<a href="/people/{{ author.author.id }}">{{ author.author.name }}</a>{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</h3>
 
   {% if minutes_long %}
   <p><strong>{{ minutes_long }} minutes.</strong></p>

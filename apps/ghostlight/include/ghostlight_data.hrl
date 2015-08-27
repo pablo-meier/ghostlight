@@ -63,11 +63,18 @@
     employees = []                     :: list(#org_employee{})
 }).
 
+-type authorship_type() :: written | book | music | lyrics | choreography | {other, binary()}.
+
+-record(authorship, {
+    author = throw(no_author_specified)    :: #person{} | #organization{},
+    types = [written]                      :: list(authorship_type())
+}).
+
 -record(work, {
     id = null                  :: null | binary(),
     title = null               :: null | binary(),
     vanity_name = null         :: null | binary(),
-    authors = []               :: list(#person{}) | list(#organization{}),
+    authors = []               :: list(#authorship{}),
     description = null         :: null | binary(),
     collaborating_orgs = []    :: [#organization{}],
     minutes_long = null        :: null | integer()

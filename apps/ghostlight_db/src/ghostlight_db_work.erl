@@ -43,7 +43,7 @@ db_to_record(
        work=#work{
                id=WorkId,
                title=Title,
-               authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jsx:decode(Authors) ],
+               authors=[ sql_author_to_record(Author) || Author <- jsx:decode(Authors) ],
                description=Description,
                minutes_long=MinutesLong
             },
@@ -56,6 +56,16 @@ db_listings_to_record_list(Response) ->
           title=WorkTitle,
           authors=[ ghostlight_db_utils:parse_person_or_org(Author) || Author <- jsx:decode(Authors) ]
       } || {WorkId, WorkTitle, Authors} <- Response].
+
+
+sql_author_to_record(Proplist) ->
+    Author = ghostlight_db_utils:parse_person_or_org(Proplist),
+    Types = proplists:get_value(<<"author_types">>, Proplist),
+    AsAtoms = [ ghostlight_work:author_type_to_atom(T) || T <- Types ],
+    #authorship {
+       author = Author,
+       types = AsAtoms
+    }.
 
 
 get_inserts(#work{title=Title,
@@ -82,15 +92,20 @@ parse_show(Show) ->
                      Producer <- proplists:get_value(<<"producers">>, Show)]
     }.
 
+get_author_inserts(WorkId, #authorship{ author=Author, types=Types }, Stmt, State) ->
+    TypesAsText = [ ghostlight_work:author_type_to_binary(T) || T <- Types ],
+    author_inserts(WorkId, Author, Stmt, TypesAsText, State).
 
-get_author_inserts(WorkId, Person=#person{}, Stmt, State) ->
+
+author_inserts(WorkId, Person=#person{}, Stmt, Types, State) ->
     {PersonInserts, PersonId} = ghostlight_db_person:get_inserts(Person, State),
     lists:append([ PersonInserts,
-                   [{Stmt, [WorkId, PersonId, null]}] ]);
-get_author_inserts(WorkId, Org=#organization{}, Stmt, State) ->
+                   [{Stmt, [WorkId, PersonId, null, Types]}] ]);
+
+author_inserts(WorkId, Org=#organization{}, Stmt, Types, State) ->
     {OrgInserts, OrgId} = ghostlight_db_org:get_inserts(Org, State),
     lists:append([ OrgInserts,
-                   [{Stmt, [WorkId, null, OrgId]}] ]).
+                   [{Stmt, [WorkId, null, OrgId, Types]}] ]).
 
 
 get_update_commands(#work{id=WorkId,
@@ -115,8 +130,8 @@ get_update_commands(#work{id=WorkId,
 prepare_statements(C, State) ->
     WorksSql = "INSERT INTO works (work_id, title, description_src, description_markdown, minutes_long) VALUES($1, $2, $3, $4, $5)",
     {ok, InsertWork} = epgsql:parse(C, "insert_work", WorksSql, [uuid, text, text, text, int8]),
-    AuthorshipSql = "INSERT INTO authorship (work_id, person_id, org_id) VALUES($1, $2, $3)",
-    {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid, uuid]),
+    AuthorshipSql = "INSERT INTO authorship (work_id, person_id, org_id, author_types) VALUES($1, $2, $3, $4)",
+    {ok, InsertAuthorship} = epgsql:parse(C, "insert_authorship", AuthorshipSql, [uuid, uuid, uuid, {array, text}]),
 
     GetWorkSql =
 "
@@ -124,8 +139,8 @@ SELECT
     w.work_id,
     w.title,
     array_to_json(ARRAY(SELECT (CASE WHEN a.person_id IS NULL
-                                   THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
-                                   ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
+                                   THEN ('org'::person_or_org_label, a.org_id, o.name, a.author_types)::authorship_agg
+                                   ELSE ('person'::person_or_org_label, a.person_id, p.name, a.author_types)::authorship_agg
                                END)
                         FROM authorship a
                         LEFT OUTER JOIN people p USING (person_id)
@@ -157,8 +172,8 @@ SELECT
     w.work_id,
     w.title,
     array_to_json(ARRAY(SELECT (CASE WHEN a.person_id IS NULL
-                                   THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
-                                   ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
+                                   THEN ('org'::person_or_org_label, a.org_id, o.name, a.author_types)::authorship_agg
+                                   ELSE ('person'::person_or_org_label, a.person_id, p.name, a.author_types)::authorship_agg
                                END)
                         FROM authorship a
                         LEFT OUTER JOIN people p USING (person_id)

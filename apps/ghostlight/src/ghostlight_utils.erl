@@ -184,11 +184,11 @@ person_or_org_json_to_record(Object) ->
     end.
 
 person_or_org_record_to_json(Person=#person{}) ->
-  PersonJson = ghostlight_people:record_to_json(Person),
-  [{<<"person">>, PersonJson}];
+    PersonJson = ghostlight_people:record_to_json(Person),
+    [{<<"person">>, PersonJson}];
 person_or_org_record_to_json(Org=#organization{}) ->
-  OrgJson = ghostlight_org:record_to_json(Org),
-  [{<<"org">>, OrgJson}].
+    OrgJson = ghostlight_org:record_to_json(Org),
+    [{<<"org">>, OrgJson}].
 
 
 person_or_org_record_to_proplist(#organization{id=Id, name=Name}) ->
@@ -280,5 +280,3 @@ ensure_minimum_length(Lst, Len, _) when length(Lst) >= Len ->
     ok;
 ensure_minimum_length(_, _, Msg) ->
     throw({list_not_correct_size, Msg}).
-    
-

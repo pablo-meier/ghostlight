@@ -126,22 +126,14 @@ CREATE TABLE IF NOT EXISTS performance_offstage (
     date_started DATE,
     date_ended DATE,
 
-    CONSTRAINT one_entity CHECK (org_id IS NULL <> person_id IS NULL),
-    PRIMARY KEY(performance_id, person_id, org_id)
+    CONSTRAINT one_entity CHECK (org_id IS NULL <> person_id IS NULL)
 );
-
-CREATE TYPE authorship_type AS ENUM (
-    'Written',
-    'Book',
-    'Lyrics',
-    'Choreography'
-    'Music');
 
 CREATE TABLE IF NOT EXISTS authorship (
     work_id UUID REFERENCES works(work_id) NOT NULL,
     person_id UUID REFERENCES people(person_id),
     org_id UUID REFERENCES organizations(org_id),
-    author_type authorship_type[] NOT NULL DEFAULT CAST ('{Written}' AS authorship_type[]),
+    author_types TEXT[] NOT NULL DEFAULT CAST ('{Written}' AS TEXT[]),
 
     CONSTRAINT one_entity CHECK (org_id IS NULL != person_id IS NULL)
 );
@@ -240,6 +232,7 @@ CREATE TYPE press_link AS (link TEXT, label TEXT);
 
 CREATE TYPE person_or_org_label AS ENUM ('person', 'org');
 CREATE TYPE person_or_org AS (type person_or_org_label, id UUID, name TEXT);
+CREATE TYPE authorship_agg AS (type person_or_org_label, id UUID, name TEXT, author_types TEXT[]);
 
 CREATE TYPE onstage_performance AS (performer named_pair, role TEXT);
 CREATE TYPE offstage_performance AS (entity person_or_org, job TEXT[]);

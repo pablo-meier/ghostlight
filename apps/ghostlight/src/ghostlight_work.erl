@@ -1,5 +1,8 @@
 -module(ghostlight_work).
 
+-export([author_type_to_binary/1,
+         author_type_to_atom/1]).
+
 -export([get_html/1,
          get_listings_html/0,
          edit_html/1,
@@ -83,9 +86,29 @@ record_to_proplist(#work{
                    }) ->
     [{id, WorkId},
      {title, WorkTitle},
-     {authors, [ ghostlight_utils:person_or_org_record_to_proplist(Author) || Author <- Authors ]},
+     {authors, [ [{author, ghostlight_utils:person_or_org_record_to_proplist(Author)},
+                  {byline, write_byline(Types)}] || #authorship { author = Author, types = Types}  <- Authors ]},
      {description, Description},
      {minutes_long, MinutesLong}].
+
+
+-spec write_byline(list(#authorship{})) -> binary().
+write_byline(Types) ->
+    ExcludingWritten = lists:filter(fun (X) -> X =/= written end, Types),
+    sophisticated_byline(ExcludingWritten).
+
+
+sophisticated_byline([]) -> <<"">>;
+sophisticated_byline(Types) ->
+    Mapped = [ binary_to_list(author_type_to_binary(T)) || T <- Types ],
+    case length(Mapped) of
+        1 -> list_to_binary(hd(Mapped));
+        2 -> list_to_binary(hd(Mapped) ++ "&" ++ hd(tl(Mapped)));
+        X -> 
+            Last = lists:last(Mapped),
+            AllButLast = lists:sublist(Mapped, X - 1),
+            list_to_binary(string:join(AllButLast, ", ") ++ ", and " ++ Last)
+    end.
 
 
 record_to_json(#work{
@@ -100,7 +123,7 @@ record_to_json(#work{
         {<<"title">>, WorkTitle},
         {<<"description">>, Description},
         {<<"minutes_long">>, MinutesLong},
-        {<<"authors">>, [ ghostlight_utils:person_or_org_record_to_json(Author) || Author <- WorkAuthors ]}
+        {<<"authors">>, [ authorship_to_json(Author) || Author <- WorkAuthors ]}
     ]);
 
 
@@ -114,16 +137,63 @@ record_to_json(#work_return{
     ]).
 
 
+authorship_to_json(#authorship {
+                      author = Author,
+                      types = Types
+                   }) ->
+    [{<<"author">>, ghostlight_utils:person_or_org_record_to_json(Author)},
+     {<<"types">>, [ author_type_to_binary(T) || T <- Types ]}].
+
+
+
 json_to_record(Proplist) ->
     validate_work(#work {
        id = proplists:get_value(<<"id">>, Proplist, null),
        title = proplists:get_value(<<"title">>, Proplist),
        vanity_name = ghostlight_utils:vanity_name_json_to_binary(Proplist),
-       authors = [ ghostlight_utils:person_or_org_json_to_record(Author)
+       authors = [ json_authors_to_record(Author)
                    || Author <- proplists:get_value(<<"authors">>, Proplist, []) ],
        description = proplists:get_value(<<"description">>, Proplist, null),
        minutes_long = proplists:get_value(<<"minutes_long">>, Proplist, null)
     }).
+
+json_authors_to_record(Proplist) ->
+    Author = ghostlight_utils:person_or_org_json_to_record(Proplist),
+    Types = case proplists:get_value(<<"types">>, Proplist, null) of
+                null -> [written];
+                Else -> [ author_type_to_atom(X) || X <- Else ]
+            end,
+    #authorship {
+       author = Author,
+       types = Types
+    }.
+
+
+-spec author_type_to_atom(binary()) -> authorship_type().
+author_type_to_atom(<<"written">>) -> written;
+author_type_to_atom(<<"Written">>) -> written;
+author_type_to_atom(<<"book">>) -> book;
+author_type_to_atom(<<"Book">>) -> book;
+author_type_to_atom(<<"music">>) -> music;
+author_type_to_atom(<<"Music">>) -> music;
+author_type_to_atom(<<"Lyrics">>) -> lyrics;
+author_type_to_atom(<<"lyrics">>) -> lyrics;
+author_type_to_atom(<<"Choreography">>) -> choreography;
+author_type_to_atom(<<"choreography">>) -> choreography;
+author_type_to_atom(Else) when is_list(Else) -> {other, list_to_binary(Else)};
+author_type_to_atom(Else) when is_binary(Else) -> {other, Else};
+author_type_to_atom(_) ->
+    throw(bad_author_type).
+
+
+-spec author_type_to_binary(authorship_type()) -> binary().
+author_type_to_binary(written) -> <<"Written">>;
+author_type_to_binary(book) -> <<"Book">>;
+author_type_to_binary(music) -> <<"Music">>;
+author_type_to_binary(lyrics) -> <<"Lyrics">>;
+author_type_to_binary(choreography) -> <<"Choreography">>;
+author_type_to_binary({other, Else}) -> Else;
+author_type_to_binary(_) -> throw(unknown_author_type).
 
 
 validate_work(#work{ id = null, title = null }) ->
@@ -141,5 +211,5 @@ validate_work_body(W=#work {
                         vanity_name = Vanity
                      }) ->
     ghostlight_utils:validate_vanity_name(Vanity),
-    [ ghostlight_utils:validate_person_or_org(Author) || Author <- Authors ],
+    [ ghostlight_utils:validate_person_or_org(Author) || #authorship{ author=Author } <- Authors ],
     W.

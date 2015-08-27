@@ -39,71 +39,71 @@
       "offstage": [
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
-          "job" : "Scenic Designer"
+          "jobs" : "Scenic Designer"
         },
         {
           "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "jobs" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "jobs" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
-          "job" : "Sound Designer"
+          "jobs" : "Sound Designer"
         },
         {
           "contributor" : {"person": {"name" : "Justin Cox" }},
-          "job" : "Props Master"
+          "jobs" : "Props Master"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
+          "jobs" : "Assistant Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
-          "job" : "Production Stage Manager"
+          "jobs" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
+          "jobs" : "Assistant Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Courtney Butt" }},
-          "job" : "Wardrobe Supervisor"
+          "jobs" : "Wardrobe Supervisor"
         },
         {
           "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
-          "job" : "Assistant Production Manager"
+          "jobs" : "Assistant Production Manager"
         },
         {
           "contributor" : {"person": {"name" : "Alexander Gilbey" }},
-          "job" : "House Manager"
+          "jobs" : "House Manager"
         },
         {
           "contributor" : {"person": {"name" : "Sara Morgan" }},
-          "job" : "Technical Director"
+          "jobs" : "Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Alison Loretta" }},
-          "job" : "Tech Intern"
+          "jobs" : "Tech Intern"
         },
         {
           "contributor" : {"person": {"name" : "Jon Huggins" }},
-          "job" : "Assistant Technical Director"
+          "jobs" : "Assistant Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Artem Kreimer" }},
-          "job" : "Master Electrician"
+          "jobs" : "Master Electrician"
         },
         {
           "contributor" : {"person": {"name" : "Jack Plowe" }},
-          "job" : "Run Crew"
+          "jobs" : "Run Crew"
         },
         {
           "contributor" : {"person": {"name" : "Nicole Richards" }},
-          "job" : "Run Crew"
+          "jobs" : "Run Crew"
         }
       ]
     },
@@ -127,75 +127,75 @@
       "offstage": [
         {
             "contributor" : {"person": {"name" : "Corinne Hastings" }},
-            "job" : "Assistant Director"
+            "jobs" : "Assistant Director"
         },
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
-          "job" : "Scenic Designer"
+          "jobs" : "Scenic Designer"
         },
         {
           "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "jobs" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "jobs" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
-          "job" : "Sound Designer"
+          "jobs" : "Sound Designer"
         },
         {
           "contributor" : {"person": {"name" : "Justin Cox" }},
-          "job" : "Props Master"
+          "jobs" : "Props Master"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
+          "jobs" : "Assistant Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
-          "job" : "Production Stage Manager"
+          "jobs" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
+          "jobs" : "Assistant Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Courtney Butt" }},
-          "job" : "Wardrobe Supervisor"
+          "jobs" : "Wardrobe Supervisor"
         },
         {
           "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
-          "job" : "Assistant Production Manager"
+          "jobs" : "Assistant Production Manager"
         },
         {
           "contributor" : {"person": {"name" : "Alexander Gilbey" }},
-          "job" : "House Manager"
+          "jobs" : "House Manager"
         },
         {
           "contributor" : {"person": {"name" : "Sara Morgan" }},
-          "job" : "Technical Director"
+          "jobs" : "Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Alison Loretta" }},
-          "job" : "Tech Intern"
+          "jobs" : "Tech Intern"
         },
         {
           "contributor" : {"person": {"name" : "Jon Huggins" }},
-          "job" : "Assistant Technical Director"
+          "jobs" : "Assistant Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Artem Kreimer" }},
-          "job" : "Master Electrician"
+          "jobs" : "Master Electrician"
         },
         {
           "contributor" : {"person": {"name" : "Jack Plowe" }},
-          "job" : "Run Crew"
+          "jobs" : "Run Crew"
         },
         {
           "contributor" : {"person": {"name" : "Nicole Richards" }},
-          "job" : "Run Crew"
+          "jobs" : "Run Crew"
         }
       ]
     },
@@ -215,71 +215,71 @@
       "offstage": [
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
-          "job" : "Scenic Designer"
+          "jobs" : "Scenic Designer"
         },
         {
           "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "jobs" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "jobs" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
-          "job" : "Sound Designer"
+          "jobs" : "Sound Designer"
         },
         {
           "contributor" : {"person": {"name" : "Justin Cox" }},
-          "job" : "Props Master"
+          "jobs" : "Props Master"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
+          "jobs" : "Assistant Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
-          "job" : "Production Stage Manager"
+          "jobs" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
+          "jobs" : "Assistant Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Courtney Butt" }},
-          "job" : "Wardrobe Supervisor"
+          "jobs" : "Wardrobe Supervisor"
         },
         {
           "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
-          "job" : "Assistant Production Manager"
+          "jobs" : "Assistant Production Manager"
         },
         {
           "contributor" : {"person": {"name" : "Alexander Gilbey" }},
-          "job" : "House Manager"
+          "jobs" : "House Manager"
         },
         {
           "contributor" : {"person": {"name" : "Sara Morgan" }},
-          "job" : "Technical Director"
+          "jobs" : "Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Alison Loretta" }},
-          "job" : "Tech Intern"
+          "jobs" : "Tech Intern"
         },
         {
           "contributor" : {"person": {"name" : "Jon Huggins" }},
-          "job" : "Assistant Technical Director"
+          "jobs" : "Assistant Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Artem Kreimer" }},
-          "job" : "Master Electrician"
+          "jobs" : "Master Electrician"
         },
         {
           "contributor" : {"person": {"name" : "Jack Plowe" }},
-          "job" : "Run Crew"
+          "jobs" : "Run Crew"
         },
         {
           "contributor" : {"person": {"name" : "Nicole Richards" }},
-          "job" : "Run Crew"
+          "jobs" : "Run Crew"
         }
       ]
     },
@@ -303,71 +303,71 @@
       "offstage": [
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},
-          "job" : "Scenic Designer"
+          "jobs" : "Scenic Designer"
         },
         {
           "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "jobs" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Designer"
+          "jobs" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Julian Evans" }},
-          "job" : "Sound Designer"
+          "jobs" : "Sound Designer"
         },
         {
           "contributor" : {"person": {"name" : "Justin Cox" }},
-          "job" : "Props Master"
+          "jobs" : "Props Master"
         },
         {
           "contributor" : {"person": {"name" : "Josh Langman" }},
-          "job" : "Assistant Lighting Designer"
+          "jobs" : "Assistant Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
-          "job" : "Production Stage Manager"
+          "jobs" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Samantha Honeycutt" }},
-          "job" : "Assistant Stage Manager"
+          "jobs" : "Assistant Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Courtney Butt" }},
-          "job" : "Wardrobe Supervisor"
+          "jobs" : "Wardrobe Supervisor"
         },
         {
           "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
-          "job" : "Assistant Production Manager"
+          "jobs" : "Assistant Production Manager"
         },
         {
           "contributor" : {"person": {"name" : "Alexander Gilbey" }},
-          "job" : "House Manager"
+          "jobs" : "House Manager"
         },
         {
           "contributor" : {"person": {"name" : "Sara Morgan" }},
-          "job" : "Technical Director"
+          "jobs" : "Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Alison Loretta" }},
-          "job" : "Tech Intern"
+          "jobs" : "Tech Intern"
         },
         {
           "contributor" : {"person": {"name" : "Jon Huggins" }},
-          "job" : "Assistant Technical Director"
+          "jobs" : "Assistant Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Artem Kreimer" }},
-          "job" : "Master Electrician"
+          "jobs" : "Master Electrician"
         },
         {
           "contributor" : {"person": {"name" : "Jack Plowe" }},
-          "job" : "Run Crew"
+          "jobs" : "Run Crew"
         },
         {
           "contributor" : {"person": {"name" : "Nicole Richards" }},
-          "job" : "Run Crew"
+          "jobs" : "Run Crew"
         }
       ]
     }

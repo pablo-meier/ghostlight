@@ -66,15 +66,15 @@
       "offstage" : [
         {
             "contributor" : {"person": {"name" : "EllaRose Chary" }},
-            "job" : "Book/Lyrics"
+            "jobs" : "Book/Lyrics"
         },
         {
             "contributor" : {"person": {"name" : "Brandon James Gwinn" }},
-            "job" : "Music/Lyrics"
+            "jobs" : "Music/Lyrics"
         },
         {
             "contributor" : {"person": {"name" : "Elizabeth Radabaugh" }},
-            "job" : "Production Stage Manager"
+            "jobs" : "Production Stage Manager"
         }
       ]
     }

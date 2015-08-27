@@ -128,7 +128,7 @@
           "performer" : {"name": "Ashley Zimmermann"}
         }
       ],
-      "offstage": [{ "contributor": {"person": { "name" : "Catherine Gasta" }}, "job" : "Assistant Director" }]
+      "offstage": [{ "contributor": {"person": { "name" : "Catherine Gasta" }}, "jobs" : "Assistant Director" }]
     },
     {
       "work" : {

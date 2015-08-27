@@ -111,7 +111,7 @@ performance_to_proplists(#performance{
 onstage_as_proplist(#onstage{ person=Person, role=Role}) ->
     [{role, Role}] ++ ghostlight_people:record_to_proplist(Person).
 offstage_as_proplist(#offstage{ contributor=Person, jobs=Jobs}) ->
-    [{job, Jobs}] ++ ghostlight_people:record_to_proplist(Person).
+    [{jobs, Jobs}] ++ ghostlight_people:record_to_proplist(Person).
 
 
 record_to_json(#show{
@@ -216,7 +216,10 @@ onstage_json_to_record(Onstage) ->
 
 offstage_json_to_record(Offstage) ->
     Contributor = ghostlight_utils:person_or_org_json_to_record(proplists:get_value(<<"contributor">>, Offstage)),
-    Jobs = proplists:get_value(<<"jobs">>, Offstage),
+    Jobs = case proplists:get_value(<<"jobs">>, Offstage) of
+               X when is_list(X) -> X;
+               X when is_binary(X) -> [X]
+           end,
     #offstage{
       contributor = Contributor,
       jobs = Jobs
@@ -256,6 +259,7 @@ substitute_property(Key, Lst, Replacement) ->
 %% * Must have at least one performance.
 %% * Each Producer must be a valid Person or Org.
 %% * Each Performance must contain a valid work.
+%% * Every offstage contributor must have at least one job.
 %% * Must have a valid External Links.
 validate_show(#show{ id = null, title = null }) ->
     throw(show_missing_identifying_information);
@@ -274,7 +278,6 @@ validate_body(S=#show{
     external_links = EL,
     dates = Dates
 }) ->
-    ok,
     ghostlight_utils:ensure_minimum_length(Producers, 1, <<"Must have at least one producer">>),
     ghostlight_utils:ensure_minimum_length(Performances, 1, <<"Must have at least one performance">>),
     ghostlight_utils:ensure_minimum_length(Dates, 1, <<"Must have at least one date">>),
@@ -296,7 +299,11 @@ validate_performance(#performance{
     ghostlight_work:validate_work(Work),
     [ ghostlight_people:validate_person(Director) || Director <- Directors ],
     [ ghostlight_people:validate_person(Person) || #onstage{person=Person} <- Onstage],
+
     [ ghostlight_utils:validate_person_or_org(Creator) || #offstage{contributor=Creator} <- Offstage],
+    [ ghostlight_utils:ensure_minimum_length(Jobs, 1, <<"Offstage contributors must have at least one job.">>)
+        || #offstage{ jobs = Jobs } <- Offstage],
+
     case {Id, ghostlight_db_utils:is_valid_uuid(Id)} of
         {null, _} -> ok;
         {_, true} -> ok;

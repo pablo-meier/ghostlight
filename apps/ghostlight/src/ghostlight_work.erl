@@ -103,7 +103,7 @@ sophisticated_byline(Types) ->
     Mapped = [ binary_to_list(author_type_to_binary(T)) || T <- Types ],
     case length(Mapped) of
         1 -> list_to_binary(hd(Mapped));
-        2 -> list_to_binary(hd(Mapped) ++ "&" ++ hd(tl(Mapped)));
+        2 -> list_to_binary(hd(Mapped) ++ " & " ++ hd(tl(Mapped)));
         X -> 
             Last = lists:last(Mapped),
             AllButLast = lists:sublist(Mapped, X - 1),
@@ -211,5 +211,6 @@ validate_work_body(W=#work {
                         vanity_name = Vanity
                      }) ->
     ghostlight_utils:validate_vanity_name(Vanity),
+    ghostlight_utils:ensure_minimum_length(Authors, 1, <<"Must have at least one author.">>),
     [ ghostlight_utils:validate_person_or_org(Author) || #authorship{ author=Author } <- Authors ],
     W.

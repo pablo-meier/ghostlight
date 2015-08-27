@@ -50,27 +50,27 @@
       "offstage" : [
         {
             "contributor" : {"person": {"name" : "Andrew Diaz" }},
-            "job" : "Set Designer"
+            "jobs" : "Set Designer"
         },
         {
             "contributor" : {"person": {"name" : "Daisy Long" }},
-            "job" : "Lighting Designer"
+            "jobs" : "Lighting Designer"
         },
         {
             "contributor" : {"person": {"name" : "Beth Goldenberg" }},
-            "job" : "Costume Designer"
+            "jobs" : "Costume Designer"
         },
         {
             "contributor" : {"person": {"name" : "Lee Kinney" }},
-            "job" : "Sound Designer"
+            "jobs" : "Sound Designer"
         },
         {
             "contributor" : {"person": {"name" : "Jesse Geguzis" }},
-            "job" : "Fight Director"
+            "jobs" : "Fight Director"
         },
         {
             "contributor" : {"person": {"name" : "Ben Andersen" }},
-            "job" : "Stage Manager"
+            "jobs" : "Stage Manager"
         }
       ]
     }

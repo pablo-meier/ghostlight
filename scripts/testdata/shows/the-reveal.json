@@ -40,31 +40,31 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Davide Berardi" }},
-          "job" : "Original Music"
+          "jobs" : "Original Music"
         },
         {
           "contributor" : {"person": {"name" : "Karl Ruckdeschel" }},
-          "job" : "Costume Design"
+          "jobs" : "Costume Design"
         },
         {
           "contributor" : {"person": {"name" : "Sarah Johnston" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Christina Roussos" }},
-          "job" : "Project Design"
+          "jobs" : "Project Design"
         },
         {
           "contributor" : {"person": {"name" : "Alejandro Garcia" }},
-          "job" : "Cinematography"
+          "jobs" : "Cinematography"
         },
         {
           "contributor" : {"person": {"name" : "Jody Christopherson" }},
-          "job" : "Photography"
+          "jobs" : "Photography"
         },
         {
           "contributor" : {"person": {"name" : "Liz Richards" }},
-          "job" : "Stage Manager"
+          "jobs" : "Stage Manager"
         }
       ]
     }

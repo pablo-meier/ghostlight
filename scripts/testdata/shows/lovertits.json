@@ -34,11 +34,11 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Adriano Shaplin" }},
-          "job" : "Sound Designer"
+          "jobs" : "Sound Designer"
         },
         {
           "contributor" : {"person": {"name" : "Andrew Thompson" }},
-          "job" : "Lighting Designer"
+          "jobs" : "Lighting Designer"
         }
       ]
     }

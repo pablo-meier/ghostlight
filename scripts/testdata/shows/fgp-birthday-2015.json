@@ -33,7 +33,7 @@
       "offstage" : [
         {
           "contributor": {"person": {"name": "Scears Lee"}},
-          "job": "Costume Designer"
+          "jobs": "Costume Designer"
         }
       ]
     },
@@ -62,15 +62,15 @@
       "offstage": [
         {
           "contributor" : {"person": {"name": "Jorge Morales"}},
-          "job" : "Sound Designer"
+          "jobs" : "Sound Designer"
         },
         {
           "contributor" : {"person": {"name": "Stevo Arnoczy"}},
-          "job" : "Projection Design"
+          "jobs" : "Projection Design"
         },
         {
           "contributor" : {"person": {"name": "Trevor F. Salter"}},
-          "job" : "Choreography"
+          "jobs" : "Choreography"
         }
       ]
     },
@@ -90,23 +90,23 @@
       "offstage" : [
         {
           "contributor": {"person": {"name" : "Kaz PS"}},
-          "job" : "Principal Photography"
+          "jobs" : "Principal Photography"
         },
         {
           "contributor": {"person": {"name" : "Charles Lindsay"}},
-          "job" : "Sound & Lights"
+          "jobs" : "Sound & Lights"
         },
         {
           "contributor": {"person": {"name" : "Anton Sanko"}},
-          "job" : "Composer"
+          "jobs" : "Composer"
         },
         {
           "contributor": {"person": {"name" : "Kaz PS"}},
-          "job" : "Editor"
+          "jobs" : "Editor"
         },
         {
           "contributor": {"person": {"name" : "Dan Safer"}},
-          "job" : "Editor"
+          "jobs" : "Editor"
         }
       ]
     },
@@ -141,7 +141,7 @@
       "offstage" : [
         {
           "contributor": {"person": {"name": "Catherine Brookman"}},
-          "job": "Composer"
+          "jobs": "Composer"
         }
       ]
     },

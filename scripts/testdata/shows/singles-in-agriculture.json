@@ -42,35 +42,35 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "David Hyman" }},
-          "job" : "Costume Design"
+          "jobs" : "Costume Design"
         },
         {
           "contributor" : {"person": {"name" : "Alberto Ruiz" }},
-          "job" : "Lighting Design, Props Design"
+          "jobs" : "Lighting Design, Props Design"
         },
         {
           "contributor" : {"person": {"name" : "Rena René Waits" }},
-          "job" : "Stage Manager"
+          "jobs" : "Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Jen Price Fick" }},
-          "job" : "Set Design"
+          "jobs" : "Set Design"
         },
         {
           "contributor" : {"person": {"name" : "Daniel Melnick" }},
-          "job" : "Sound Design"
+          "jobs" : "Sound Design"
         },
         {
           "contributor" : {"person": {"name" : "Brad Mead" }},
-          "job" : "Logo Design"
+          "jobs" : "Logo Design"
         },
         {
           "contributor" : {"person": {"name" : "Haley Carter" }},
-          "job" : "Assistant Stage Manager"
+          "jobs" : "Assistant Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Raul Hernandez" }},
-          "job" : "Assistant Stage Manager"
+          "jobs" : "Assistant Stage Manager"
         }
 
       ]

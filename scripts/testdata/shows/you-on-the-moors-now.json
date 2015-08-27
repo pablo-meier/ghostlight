@@ -97,31 +97,31 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Brian Abbott" }},
-          "job" : "Assistant Lighting Designer"
+          "jobs" : "Assistant Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Kristy Bodall" }},
-          "job" : "Stage Manager"
+          "jobs" : "Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Adrianna Brannon" }},
-          "job" : "Assistant Sound Designer"
+          "jobs" : "Assistant Sound Designer"
         },
         {
           "contributor" : {"person": {"name" : "Alex Hawthorn" }},
-          "job" : "Sound Design"
+          "jobs" : "Sound Design"
         },
         {
           "contributor" : {"person": {"name" : "Marika Kent" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Reed Whitney" }},
-          "job" : "Producing Director"
+          "jobs" : "Producing Director"
         },
         {
           "contributor" : {"person": {"name" : "Joseph Wolfslau" }},
-          "job" : "Set and Costume Design"
+          "jobs" : "Set and Costume Design"
         }
       ]
     }

@@ -56,71 +56,71 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Izzy Fields" }},
-          "job" : "Costume Design"
+          "jobs" : "Costume Design"
         },
         {
           "contributor" : {"person": {"name" : "John Eckert" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Elizabeth Goodman" }},
-          "job" : "Production Stage Manager"
+          "jobs" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Tristan Jeffers" }},
-          "job" : "Set Design"
+          "jobs" : "Set Design"
         },
         {
           "contributor" : {"person": {"name" : "Chad Raines" }},
-          "job" : "Sound Design"
+          "jobs" : "Sound Design"
         },
         {
           "contributor" : {"person": {"name" : "Nicole Santiago" }},
-          "job" : "Stage Management Intern, Deck Crew"
+          "jobs" : "Stage Management Intern, Deck Crew"
         },
         {
           "contributor" : {"person": {"name" : "Sean M. Daniels" }},
-          "job" : "Production Manager"
+          "jobs" : "Production Manager"
         },
         {
           "contributor" : {"person": {"name" : "Jenn Tash" }},
-          "job" : "Technical Director"
+          "jobs" : "Technical Director"
         },
         {
           "contributor" : {"person": {"name" : "Jill Rafson" }},
-          "job" : "Dramaturg"
+          "jobs" : "Dramaturg"
         },
         {
           "contributor" : {"org": {"name" : "Matt Ross PR" }},
-          "job" : "Press Representative"
+          "jobs" : "Press Representative"
         },
         {
           "contributor" : {"person": {"name" : "Becky Phillips" }},
-          "job" : "Props"
+          "jobs" : "Props"
         },
         {
           "contributor" : {"person": {"name" : "Alie Rose Dachis" }},
-          "job" : "Poster Design"
+          "jobs" : "Poster Design"
         },
         {
           "contributor" : {"person": {"name" : "Matt Clevy" }},
-          "job" : "Communications Director"
+          "jobs" : "Communications Director"
         },
         {
           "contributor" : {"person": {"name" : "John Racioppo" }},
-          "job" : "Communications"
+          "jobs" : "Communications"
         },
         {
           "contributor" : {"person": {"name" : "Adam Suritz" }},
-          "job" : "Communications Director"
+          "jobs" : "Communications Director"
         },
         {
           "contributor" : {"person": {"name" : "Craig Wesley Divino" }},
-          "job" : "Co-Artistic Director"
+          "jobs" : "Co-Artistic Director"
         },
         {
           "contributor" : {"person": {"name" : "Aaron Rossini" }},
-          "job" : "Co-Artistic Director"
+          "jobs" : "Co-Artistic Director"
         }
       ]
     }

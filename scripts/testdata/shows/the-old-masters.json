@@ -65,27 +65,27 @@
       "offstage" : [
         {
             "contributor" : {"person": {"name" : "Andrew Diaz" }},
-            "job" : "Set Designer"
+            "jobs" : "Set Designer"
         },
         {
             "contributor" : {"person": {"name" : "Jonathan Cottle" }},
-            "job" : "Lighting Designer"
+            "jobs" : "Lighting Designer"
         },
         {
             "contributor" : {"person": {"name" : "Travis Alexandra Boatright" }},
-            "job" : "Costume Designer"
+            "jobs" : "Costume Designer"
         },
         {
             "contributor" : {"person": {"name" : "Reece Arthur" }},
-            "job" : "Sound Designer"
+            "jobs" : "Sound Designer"
         },
         {
             "contributor" : {"person": {"name" : "Cristina Pitter" }},
-            "job" : "Props Master"
+            "jobs" : "Props Master"
         },
         {
             "contributor" : {"person": {"name" : "Kaila Hill" }},
-            "job" : "Stage Manager"
+            "jobs" : "Stage Manager"
         }
       ]
     }

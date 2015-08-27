@@ -36,11 +36,11 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Ben Bauer" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Jordan Harrison" }},
-          "job" : "Video Design"
+          "jobs" : "Video Design"
         }
       ]
     },

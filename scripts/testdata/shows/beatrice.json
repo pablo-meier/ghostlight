@@ -70,23 +70,23 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Daniela Hart" }},
-          "job" : "Sound Design"
+          "jobs" : "Sound Design"
         },
         {
           "contributor" : {"person": {"name" : "Matsy Stinson" }},
-          "job" : "Costume Design"
+          "jobs" : "Costume Design"
         },
         {
           "contributor" : {"person": {"name" : "Paul Notice" }},
-          "job" : "Rehearsal Photography"
+          "jobs" : "Rehearsal Photography"
         },
         {
           "contributor" : {"person": {"name" : "Miranda Poett" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Milica Bogetic" }},
-          "job" : "Stage Manager"
+          "jobs" : "Stage Manager"
         }
       ]
     }

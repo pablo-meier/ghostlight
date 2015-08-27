@@ -80,27 +80,27 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Scott Klopfenstein" }},
-          "job" : "Original Music"
+          "jobs" : "Original Music"
         },
         {
           "contributor" : {"person": {"name" : "Michael Raine" }},
-          "job" : "Choreographer"
+          "jobs" : "Choreographer"
         },
         {
           "contributor" : {"person": {"name" : "Jenna Alexy" }},
-          "job" : "Props"
+          "jobs" : "Props"
         },
         {
           "contributor" : {"person": {"name" : "Rebecca Heisler" }},
-          "job" : "Lighting Designer"
+          "jobs" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Dylan Grunn" }},
-          "job" : "Production Assistant"
+          "jobs" : "Production Assistant"
         },
         {
           "contributor" : {"person": {"name" : "Jason Linzer" }},
-          "job" : "Graphics/Poster"
+          "jobs" : "Graphics/Poster"
         }
       ]
     }

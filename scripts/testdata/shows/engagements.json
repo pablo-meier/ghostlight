@@ -51,39 +51,39 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Jason Simms" }},
-          "job" : "Scenic Designer"
+          "jobs" : "Scenic Designer"
         },
         {
           "contributor" : {"person": {"name" : "Mark van Hare" }},
-          "job" : "Sound Designer"
+          "jobs" : "Sound Designer"
         },
         {
           "contributor" : {"person": {"name" : "Joe Lankheet" }},
-          "job" : "Production Manager"
+          "jobs" : "Production Manager"
         },
         {
           "contributor" : {"person": {"name" : "Greg MacPherson" }},
-          "job" : "Lighting Plot Designer"
+          "jobs" : "Lighting Plot Designer"
         },
         {
           "contributor" : {"person": {"name" : "Audrey Nauman" }},
-          "job" : "Costume Designer"
+          "jobs" : "Costume Designer"
         },
         {
           "contributor" : {"person": {"name" : "Nicholas Ward" }},
-          "job" : "General Manager"
+          "jobs" : "General Manager"
         },
         {
           "contributor" : {"person": {"name" : "Chelsie McPhilimy" }},
-          "job" : "Lighting Designer"
+          "jobs" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Jessica Jalal" }},
-          "job" : "Props Master"
+          "jobs" : "Props Master"
         },
         {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
-          "job" : "Production Stage Manager"
+          "jobs" : "Production Stage Manager"
         }
       ]
     }

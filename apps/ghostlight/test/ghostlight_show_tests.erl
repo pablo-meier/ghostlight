@@ -23,7 +23,10 @@ base_show() ->
                id = <<"edef2ee2-b04c-4572-a201-5feabf428891">>,
                work = #work {
                    title = <<"Leech Beach">>,
-                   authors = []
+                   authors = [#authorship {
+                       author = #person { name = <<"Alucard 👻"/utf8>> },
+                       types = [written]
+                   }]
                },
                onstage = [
                    #onstage{
@@ -38,7 +41,15 @@ base_show() ->
                        }
                    }
                ],
-               offstage = [],
+               offstage = [
+                   #offstage {
+                       contributor = #person { id = <<"12239ae2-b04c-4572-a201-59381ccc3891">> },
+                       jobs = [<<"Stage Hand">>, <<"Stage Armpit">>]
+                   },
+                   #offstage {
+                       contributor = #organization { name = <<"Fled Nanders">> },
+                       jobs = [<<"Sounding Designer">>]
+                   }],
                directors = [
                   #person {
                     id = <<"ca3f2932-b04c-4572-a904-5fe1b6418721">>

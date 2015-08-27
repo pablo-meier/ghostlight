@@ -68,51 +68,51 @@
       "offstage" : [
         {
             "contributor" : {"person": {"name" : "Arnulfo Maldonado" }},
-            "job" : "Scenic Design"
+            "jobs" : "Scenic Design"
         },
         {
             "contributor" : {"person": {"name" : "Solomon Weisbard" }},
-            "job" : "Lighting Design"
+            "jobs" : "Lighting Design"
         },
         {
             "contributor" : {"person": {"name" : "Ásta Bennie Hostetter" }},
-            "job" : "Costume Designer"
+            "jobs" : "Costume Designer"
         },
         {
             "contributor" : {"org": {"name" : "Jane Shaw" }},
-            "job" : "Sound Design"
+            "jobs" : "Sound Design"
         },
         {
             "contributor" : {"person": {"name" : "Sunneva Stapleton" }},
-            "job" : "Production Stage Manager"
+            "jobs" : "Production Stage Manager"
         },
         {
             "contributor" : {"person": {"name" : "Avery Reed" }},
-            "job" : "Costume Assistant"
+            "jobs" : "Costume Assistant"
         },
         {
             "contributor" : {"person": {"name" : "Alex Hansen" }},
-            "job" : "Props Assistant"
+            "jobs" : "Props Assistant"
         },
         {
             "contributor" : {"org": {"name" : "Ilana Khanin" }},
-            "job" : "Assistant Stage Manager"
+            "jobs" : "Assistant Stage Manager"
         },
         {
             "contributor" : {"person": {"name" : "Danielle Santos" }},
-            "job" : "Assistant Director"
+            "jobs" : "Assistant Director"
         },
         {
             "contributor" : {"person": {"name" : "Allie Freed" }},
-            "job" : "Production Assistant"
+            "jobs" : "Production Assistant"
         },
         {
             "contributor" : {"person": {"name" : "Colette Girardin" }},
-            "job" : "Production Assistant"
+            "jobs" : "Production Assistant"
         },
         {
             "contributor" : {"person": {"name" : "Laakan McHardy" }},
-            "job" : "Production Assistant"
+            "jobs" : "Production Assistant"
         }
       ]
     }

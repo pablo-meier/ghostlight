@@ -108,35 +108,35 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Production Design"
+          "jobs" : "Production Design"
         },
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Brian Hoes" }},
-          "job" : "Score"
+          "jobs" : "Score"
         },
         {
           "contributor" : {"person": {"name" : "Matt Cox" }},
-          "job" : "Sound Design"
+          "jobs" : "Sound Design"
         },
         {
           "contributor" : {"person": {"name" : "Josh Boerman" }},
-          "job" : "Costumes"
+          "jobs" : "Costumes"
         },
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Costumes"
+          "jobs" : "Costumes"
         },
         {
           "contributor" : {"person": {"name" : "Alex J. Gould" }},
-          "job" : "Fight Choreography"
+          "jobs" : "Fight Choreography"
         },
         {
           "contributor" : {"person": {"name" : "Madeleine Bundy" }},
-          "job" : "Graphic Design"
+          "jobs" : "Graphic Design"
         }
       ]
     },
@@ -220,35 +220,35 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Production Design"
+          "jobs" : "Production Design"
         },
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Brian Hoes" }},
-          "job" : "Score"
+          "jobs" : "Score"
         },
         {
           "contributor" : {"person": {"name" : "Matt Cox" }},
-          "job" : "Sound Design"
+          "jobs" : "Sound Design"
         },
         {
           "contributor" : {"person": {"name" : "Josh Boerman" }},
-          "job" : "Costumes"
+          "jobs" : "Costumes"
         },
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Costumes"
+          "jobs" : "Costumes"
         },
         {
           "contributor" : {"person": {"name" : "Alex J. Gould" }},
-          "job" : "Fight Choreography"
+          "jobs" : "Fight Choreography"
         },
         {
           "contributor" : {"person": {"name" : "Madeleine Bundy" }},
-          "job" : "Graphic Design"
+          "jobs" : "Graphic Design"
         }
       ]
     },
@@ -332,35 +332,35 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Production Design"
+          "jobs" : "Production Design"
         },
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Brian Hoes" }},
-          "job" : "Score"
+          "jobs" : "Score"
         },
         {
           "contributor" : {"person": {"name" : "Matt Cox" }},
-          "job" : "Sound Design"
+          "jobs" : "Sound Design"
         },
         {
           "contributor" : {"person": {"name" : "Josh Boerman" }},
-          "job" : "Costumes"
+          "jobs" : "Costumes"
         },
         {
           "contributor" : {"person": {"name" : "Joel Soren" }},
-          "job" : "Costumes"
+          "jobs" : "Costumes"
         },
         {
           "contributor" : {"person": {"name" : "Alex J. Gould" }},
-          "job" : "Fight Choreography"
+          "jobs" : "Fight Choreography"
         },
         {
           "contributor" : {"person": {"name" : "Madeleine Bundy" }},
-          "job" : "Graphic Design"
+          "jobs" : "Graphic Design"
         }
       ]
     }

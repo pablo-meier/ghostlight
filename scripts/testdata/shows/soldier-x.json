@@ -74,126 +74,126 @@
       "offstage" : [
         {
             "contributor" : {"person": {"name" : "Daniel Conway" }},
-            "job" : "Set Designer"
+            "jobs" : "Set Designer"
         },
         {
             "contributor" : {"person": {"name" : "Peter West" }},
-            "job" : "Lighting Designer"
+            "jobs" : "Lighting Designer"
         },
         {
             "contributor" : {"person": {"name" : "Beth Goldenberg" }},
-            "job" : "Costume Designer"
+            "jobs" : "Costume Designer"
         },
         {
             "contributor" : {"org": {"name" : "Broken Chord" }},
-            "job" : "Sound Designer"
+            "jobs" : "Sound Designer"
         },
         {
             "contributor" : {"person": {"name" : "Sarah Devon Ford" }},
-            "job" : "Assistant Stage Manager"
+            "jobs" : "Assistant Stage Manager"
         },
         {
             "contributor" : {"person": {"name" : "Jennifer Delac" }},
-            "job" : "Production Stage Manager"
+            "jobs" : "Production Stage Manager"
         },
         {
             "contributor" : {"person": {"name" : "Libby Jensen" }},
-            "job" : "Production Manager"
+            "jobs" : "Production Manager"
         },
         {
             "contributor" : {"org": {"name" : "Sam Rudy Media Relations" }},
-            "job" : "Public Relations"
+            "jobs" : "Public Relations"
         },
         {
             "contributor" : {"person": {"name" : "Suzette Porte" }},
-            "job" : "Producer"
+            "jobs" : "Producer"
         },
 
         {
             "contributor" : {"person": {"name" : "Jennie Haskamp" }},
-            "job" : "Military Consultant"
+            "jobs" : "Military Consultant"
         },
         {
             "contributor" : {"person": {"name" : "Col. Odelia Tablit" }},
-            "job" : "Military Consultant"
+            "jobs" : "Military Consultant"
         },
         {
             "contributor" : {"person": {"name" : "Ed Walsh" }},
-            "job" : "Military Consultant"
+            "jobs" : "Military Consultant"
         },
 
         {
             "contributor" : {"person": {"name" : "Rachel Townsend" }},
-            "job" : "Assistant Costume Design"
+            "jobs" : "Assistant Costume Design"
         },
         {
             "contributor" : {"person": {"name" : "Nicholas Flinn"}},
-            "job" : "Assistant Lighting Design"
+            "jobs" : "Assistant Lighting Design"
         },
         {
             "contributor" : {"person": {"name" : "Emily Auciello" }},
-            "job" : "Assistant Sound Design"
+            "jobs" : "Assistant Sound Design"
         },
         {
             "contributor" : {"person": {"name" : "Justin Cox" }},
-            "job" : "Prop Supervisor"
+            "jobs" : "Prop Supervisor"
         },
         {
             "contributor" : {"person": {"name" : "Michelle Tarantina" }},
-            "job" : "Wardrobe Supervisor"
+            "jobs" : "Wardrobe Supervisor"
         },
         {
             "contributor" : {"person": {"name" : "Derek Dickinson" }},
-            "job" : "Technical Director"
+            "jobs" : "Technical Director"
         },
         {
             "contributor" : {"org": {"name" : "Derek Dickinson LLC" }},
-            "job" : "Technical Director"
+            "jobs" : "Technical Director"
         },
         {
             "contributor" : {"person": {"name" : "Charlie Babbitt" }},
-            "job" : "Master Electrician/Audio Supervisor"
+            "jobs" : "Master Electrician/Audio Supervisor"
         },
         {
             "contributor" : {"person": {"name" : "Christopher D'Angelo" }},
-            "job" : "Assistant Master Electrician"
+            "jobs" : "Assistant Master Electrician"
         },
         {
             "contributor" : {"person": {"name" : "Andrew Trent" }},
-            "job" : "Programmer"
+            "jobs" : "Programmer"
         },
         {
             "contributor" : {"person": {"name" : "Jorge Olivo" }},
-            "job" : "Board Operator"
+            "jobs" : "Board Operator"
         },
 
         {
             "contributor" : {"person": {"name" : "Psyril Apacible" }},
-            "job" : "Additional Crew"
+            "jobs" : "Additional Crew"
         },
         {
             "contributor" : {"person": {"name" : "Jeffrey Walker" }},
-            "job" : "Additional Crew"
+            "jobs" : "Additional Crew"
         },
         {
             "contributor" : {"person": {"name" : "Ashley Tata" }},
-            "job" : "Additional Crew"
+            "jobs" : "Additional Crew"
         },
         {
             "contributor" : {"person": {"name" : "Matt Carrington" }},
-            "job" : "Additional Crew"
+            "jobs" : "Additional Crew"
         },
         {
             "contributor" : {"person": {"name" : "Alex Tomea" }},
-            "job" : "Additional Crew"
+            "jobs" : "Additional Crew"
         },
         {
             "contributor" : {"person": {"name" : "Derek Roe" }},
-            "job" : "Additional Crew"
+            "jobs" : "Additional Crew"
         },
         {
             "contributor" : {"person": {"name" : "Avinesh Rana" }},
-            "job" : "Additional Crew"
+            "jobs" : "Additional Crew"
         }
       ]
     }

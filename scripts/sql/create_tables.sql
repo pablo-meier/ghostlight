@@ -235,7 +235,7 @@ CREATE TYPE person_or_org AS (type person_or_org_label, id UUID, name TEXT);
 CREATE TYPE authorship_agg AS (type person_or_org_label, id UUID, name TEXT, author_types TEXT[]);
 
 CREATE TYPE onstage_performance AS (performer named_pair, role TEXT);
-CREATE TYPE offstage_performance AS (entity person_or_org, job TEXT[]);
+CREATE TYPE offstage_performance AS (entity person_or_org, jobs TEXT[]);
 
 CREATE TYPE aggregated_performance AS (
     performance_id UUID,

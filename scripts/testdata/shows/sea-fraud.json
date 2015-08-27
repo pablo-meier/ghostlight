@@ -37,23 +37,23 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Ásta Bennie Hostetter" }},
-          "job" : "Costume Design"
+          "jobs" : "Costume Design"
         },
         {
           "contributor" : {"person": {"name" : "Ebony Burton" }},
-          "job" : "Lighting Design"
+          "jobs" : "Lighting Design"
         },
         {
           "contributor" : {"person": {"name" : "Blaze Ferrer" }},
-          "job" : "Production Stage Management"
+          "jobs" : "Production Stage Management"
         },
         {
           "contributor" : {"person": {"name" : "Christopher Heilman" }},
-          "job" : "Set Design"
+          "jobs" : "Set Design"
         },
         {
           "contributor" : {"person": {"name" : "Jeff Aaron Bryant" }},
-          "job" : "Sound Design"
+          "jobs" : "Sound Design"
         }
       ]
     }

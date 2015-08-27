@@ -57,9 +57,20 @@ test_json_to_record(Input, Expected) ->
 
 %% Minimum viability
 work_validate_id_test() ->
-    ghostlight_work:validate_work(#work{id = <<"87ac576a-5645-400a-90e3-60e8f717a889">>}).
+    ghostlight_work:validate_work(#work{id = <<"87ac576a-5645-400a-90e3-60e8f717a889">>,
+                                        authors = [#authorship{
+                                                        author = #person{ id = <<"481e9c01-8284-4b9f-8263-f8e3a8f0aa32">> },
+                                                        types = [written]
+                                                   }]
+                                        }).
+
 work_validate_name_test() ->
-    ghostlight_work:validate_work(#work{title = <<"Winners lol">>}).
+    ghostlight_work:validate_work(#work{title = <<"Winners lol">>,
+                                        authors = [#authorship{
+                                                        author = #person{ id = <<"481e9c01-8284-4b9f-8263-f8e3a8f0aa32">> },
+                                                        types = [written]
+                                                   }]
+                                        }).
 
 
 work_bad_author_person_test() ->
@@ -105,6 +116,7 @@ work_bad_author_org_test() ->
 work_bad_vanity_name_test() ->
     WorkToTest = #work{
         title = <<"It's a Shakespeare knock-off!!!!">>,
+        authors = [#authorship{ author = #person{ id = <<"481e9c01-8284-4b9f-8263-f8e3a8f0aa32">> }, types = [written] }],
         vanity_name = <<"jkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjk">>
     },
     ?assertException(throw, invalid_vanity_name_format, ghostlight_work:validate_work(WorkToTest)).

@@ -93,12 +93,15 @@
       <h5>Creative Team</h5>
       <table>
           <tr>
-              <td>Position</td>
+              <td>Position(s)</td>
               <td>Contributor</td>
           </tr>
       {% for offstage in performance.offstage %}
           <tr>
-              <td>{{ offstage.job }}</td>
+            <td>{% for job in offstage.jobs %}
+                  {{ job }}{% if not forloop.last %}<br />{% endif %}
+                {% endfor %}
+            </td>
               <td><a href="/people/{{ offstage.id }}">{{ offstage.name }}</a></td>
           </tr>
       {% endfor %}

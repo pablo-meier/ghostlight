@@ -65,31 +65,31 @@
       "offstage" : [
         {
           "contributor" : {"person": {"name" : "Andy Roninson" }},
-          "job" : "Musical Director"
+          "jobs" : "Musical Director"
         },
         {
           "contributor" : {"person": {"name" : "Mikhaela Mahony" }},
-          "job" : "Assistant Director"
+          "jobs" : "Assistant Director"
         },
         {
           "contributor" : {"person": {"name" : "Mitch Ost" }},
-          "job" : "Lighting Designer"
+          "jobs" : "Lighting Designer"
         },
         {
           "contributor" : {"person": {"name" : "Joe Lankheet" }},
-          "job" : "Production Manager"
+          "jobs" : "Production Manager"
         },
         {
           "contributor" : {"person": {"name" : "Eileen Lalley" }},
-          "job" : "Production Stage Manager"
+          "jobs" : "Production Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Taylor Wilkerson" }},
-          "job" : "Rehearsal Stage Manager"
+          "jobs" : "Rehearsal Stage Manager"
         },
         {
           "contributor" : {"person": {"name" : "Oliva Wells" }},
-          "job" : "Production Assistant"
+          "jobs" : "Production Assistant"
         }
       ]
     }

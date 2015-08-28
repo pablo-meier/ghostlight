@@ -87,6 +87,7 @@ db_to_record(
                                                    title = proplists:get_value(<<"title">>, RoleObj)
                                                 },
                                          offstage = [#offstage {
+                                                      contributor = #person { id = PersonId },
                                                       jobs = proplists:get_value(<<"jobs">>, RoleObj)
                                                      }]
                                       } || RoleObj <- proplists:get_value(<<"jobs">>, Show)],

@@ -19,6 +19,7 @@
 -export([record_to_json/1,
          record_to_proplist/1]).
 
+
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
 get_html(OrgId) ->

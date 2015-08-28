@@ -79,13 +79,13 @@ get_inserts(#show{title=Title,
                   special_thanks=SpecialThanks,
                   dates=Dates,
                   hosts=Hosts,
-                  press_links=PressLinks,
+                  press_links=_PressLinks,
                   external_links=ExternalLinks
             },
             State=#db_state{insert_show_statement=IS,
                             insert_dates_statement=ID,
                             insert_links_statement=IL,
-                            insert_presslinks_statement=IP}) ->
+                            insert_presslinks_statement=_IP}) ->
     Works = extract_works(Performances),
     {AllWorkInserts, WorksWithId} = fold_over_works(Works, State),
 
@@ -102,9 +102,9 @@ get_inserts(#show{title=Title,
     AllPerformanceInserts = fold_over_performances(Performances, ShowId, WorksWithId, State),
 
     HostInserts = get_host_inserts(ShowId, Hosts, State),
-    PressInserts = [ {IP, [ShowId, Link, Label]} || #press_link{link=Link,
-                                                                label=Label
-                                                    } <- PressLinks],
+%    PressInserts = [ {IP, [ShowId, Link, Label]} || #press_link{link=Link,
+%                                                                label=Label
+%                                                    } <- PressLinks],
     LinkInserts = ghostlight_db_utils:external_links_inserts(ShowId, IL, ExternalLinks),
 
     Batch = lists:append([
@@ -114,8 +114,8 @@ get_inserts(#show{title=Title,
                           DateInserts,
                           AllPerformanceInserts,
                           HostInserts,
-                          LinkInserts,
-                          PressInserts
+                          LinkInserts
+%                          PressInserts
                          ]),
     {Batch, ShowId}.
 

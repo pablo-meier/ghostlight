@@ -14,7 +14,10 @@
     {
       "work" : {
         "title" : "I Battled Lenny Ross",
-        "authors": [{"person": {"name": "Anna Ziegler"}}],
+        "authors": [{"person": {"name": "Anna Ziegler"},
+                     "types": ["Book"]},
+                    {"person": {"name": "Matt Schatz"},
+                     "types": ["Music", "Lyrics"]}],
         "description": "A new musical about the toughest interview of Mike Wallace's career."
       },
       "directors": [{"name": "Daniella Topol"}],
@@ -40,10 +43,6 @@
         {
           "contributor": {"person": {"name": "Assaf Gleizner"}},
           "jobs": "Musical Director"
-        },
-        {
-          "contributor": {"person": {"name": "Matt Schatz"}},
-          "jobs": "Music & Lyrics"
         },
         {
           "contributor" : {"person": {"name" : "Nick Francone" }},

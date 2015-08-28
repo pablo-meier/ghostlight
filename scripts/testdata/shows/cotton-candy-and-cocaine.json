@@ -17,8 +17,10 @@
     {
       "work" : {
         "title" : "Cotton Candy & Cocaine",
-        "authors" : [{"person": {"name": "EllaRose Chary"}},
-                     {"person": {"name": "Brandon James Gwinn"}}],
+        "authors" : [{"person": {"name": "EllaRose Chary"},
+                      "types": ["Book", "Lyrics"]},
+                     {"person": {"name": "Brandon James Gwinn"},
+                      "types": ["Music", "Lyrics"]}],
         "description": "_Cotton Candy and Cocaine_ is a new immersive, electro-pop musical/dance party about gentrification in Las Vegas."
       },
       "directors": [{"name": "Melissa Crespo"}],
@@ -64,14 +66,6 @@
         }
       ],
       "offstage" : [
-        {
-            "contributor" : {"person": {"name" : "EllaRose Chary" }},
-            "jobs" : "Book/Lyrics"
-        },
-        {
-            "contributor" : {"person": {"name" : "Brandon James Gwinn" }},
-            "jobs" : "Music/Lyrics"
-        },
         {
             "contributor" : {"person": {"name" : "Elizabeth Radabaugh" }},
             "jobs" : "Production Stage Manager"

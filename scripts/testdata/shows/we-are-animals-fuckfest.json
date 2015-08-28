@@ -31,7 +31,11 @@
     {
       "work" : {
         "title" : "We Are Animals 4: F*ckin'",
-        "authors": [{"person": {"name": "Catya McMullen"}}],
+        "authors": [{"person": {"name": "Catya McMullen"},
+                     "types": ["Written"]},
+                    {"person": {"name": "Scott Klopfenstein"},
+                     "types": ["Music"]}
+        ],
         "description": "WE ARE ANIMALS is a series of short solo pieces, comedy sketches and original music by Catya McMullen and Reel Big Fish's Scott Klopfenstein. We take on a theme and write for a specific team of actors/vocalists and are a precise blend of comedy, rap music, sweeping ballads and monologues that capture some bizarre, beautiful and complicated elements of the human experience. We're here to make you laugh, move you, make you think and create a kick ass good time.\n\nIt's about time we took on sex."
       },
       "directors": [{"name": "Kevin Laibson"}],
@@ -78,10 +82,6 @@
         }
      ],
       "offstage" : [
-        {
-          "contributor" : {"person": {"name" : "Scott Klopfenstein" }},
-          "jobs" : "Original Music"
-        },
         {
           "contributor" : {"person": {"name" : "Michael Raine" }},
           "jobs" : "Choreographer"

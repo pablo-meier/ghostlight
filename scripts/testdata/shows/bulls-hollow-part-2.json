@@ -18,8 +18,10 @@
     {
       "work" : {
         "title" : "Bull's Hollow Part II: The Princess Alaska",
-        "authors": [{"person": {"name": "Jaclyn Backhaus"}},
-                    {"person": {"name": "Mike Brun"}}],
+        "authors": [{"person": {"name": "Jaclyn Backhaus"},
+                     "types": ["Book"]},
+                    {"person": {"name": "Mike Brun"},
+                     "types": ["Music", "Lyrics"]}],
         "description": ""
       },
       "directors": [{"name": "Andrew Neisler"}],
@@ -79,14 +81,6 @@
         }
       ],
       "offstage" : [
-        {
-          "contributor" : {"person": {"name" : "Jaclyn Backhaus" }},
-          "jobs" : "Book"
-        },
-        {
-          "contributor" : {"person": {"name" : "Mike Brun" }},
-          "jobs" : "Music/Lyrics"
-        },
         {
           "contributor" : {"person": {"name" : "Carolyn Mraz" }},
           "jobs" : "Scenic Design"

@@ -3,6 +3,9 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
+show_fixture(File) -> ghostlight_test_utils:read_fixture(["shows"] ++ [File]).
+
+
 
 %% Shows have a much more thorough set of minimums. This is a base case that
 %% we can add to to test individual properties.
@@ -20,7 +23,6 @@ base_show() ->
         ],
         performances = [
             #performance {
-               id = <<"edef2ee2-b04c-4572-a201-5feabf428891">>,
                work = #work {
                    title = <<"Leech Beach">>,
                    authors = [#authorship {
@@ -69,6 +71,18 @@ base_show() ->
         external_links = null,
         dates = [{{2015,3,9},{20,0,0}}]
     }.
+
+
+%%% JSON-TO-RECORD
+kitchen_sink_test() ->
+    Input = show_fixture("kitchen_sink.json"),
+    Expected = base_show(),
+    test_json_to_record(Input, Expected).
+
+test_json_to_record(Input, Expected) ->
+    Result = ghostlight_show:json_to_record(jsx:decode(Input)),
+    ?assertEqual(Expected, Result).
+
 
 
 %%% RECORD VALIDATION

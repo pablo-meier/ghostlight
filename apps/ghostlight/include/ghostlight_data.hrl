@@ -58,7 +58,7 @@
     tagline = null                     :: null | binary(),
     description = null                 :: null | binary(),
     date_founded = null                :: null | datetime(),
-    external_links = #external_links{} :: #external_links{},
+    external_links = null              :: null | #external_links{},
     members = []                       :: list(#org_member{}),
     employees = []                     :: list(#org_employee{})
 }).
@@ -81,7 +81,7 @@
 }).
 
 -record(onstage, {
-    role = <<"">>      :: binary(),
+    role = null        :: null | binary(),
     person = #person{} :: #person{}
 }).
 

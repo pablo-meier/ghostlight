@@ -163,6 +163,7 @@ json_to_record(Decoded) ->
     ShowId = proplists:get_value(<<"id">>, Decoded, null),
     Title = proplists:get_value(<<"title">>, Decoded),
     SpecialThanks = proplists:get_value(<<"special_thanks">>, Decoded),
+    ShowDescription = proplists:get_value(<<"description">>, Decoded),
     Dates = lists:map(fun iso8601:parse/1, proplists:get_value(<<"dates">>, Decoded, [])),
     Producers = [ ghostlight_utils:person_or_org_json_to_record(Producer)
                   || Producer <- proplists:get_value(<<"producers">>, Decoded, [])],
@@ -182,6 +183,7 @@ json_to_record(Decoded) ->
         title=Title,
         vanity_name=Vanity,
         special_thanks=SpecialThanks,
+        description=ShowDescription,
         dates=Dates,
         producers=Producers,
         hosts=Hosts,
@@ -208,7 +210,7 @@ performance_json_to_record(Proplist) ->
 
 onstage_json_to_record(Onstage) ->
     Performer = ghostlight_people:json_to_record(proplists:get_value(<<"performer">>, Onstage)),
-    Role = proplists:get_value(<<"role">>, Onstage),
+    Role = proplists:get_value(<<"role">>, Onstage, null),
     #onstage{
       person = Performer,
       role = Role

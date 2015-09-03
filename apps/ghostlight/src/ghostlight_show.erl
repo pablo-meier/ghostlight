@@ -110,8 +110,8 @@ performance_to_proplists(#performance{
 
 onstage_as_proplist(#onstage{ person=Person, role=Role}) ->
     [{role, Role}] ++ ghostlight_people:record_to_proplist(Person).
-offstage_as_proplist(#offstage{ contributor=Person, jobs=Jobs}) ->
-    [{jobs, Jobs}] ++ ghostlight_people:record_to_proplist(Person).
+offstage_as_proplist(#offstage{ contributor=Contributor, jobs=Jobs}) ->
+    [{jobs, Jobs}] ++ ghostlight_utils:person_or_org_record_to_proplist(Contributor).
 
 
 record_to_json(#show{

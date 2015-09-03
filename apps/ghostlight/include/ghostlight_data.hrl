@@ -102,7 +102,7 @@
 
 -record(show, {
     id = null               :: null | binary(),
-    title = <<"">>          :: binary(),
+    title = null            :: null | binary(),
     vanity_name = null      :: null | binary(),
     producers = []          :: list(#person{} | #organization{}),
     performances = []       :: list(#performance{}),

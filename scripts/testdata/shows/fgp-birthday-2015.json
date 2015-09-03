@@ -48,8 +48,10 @@
     {
       "work" : {
         "title" : "'mothertongue'",
-        "authors": [{"person": {"name": "Stevo Arnoczy"}},
-                    {"person": {"name": "Trevor F. Salter"}}]
+        "authors": [{"person": {"name": "Stevo Arnoczy"},
+                     "types": ["Projection Design"]},
+                    {"person": {"name": "Trevor F. Salter"},
+                     "types": ["Choreography"]}]
       },
       "directors": [{"name": "Stevo Arnoczy"},
                     {"name": "Trevor F. Salter"}],
@@ -63,14 +65,6 @@
         {
           "contributor" : {"person": {"name": "Jorge Morales"}},
           "jobs" : "Sound Designer"
-        },
-        {
-          "contributor" : {"person": {"name": "Stevo Arnoczy"}},
-          "jobs" : "Projection Design"
-        },
-        {
-          "contributor" : {"person": {"name": "Trevor F. Salter"}},
-          "jobs" : "Choreography"
         }
       ]
     },

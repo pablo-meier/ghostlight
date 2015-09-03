@@ -126,10 +126,7 @@ make_offstage_proplist(Show= #show{ performances=[#performance{
                                       offstage=[#offstage{ jobs=Jobs }]
                                   }]}) ->
     Toplevel = ghostlight_show:record_to_proplist(Show),
-    case Jobs of
-        null -> Toplevel;
-        _ -> [{job, Jobs}|Toplevel]
-    end.
+    [{jobs, Jobs}|Toplevel].
 
 
 json_to_record(Person) ->

@@ -119,25 +119,31 @@ record_to_json(#show{
                   title=ShowTitle,
                   producers=Producers,
                   performances=Performances,
+                  description=Description,
                   special_thanks=SpecialThanks,
                   dates=Dates}) ->
     ghostlight_utils:json_with_valid_values([
         {<<"id">>, ShowId},
         {<<"title">>, ShowTitle},
         {<<"producers">>, [ ghostlight_utils:person_or_org_record_to_json(Producer) || Producer <- Producers ]},
+        {<<"description">>, Description},
         {<<"special_thanks">>, SpecialThanks},
-        {<<"performances">>, [ performance_record_to_json(Performance) || Performance <- Performances ]},
-        {<<"dates">>, [ ghostlight_utils:erl_date_to_iso8601(Date) || Date <- Dates ]}
+        {<<"dates">>, [ ghostlight_utils:erl_date_to_iso8601(Date) || Date <- Dates ]},
+        {<<"performances">>, [ performance_record_to_json(Performance) || Performance <- Performances ]}
     ]).
 
 performance_record_to_json(#performance{
                              work=Work,
                              directors=Directors,
+                             directors_note=DirectorsNote,
+                             description=Description,
                              onstage=Onstage,
                              offstage=Offstage}) ->
     ghostlight_utils:json_with_valid_values([
         {<<"work">>, ghostlight_work:record_to_json(Work)},
         {<<"directors">>, [ ghostlight_people:record_to_json(Director) || Director <- Directors ]},
+        {<<"directors_note">>, DirectorsNote},
+        {<<"description">>, Description},
         {<<"onstage">>, [ onstage_as_json(Performer) || Performer <- Onstage ]},
         {<<"offstage">>, [ offstage_as_json(Contributor) || Contributor <- Offstage ]}
     ]).
@@ -147,16 +153,16 @@ onstage_as_json(#onstage{
                    person=Person
                 }) ->
     ghostlight_utils:json_with_valid_values([
-        {<<"role">>, Role},
-        {<<"person">>, ghostlight_people:record_to_json(Person)}
+        {<<"performer">>, ghostlight_people:record_to_json(Person)},
+        {<<"role">>, Role}
     ]).
 offstage_as_json(#offstage{
                    jobs=Jobs,
-                   contributor=Person
+                   contributor=Contributor
                 }) ->
     ghostlight_utils:json_with_valid_values([
-        {<<"job">>, Jobs},
-        {<<"contributor">>, ghostlight_people:record_to_json(Person)}
+        {<<"contributor">>, ghostlight_utils:person_or_org_record_to_json(Contributor)},
+        {<<"jobs">>, Jobs}
     ]).
 
 json_to_record(Decoded) ->

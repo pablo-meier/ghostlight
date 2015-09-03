@@ -27,7 +27,7 @@ DROP TYPE aggregated_performance CASCADE;
 DROP TYPE production_abbrev CASCADE;
 DROP TYPE onstage_performance CASCADE;
 DROP TYPE offstage_performance CASCADE;
-DROP TYPE authorship_agg CASCASE;
+DROP TYPE authorship_agg CASCADE;
 DROP TYPE work_and_authors CASCADE;
 DROP TYPE person_or_org CASCADE;
 DROP TYPE person_or_org_label CASCADE;

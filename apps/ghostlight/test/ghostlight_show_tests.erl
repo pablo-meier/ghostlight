@@ -79,10 +79,25 @@ kitchen_sink_test() ->
     Expected = base_show(),
     test_json_to_record(Input, Expected).
 
+
 test_json_to_record(Input, Expected) ->
     Result = ghostlight_show:json_to_record(jsx:decode(Input)),
     ?assertEqual(Expected, Result).
 
+
+%%% RECORD-TO-JSON
+base_show_deserialize_test() ->
+    Input = base_show(),
+    Expected = show_fixture("kitchen_sink.json"),
+    test_record_to_json(Input, Expected).
+
+
+test_record_to_json(Show, Expected) ->
+    %% Run the input through an extra decode/encode cycle to match whatever ordering JSX
+    %% uses.
+    Result = jsx:prettify(jsx:encode(ghostlight_show:record_to_json(Show))),
+    ExpectedEncoded = jsx:prettify(jsx:encode(jsx:decode(Expected))),
+    ?assertEqual(ExpectedEncoded, Result).
 
 
 %%% RECORD VALIDATION

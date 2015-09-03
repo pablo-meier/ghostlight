@@ -141,8 +141,8 @@ authorship_to_json(#authorship {
                       author = Author,
                       types = Types
                    }) ->
-    [{<<"author">>, ghostlight_utils:person_or_org_record_to_json(Author)},
-     {<<"types">>, [ author_type_to_binary(T) || T <- Types ]}].
+    Base = ghostlight_utils:person_or_org_record_to_json(Author),
+    Base ++ [{<<"types">>, [ author_type_to_binary(T) || T <- Types ]}].
 
 
 

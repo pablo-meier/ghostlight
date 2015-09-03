@@ -3,24 +3,10 @@
 
 -include("apps/ghostlight/include/ghostlight_data.hrl").
 
+person_fixture(File) -> ghostlight_test_utils:read_fixture(["people"] ++ [File]).
 
-%%% JSON-TO-RECORD
-kitchen_sink_test() -> 
-    Input = <<"
-{
-  \"id\": \"481e9c01-8284-4b9f-8263-f8e3a8f0aa32\",
-  \"name\": \"Daria Miyeko Marinelli\",
-  \"description\": \"Ms. Marinelli was born and raised in New York and lives in Astoria.\",
-
-  \"social\": {
-    \"website\": \"http://www.dariamiyekomarinelli.com\",
-    \"twitter\": \"https://twitter.com/dariamiyeko\",
-    \"instagram\": \"http://instagram.com/daria.miyeko.marinelli\",
-    \"email\": \"daria.miyeko.marinelli@gmail.com\",
-    \"tumblr\": \"http://whatindarnation.tumblr.com/\"
-  }
-}">>,
-    Expected = #person{
+kitchen_sink() ->
+    #person{
         id = <<"481e9c01-8284-4b9f-8263-f8e3a8f0aa32">>,
         name = <<"Daria Miyeko Marinelli">>,
         external_links = #external_links{
@@ -31,13 +17,32 @@ kitchen_sink_test() ->
             tumblr = <<"http://whatindarnation.tumblr.com/">>
         },
         description = <<"Ms. Marinelli was born and raised in New York and lives in Astoria.">>
-    },
+    }.
+
+%%% JSON-TO-RECORD
+kitchen_sink_test() ->
+    Input = person_fixture("kitchen_sink.json"),
+    Expected = kitchen_sink(),
     test_json_to_record(Input, Expected).
 
 
 test_json_to_record(Input, Expected) ->
     Result = ghostlight_people:json_to_record(jsx:decode(Input)),
     ?assertEqual(Expected, Result).
+
+
+%%% RECORD-TO-JSON
+base_show_deserialize_test() ->
+    Input = kitchen_sink(),
+    Expected = person_fixture("kitchen_sink.json"),
+    test_record_to_json(Input, Expected).
+
+
+test_record_to_json(Person, Expected) ->
+    Result = jsx:prettify(jsx:encode(ghostlight_people:record_to_json(Person))),
+    ExpectedEncoded = jsx:prettify(jsx:encode(jsx:decode(Expected))),
+    ?assertEqual(ExpectedEncoded, Result).
+
 
 
 %%% RECORD VALIDATION

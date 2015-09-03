@@ -116,14 +116,16 @@ record_to_json(#work{
                   title=WorkTitle,
                   authors=WorkAuthors,
                   description=Description,
-                  minutes_long=MinutesLong
+                  minutes_long=MinutesLong,
+                  vanity_name=Vanity
                }) ->
     ghostlight_utils:json_with_valid_values([
         {<<"id">>, WorkId},
         {<<"title">>, WorkTitle},
         {<<"description">>, Description},
+        {<<"authors">>, [ authorship_to_json(Author) || Author <- WorkAuthors ]},
         {<<"minutes_long">>, MinutesLong},
-        {<<"authors">>, [ authorship_to_json(Author) || Author <- WorkAuthors ]}
+        {<<"vanity">>, Vanity}
     ]);
 
 

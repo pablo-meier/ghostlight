@@ -36,6 +36,8 @@ mothertongue() ->
             }]
     }.
 
+
+%%% JSON-TO-RECORD
 kitchen_sink_test() ->
     Input = work_fixture("kitchen_sink.json"),
     Expected = kitchen_sink(),
@@ -51,6 +53,20 @@ test_json_to_record(Input, Expected) ->
     Result = ghostlight_work:json_to_record(jsx:decode(Input)),
     ?assertEqual(Expected, Result).
 
+
+%%% RECORD-TO-JSON
+base_show_deserialize_test() ->
+    Input = kitchen_sink(),
+    Expected = work_fixture("kitchen_sink.json"),
+    test_record_to_json(Input, Expected).
+
+
+test_record_to_json(Show, Expected) ->
+    %% Run the input through an extra decode/encode cycle to match whatever ordering JSX
+    %% uses.
+    Result = jsx:prettify(jsx:encode(ghostlight_work:record_to_json(Show))),
+    ExpectedEncoded = jsx:prettify(jsx:encode(jsx:decode(Expected))),
+    ?assertEqual(ExpectedEncoded, Result).
 
 
 %%% RECORD VALIDATION

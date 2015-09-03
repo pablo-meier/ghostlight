@@ -1,0 +1,47 @@
+{
+  "id": "d7962932-b04c-4572-a904-5fe1b94187f4",
+  "title": "Citizen Sarah Kane: The Musical!!",
+  "producers" : [
+    {"person": { "id" : "ca962932-b04c-4572-a904-5fe1b94187ff"}},
+    {"org": { "id" : "adaf2932-b04c-4572-a904-5fe1b6418721"}}
+  ],
+  "description": "**There were nights of endless pleasure.**",
+  "special_thanks": "Me, and nobody else",
+  "dates": ["2015-03-09T20:00:00Z"],
+  "performances": [
+    {
+      "work": {
+        "title": "Leech Beach",
+        "authors": [
+          { "person": { "name": "Alucard 👻" },
+            "types": ["Written"] }
+        ]
+      },
+      "directors": [
+        {"id": "ca3f2932-b04c-4572-a904-5fe1b6418721"},
+        {"id": "99a22018-b04c-4572-a904-ba917492aec1"}
+      ],
+      "directors_note": "Started from the bottom, still at the bottom.",
+      "description": "The most daring play to have eggrolls since _Apocalypse, WOW!_",
+      "onstage": [
+        {
+          "performer": { "id": "09cc9ae2-b04c-4572-a201-59381ccc3891"},
+          "role": "Bellerephon"
+        },
+        {
+          "performer": { "id": "09cc9ae2-b04c-4572-a201-59381ccc3891"}
+        }
+      ],
+      "offstage": [
+        {
+          "contributor": { "person": {"id": "12239ae2-b04c-4572-a201-59381ccc3891"}},
+          "jobs": ["Stage Hand", "Stage Armpit"]
+        },
+        {
+          "contributor": {"org": {"name": "Fled Nanders"}},
+          "jobs": ["Sounding Designer"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "migrations",
+  "version": "0.0.1",
+  "description": "Migrations for Ghostlight",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pablo",
+  "license": "NOPE",
+  "dependencies": {
+    "async": "^1.4.2",
+    "babel": "^5.8.23",
+    "lodash": "^3.10.1",
+    "moment": "^2.10.6",
+    "nconf": "^0.7.2",
+    "pg": "^4.4.1"
+  }
+}

@@ -99,6 +99,8 @@ performance_to_proplists(#performance{
                              directors=Directors,
                              directors_note=DirectorsNote,
                              description=Description}) ->
+    lager:info("Work is ~p~n", [Work]),
+    lager:info("As Proplist, is ~p~n", [ghostlight_work:record_to_proplist(Work)]),
     ghostlight_utils:proplist_with_valid_values(
       [{work, ghostlight_work:record_to_proplist(Work)},
        {directors_note, DirectorsNote},

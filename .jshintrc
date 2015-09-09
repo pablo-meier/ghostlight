@@ -3,5 +3,6 @@
   "globals": {
     "$": true,
     "_": true 
-  }
+  },
+  "esnext": true
 }

@@ -81,10 +81,10 @@ exec_batch(Batch, #db_state{connection=C,
     end.
 
 failures_from(Results) ->
-    lists:filter(fun good_result/1, Results).
+    lists:filter(fun bad_result/1, Results).
 
-good_result({ok, _}) -> false;
-good_result(_Else) -> true.
+bad_result({ok, _}) -> false;
+bad_result(_Else) -> true.
 
 
 parse_person_or_org(Entity) ->

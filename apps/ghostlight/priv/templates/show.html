@@ -59,16 +59,20 @@
   {% for performance in performances %}
   <hr />
       <h3><a href="/works/{{ performance.work.id }}"><em>{{ performance.work.title }}</em></a></h3>
+
       <h5>
     {% for author in performance.work.authors %}
       {% if author.byline %}{{ author.byline }} by {% else %}By {% endif %}
       {% if author.author.type == "org" %}<a href="/organization/{{ author.author.id }}">{{ author.author.name }}</a>{% else %}<a href="/people/{{ author.author.id }}">{{ author.author.name }}</a>{% endif %}{% if not forloop.last %}, {% endif %}
     {% endfor %}
       </h5>
-      <h5> Directed by 
-      {% for director in performance.directors %}
-        <a href="/people/{{ director.id }}">{{ director.name }}</a>{% include "comma_list.html" %}
-      {% endfor %}</h5>
+
+      {% if performance.directors %}
+        <h5> Directed by 
+        {% for director in performance.directors %}
+          <a href="/people/{{ director.id }}">{{ director.name }}</a>{% include "comma_list.html" %}
+        {% endfor %}</h5>
+      {% endif %}
 
       {% if performance.description %}
         {% autoescape off %} {{ performance.description }} {% endautoescape %}
@@ -76,11 +80,11 @@
 
       {% if performance.no_roles %}
         <p>With {% for onstage in performance.onstage %} <a href="/people/{{ onstage.id }}">{{ onstage.name }}</a>{% include "comma_list.html" %}{% endfor %}
-      {% else %}
+      {% elif performance.onstage %}
         <h5>Starring</h5>
         <table>
           <tr>
-              <th><strong>Role<strong></th>
+              <th><strong>Role</strong></th>
               <th><strong>Performer</strong></th>
           </tr>
         {% for onstage in performance.onstage %}
@@ -90,6 +94,8 @@
         </tr>
         {% endfor %} <!-- for onstage -->
         </table>
+      {% else %}
+        <p>No listed cast!</p>
       {% endif %}
 
       {% if performance.offstage %}

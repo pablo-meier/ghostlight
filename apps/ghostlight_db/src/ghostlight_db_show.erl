@@ -234,7 +234,7 @@ parse_performance(Proplist) ->
        work = #work{
                  id = proplists:get_value(<<"work_id">>, Proplist),
                  title = proplists:get_value(<<"work_title">>, Proplist),
-                 authors = [ ghostlight_db_utils:parse_person_or_org(Author) 
+                 authors = [ ghostlight_db_utils:parse_authorship(Author)
                              || Author <- proplists:get_value(<<"authors">>, Proplist) ]
               },
        directors = [ parse_person(Director) || Director <- proplists:get_value(<<"directors">>, Proplist, []) ],
@@ -352,8 +352,8 @@ SELECT
           w.work_id, 
           w.title, 
           ARRAY(SELECT (CASE WHEN a.person_id IS NULL 
-                            THEN ('org'::person_or_org_label, a.org_id, o.name)::person_or_org
-                            ELSE ('person'::person_or_org_label, a.person_id, p.name)::person_or_org
+                            THEN ('org'::person_or_org_label, a.org_id, o.name, a.author_types)::authorship_agg
+                            ELSE ('person'::person_or_org_label, a.person_id, p.name, a.author_types)::authorship_agg
                        END)
                 FROM authorship a
                 LEFT OUTER JOIN people p USING (person_id)

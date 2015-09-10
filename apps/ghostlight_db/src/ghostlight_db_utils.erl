@@ -7,6 +7,7 @@
          null_if_unspecified/1,
          get_state/1,
          parse_person_or_org/1,
+         parse_authorship/1,
          exec_batch/2,
          external_links_sql_to_record/1,
          external_links_inserts/3]).
@@ -95,6 +96,16 @@ parse_person_or_org(Entity) ->
         <<"person">> ->
             #person{ id = Id, name = Name }
     end.
+
+
+parse_authorship(Entity) ->
+    Author = parse_person_or_org(Entity),
+    AuthorTypes = proplists:get_value(<<"author_types">>, Entity, [written]),
+    lager:info("AuthorTypes is ~p~n", [AuthorTypes]),
+    #authorship {
+       author = Author,
+       types = [ ghostlight_work:author_type_to_atom(Type) || Type <- AuthorTypes ]
+    }.
 
 
 external_links_sql_to_record(Links) ->

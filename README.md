@@ -44,6 +44,68 @@ nasty.
 Config is done in `config/sys.config`. It's not checked in, but copy
 `sys.config.sample` and fill in the blanks.
 
+## Stacks, architecture
+
+This is structured as an Erlang "umbrella" project, so you can build all the
+components from the toplevel, and each directory under `apps/` is it's own OTP
+application. The apps more or less map to packages in other languages.
+
+That said, because the Erlang VM maps everything to a global namespace, it's
+irresponsible to _not_ prefix your app's name to every module, which is why
+every Module takes the form `<app_name>_file.erl`. It makes filenames (and
+fully-qualified function calls) very long 😩
+
+Here are the apps and a description of them:
+
+### `ghostlight`
+
+This is, naturally, the top-level app, which has the other apps as dependencies.
+This _mostly_ sets up the Cowboy server, sets up routing, and handles other
+shared logic around request handling REST.
+
+Note that in name of separating concerns, it communicates to other apps solely
+with the records defined in `apps/ghostlight/include/ghostlight_data.hrl`. It's
+responsible for parsing JSON representations of the resources and rendering
+their HTML templates, but those details are obscured away from the other apps,
+as are the details of the other apps (i.e. persistent backend choice and data
+format) from it.
+
+### `ghostlight_db`
+
+This app handles persistent data, using (as mentioned elsewhere) Postgres. It
+handles saving, updating, and retrieving the data.
+
+### `ghostlight_config`
+
+One of my Trello items is to remove this from being its own app: it could
+probably just be a module in top-level ghostlight. This serves as a way to get
+config information we don't check in (i.e. through the `sys.config` file and/or
+environment variables).
+
+### `ghostlight_markdown`
+
+Handles parsing Markdown. See below, in "Jinterface, C Ports" to see why this is
+both the best and worst app in this project.
+
+### `ghostlight_fulltext`
+
+Also arguably should be a single module, this is the interface for making a
+full-text search of the data for user search queries.
+
+### `ghostlight_auth`
+
+Preliminary, unshipped code for Twitter auth, could be expanded for other
+providers like Google or FB.
+
+### `ghostlight_devtools`
+
+The Ghostiest app in Ghostlight, this was tearfully abandoned like Daniel
+Day-Lewis' son in _There Will Be Blood_. The intention of this app was to be a
+module that watches the source directory and reloads modules, as well as adding
+a "productionizing" step to the ErlyDtl templates and frontend code. I got most
+of the way there, but left it to die when I figured I'd rather work on features
+and sank a few weeks into it already.
+
 ## Dependencies, making a mess
 
 If it isn't clear, I didn't invest a whole lot in the build system or ops of

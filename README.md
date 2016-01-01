@@ -44,7 +44,7 @@ nasty.
 Config is done in `config/sys.config`. It's not checked in, but copy
 `sys.config.sample` and fill in the blanks.
 
-## Stacks, architecture
+## App Descriptions and Architecture
 
 This is structured as an Erlang "umbrella" project, so you can build all the
 components from the toplevel, and each directory under `apps/` is it's own OTP
@@ -105,6 +105,18 @@ module that watches the source directory and reloads modules, as well as adding
 a "productionizing" step to the ErlyDtl templates and frontend code. I got most
 of the way there, but left it to die when I figured I'd rather work on features
 and sank a few weeks into it already.
+
+## Stack
+
+We use [Cowboy][14] as our HTTP router, the Amazing and Wretched [ErlyDtl][15]
+for HTML templates, [epgsql][16] to connect to Postgres. [jsx][17] is our JSON
+parser of choice, because ~~crack is whack~~ [NIF][19]s are for Noobs, sorry
+[jiffy][18].
+
+Frontend uses [Foundation][20] for responsive CSS, and I hadn't really picked a
+JS framework because this isn't supposed to be a Rich Client app, it is what the
+Internet used to be: a collection of linked _documents_ rich in data, so the
+less dynamic doohickery, the better.
 
 ## Dependencies, making a mess
 
@@ -197,3 +209,10 @@ work, so let this be a first step in Sharing.
    [11]: https://www.owasp.org/index.php/OWASP_Java_HTML_Sanitizer_Project
    [12]: https://developers.google.com/closure/compiler/?hl=en
    [13]: http://yui.github.io/yuicompressor/
+   [14]: https://github.com/ninenines/cowboy
+   [15]: https://github.com/erlydtl/erlydtl
+   [16]: https://github.com/epgsql/epgsql
+   [17]: https://github.com/talentdeficit/jsx
+   [18]: https://github.com/davisp/jiffy
+   [19]: http://www.erlang.org/doc/tutorial/nif.html
+   [20]: http://foundation.zurb.com/
